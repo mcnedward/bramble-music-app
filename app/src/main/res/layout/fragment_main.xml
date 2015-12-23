@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center|bottom"
+    android:orientation="vertical"
+    tools:context="com.mcnedward.bramble.MainActivity$PlaceholderFragment">
+
+    <LinearLayout
+        android:id="@+id/viewArtist"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center|bottom"
+        android:baselineAligned="false"
+        android:orientation="vertical" >
+
+        <ListView
+            android:id="@+id/displayArtists"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:transcriptMode="disabled"
+            android:nestedScrollingEnabled="true">
+        </ListView>
+    </LinearLayout>
+
+</LinearLayout>
