@@ -1,9 +1,12 @@
 package com.mcnedward.bramble.utils.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 
+import com.mcnedward.bramble.activity.AlbumActivity;
 import com.mcnedward.bramble.media.Album;
+import com.mcnedward.bramble.view.AlbumPopupItem;
 
 import java.util.List;
 
@@ -19,12 +22,14 @@ public class AlbumGridAdapter extends BrambleBaseAdapter<Album> {
 
     @Override
     protected View getCustomView(final int position) {
-        return null;
+        AlbumPopupItem albumPopupItem = new AlbumPopupItem(getItem(position), context);
+        return albumPopupItem;
     }
 
     @Override
     protected void setViewContent(int position, View view) {
-
+        Album album = getItem(position);
+        ((AlbumPopupItem) view).setAlbumName(album.getAlbumName());
     }
 
 }

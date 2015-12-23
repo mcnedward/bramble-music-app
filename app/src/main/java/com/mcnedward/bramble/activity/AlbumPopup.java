@@ -3,6 +3,7 @@ package com.mcnedward.bramble.activity;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
+import com.mcnedward.bramble.utils.adapter.AlbumGridAdapter;
 
 /**
  * Created by edward on 22/12/15.
@@ -28,8 +30,9 @@ public class AlbumPopup extends Activity {
         textView.setText(artist.getArtistName());
 
         GridView gridView = (GridView) findViewById(R.id.albumView);
-        ArrayAdapter<Album> adapter = new ArrayAdapter<>(this, R.layout.simple_list_item, artist.getAlbums());
+        AlbumGridAdapter adapter = new AlbumGridAdapter(artist.getAlbums(), this);
         gridView.setAdapter(adapter);
+        gridView.setGravity(Gravity.CENTER);
     }
 
     private void initializeWindow() {

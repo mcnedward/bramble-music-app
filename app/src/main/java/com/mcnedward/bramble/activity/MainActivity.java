@@ -1,4 +1,4 @@
-package com.mcnedward.bramble;
+package com.mcnedward.bramble.activity;
 
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import android.widget.ListView;
 
+import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.utils.adapter.MediaListAdapter;
