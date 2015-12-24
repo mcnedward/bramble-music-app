@@ -38,12 +38,12 @@ public class MediaListAdapter<T> extends BrambleBaseAdapter<T> {
     protected void setViewContent(int position, View view) {
         T object = getItem(position);
         ((TextView) view).setText(object.toString());
-        final Artist artist = (Artist) groups.get(position);
+//        final Artist artist = (Artist) groups.get(position);
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // TODO This has to be changed
-                openPopupWindow(artist);
+//                openPopupWindow(artist);
             }
         });
     }

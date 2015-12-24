@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 
 import java.util.ArrayList;
@@ -61,7 +62,64 @@ public class MediaLoader {
         } finally {
             if (cursor != null && !cursor.isClosed())
                 cursor.close();
+            Log.d(TAG, "Done with artists");
         }
         return artists;
+    }
+
+    public List<Album> getAlbums() {
+        List<Album> albums = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+            // Get the album information for each artist
+            final Uri albumUri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
+            final String[] albumCols = { MediaStore.Audio.Albums._ID,
+                    MediaStore.Audio.Albums.ALBUM,
+                    MediaStore.Audio.Albums.ALBUM_KEY,
+                    MediaStore.Audio.Albums.NUMBER_OF_SONGS,
+                    MediaStore.Audio.Albums.FIRST_YEAR,
+                    MediaStore.Audio.Albums.LAST_YEAR,
+                    MediaStore.Audio.Albums.ALBUM_ART };
+            cursor = context.getContentResolver().query(albumUri, albumCols,
+                    null, null, null);
+
+            int albumCount = cursor.getCount();
+            Log.d(TAG, "Number of results for album retrieval: " + albumCount);
+            while (cursor.moveToNext()) {
+                // Get album information
+                Integer albumId = cursor.getInt(cursor
+                        .getColumnIndexOrThrow(MediaStore.Audio.Albums._ID));
+                String albumName = cursor
+                        .getString(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM));
+                String albumKey = cursor
+                        .getString(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM_KEY));
+                Integer numberOfSongs = cursor
+                        .getInt(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.NUMBER_OF_SONGS));
+                Integer firstYear = cursor
+                        .getInt(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.FIRST_YEAR));
+                Integer lastYear = cursor
+                        .getInt(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.LAST_YEAR));
+                String albumArt = cursor
+                        .getString(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM_ART));
+
+                // Create a new album and add it to the total album list
+                // and the artist album list
+                albums.add(new Album(albumId, albumName, albumKey,
+                        numberOfSongs, firstYear, lastYear, albumArt));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage(), e);
+        } finally {
+            if (cursor != null && !cursor.isClosed())
+                cursor.close();
+            Log.d(TAG, "Done with albums");
+        }
+        return albums;
     }
 }

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.widget.ListView;
 
+import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.utils.MediaType;
 import com.mcnedward.bramble.utils.adapter.MediaListAdapter;
 
 import java.util.List;
@@ -11,7 +13,7 @@ import java.util.List;
 /**
  * Created by edward on 24/12/15.
  */
-public abstract class Refresher<T> {
+public class Refresher {
 
     protected Context context;
 
@@ -19,15 +21,22 @@ public abstract class Refresher<T> {
         this.context = context;
     }
 
-    protected abstract void setupListView(ListView view, MediaListAdapter<T> adapter, List<T> mediaList);
-
-    protected abstract int getResourceId();
-
-    public void refresh(List<T> mediaList) {
+    public <T> void refresh(List<T> mediaList, MediaType mediaType) {
         if (mediaList != null && !mediaList.isEmpty()) {
-            ListView listView = (ListView) ((Activity) context).findViewById(getResourceId());
+            int resourceId;
+            switch(mediaType) {
+                case ARTIST:
+                    resourceId = R.id.artist_list;
+                    break;
+                case ALBUM:
+                    resourceId = R.id.album_list;
+                    break;
+                default:
+                    resourceId = R.id.media_list;
+                    break;
+            }
+            ListView listView = (ListView) ((Activity) context).findViewById(resourceId);
             MediaListAdapter<T> adapter = new MediaListAdapter<>(mediaList, context);
-
             listView.setAdapter(adapter);
         } else {
             // Clear everything out here

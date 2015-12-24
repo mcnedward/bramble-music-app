@@ -5,9 +5,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
+import com.mcnedward.bramble.utils.MediaType;
 import com.mcnedward.bramble.utils.loader.MediaLoader;
-import com.mcnedward.bramble.utils.refresh.ArtistRefresher;
+import com.mcnedward.bramble.utils.refresh.Refresher;
 
 import java.util.List;
 
@@ -23,9 +26,10 @@ public class RetrieveMediaTask extends AsyncTask<Void, Integer, Void> {
 
     private Context context;
     private MediaLoader mediaLoader;
-    private ArtistRefresher artistRefresher;
+    private Refresher refresher;
 
     private List<Artist> artists;
+    private List<Album> albums;
 
     /**
      * Constructor for this AsyncTask. Creates a MediaAdapter to retrieve information from the Media Store, a
@@ -38,7 +42,7 @@ public class RetrieveMediaTask extends AsyncTask<Void, Integer, Void> {
     public RetrieveMediaTask(Context context) {
         this.context = context;
         mediaLoader = new MediaLoader(context);
-        artistRefresher = new ArtistRefresher(context);
+        refresher = new Refresher(context);
     }
 
     @Override
@@ -52,6 +56,7 @@ public class RetrieveMediaTask extends AsyncTask<Void, Integer, Void> {
         Log.i(TAG, "Starting Retrieve Media Task!");
         try {
             artists = mediaLoader.getArtists();
+            albums = mediaLoader.getAlbums();
         } catch (Exception e) {
             // TODO Definitely need better error handling
             Log.d(TAG, e.getMessage(), e);
@@ -64,7 +69,8 @@ public class RetrieveMediaTask extends AsyncTask<Void, Integer, Void> {
         Log.i(TAG, "Task successfully executed");
         ((Activity) context).setProgressBarIndeterminateVisibility(false);	// Remove the progress spinner
 
-        artistRefresher.refresh(artists);
+        refresher.refresh(artists, MediaType.ARTIST);
+        refresher.refresh(albums, MediaType.ALBUM);
     }
 
     @Override

@@ -15,17 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.ListView;
-
 import com.mcnedward.bramble.R;
-import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.media.Artist;
-import com.mcnedward.bramble.utils.adapter.MediaListAdapter;
-import com.mcnedward.bramble.utils.loader.MediaLoader;
+import com.mcnedward.bramble.utils.MediaType;
 import com.mcnedward.bramble.utils.task.RetrieveMediaTask;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(3);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -92,40 +86,46 @@ public class MainActivity extends AppCompatActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class MediaFragment extends Fragment {
 
-        public PlaceholderFragment() {
-        }
+        private static final String POSITION = "position";
+        private int position;
 
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance() {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static MediaFragment newInstance(int position) {
             Bundle args = new Bundle();
+            args.putInt(POSITION, position);
+            MediaFragment fragment = new MediaFragment();
             fragment.setArguments(args);
             return fragment;
         }
 
         @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            position = getArguments().getInt(POSITION);
+        }
+
+        @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-//            List<Artist> artists = new ArrayList<>();
-//            for (int x = 0; x <= 20; x++) {
-//                Artist artist = new Artist("Artist " + (x + 1));
-//                for (int y = 0; y <= 10; y++) {
-//                    artist.addAlbum(new Album("Album " + (y + 1)));
-//                }
-//                artists.add(artist);
-//            }
-//            MediaListAdapter<Artist> mediaAdapter = new MediaListAdapter<>(artists, getContext());
-//            ListView listView = (ListView) rootView.findViewById(R.id.displayArtists);
-//            listView.setAdapter(mediaAdapter);
-
-            return rootView;
+            MediaType mediaType = MediaType.values()[position];
+            int layout;
+            switch(mediaType) {
+                case ARTIST:
+                    layout = R.layout.artist_fragment_view;
+                    break;
+                case ALBUM:
+                    layout = R.layout.album_fragment_view;
+                    break;
+                default:
+                    layout = R.layout.media_fragment_view;
+                    break;
+            }
+            return inflater.inflate(layout, container, false);
         }
     }
 
@@ -133,7 +133,10 @@ public class MainActivity extends AppCompatActivity {
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentPagerAdapter implements
+            ViewPager.OnPageChangeListener {
+
+        final private static int PAGE_COUNT = 4;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -142,28 +145,33 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance();
+            // Return a MediaFragment (defined as a static inner class below).
+            return MediaFragment.newInstance(position);
         }
 
         @Override
         public int getCount() {
-            return 4;
+            return PAGE_COUNT;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "Artist";
-                case 1:
-                    return "Album";
-                case 2:
-                    return "Song";
-                case 3:
-                    return "Genre";
-            }
-            return null;
+            return MediaType.values()[position].type();
+        }
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
         }
     }
 }
