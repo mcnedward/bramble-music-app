@@ -9,7 +9,10 @@ import java.util.List;
  */
 public class Artist implements Serializable {
 
+    private int artistId;
     private String artistName;
+    private String artistKey;
+    private int numberOfAlbums;
     private List<Album> albums;
 
     public Artist(String artistName) {
@@ -17,8 +20,23 @@ public class Artist implements Serializable {
         albums = new ArrayList<>();
     }
 
+    public Artist(int artistId, String artistName, String artistKey, int numberOfAlbums) {
+        this(artistName);
+        this.artistId = artistId;
+        this.artistKey = artistKey;
+        this.numberOfAlbums = numberOfAlbums;
+    }
+
     public void addAlbum(Album album) {
         albums.add(album);
+    }
+
+    public int getArtistId() {
+        return artistId;
+    }
+
+    public void setArtistId(int artistId) {
+        this.artistId = artistId;
     }
 
     public String getArtistName() {
@@ -27,6 +45,22 @@ public class Artist implements Serializable {
 
     public void setArtistName(String artistName) {
         this.artistName = artistName;
+    }
+
+    public String getArtistKey() {
+        return artistKey;
+    }
+
+    public void setArtistKey(String artistKey) {
+        this.artistKey = artistKey;
+    }
+
+    public int getNumberOfAlbums() {
+        return numberOfAlbums;
+    }
+
+    public void setNumberOfAlbums(int numberOfAlbums) {
+        this.numberOfAlbums = numberOfAlbums;
     }
 
     public List<Album> getAlbums() {

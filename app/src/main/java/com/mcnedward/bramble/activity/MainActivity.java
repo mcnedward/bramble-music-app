@@ -21,6 +21,8 @@ import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.utils.adapter.MediaListAdapter;
+import com.mcnedward.bramble.utils.loader.MediaLoader;
+import com.mcnedward.bramble.utils.task.RetrieveMediaTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        RetrieveMediaTask task = new RetrieveMediaTask(this);
+        task.execute();
     }
 
 
@@ -108,17 +113,17 @@ public class MainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-            List<Artist> artists = new ArrayList<>();
-            for (int x = 0; x <= 20; x++) {
-                Artist artist = new Artist("Artist " + (x + 1));
-                for (int y = 0; y <= 10; y++) {
-                    artist.addAlbum(new Album("Album " + (y + 1)));
-                }
-                artists.add(artist);
-            }
-            MediaListAdapter<Artist> mediaAdapter = new MediaListAdapter<>(artists, getContext());
-            ListView listView = (ListView) rootView.findViewById(R.id.displayArtists);
-            listView.setAdapter(mediaAdapter);
+//            List<Artist> artists = new ArrayList<>();
+//            for (int x = 0; x <= 20; x++) {
+//                Artist artist = new Artist("Artist " + (x + 1));
+//                for (int y = 0; y <= 10; y++) {
+//                    artist.addAlbum(new Album("Album " + (y + 1)));
+//                }
+//                artists.add(artist);
+//            }
+//            MediaListAdapter<Artist> mediaAdapter = new MediaListAdapter<>(artists, getContext());
+//            ListView listView = (ListView) rootView.findViewById(R.id.displayArtists);
+//            listView.setAdapter(mediaAdapter);
 
             return rootView;
         }
