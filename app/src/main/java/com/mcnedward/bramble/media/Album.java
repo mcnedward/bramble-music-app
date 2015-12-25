@@ -1,6 +1,7 @@
 package com.mcnedward.bramble.media;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by edward on 22/12/15.
@@ -13,8 +14,9 @@ public class Album extends Media implements Serializable {
     private int firstYear;
     private int lastYear;
     private String albumArt;
+    private List<Integer> songIds;
 
-    public Album(int albumId, String albumName, String albumKey, String artist, int numberOfSongs, int firstYear, int lastYear, String albumArt) {
+    public Album(int albumId, String albumName, String albumKey, String artist, int numberOfSongs, int firstYear, int lastYear, String albumArt, List<Integer> songIds) {
         super(albumId, albumKey, MediaType.ALBUM);
         this.albumName = albumName;
         this.artist = artist;
@@ -22,6 +24,7 @@ public class Album extends Media implements Serializable {
         this.firstYear = firstYear;
         this.lastYear = lastYear;
         this.albumArt = albumArt;
+        this.songIds = songIds;
     }
 
     public String getAlbumName() {
@@ -30,6 +33,14 @@ public class Album extends Media implements Serializable {
 
     public void setAlbumName(String albumName) {
         this.albumName = albumName;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
     }
 
     public int getNumberOfSongs() {
@@ -62,6 +73,14 @@ public class Album extends Media implements Serializable {
 
     public void setAlbumArt(String albumArt) {
         this.albumArt = albumArt;
+    }
+
+    public List<Integer> getSongIds() {
+        return songIds;
+    }
+
+    public void setSongIds(List<Integer> songIds) {
+        this.songIds = songIds;
     }
 
     @Override

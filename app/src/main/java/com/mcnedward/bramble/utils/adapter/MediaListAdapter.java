@@ -23,8 +23,11 @@ public abstract class MediaListAdapter<T extends Media> extends BaseListAdapter<
 
     @Override
     protected void setViewContent(int position, View view) {
-        final T media = getItem(position);
-        ((TextView) view).setText(media.toString());
+        if (position != 0) {
+            final T media = getItem(position);
+            if (view instanceof TextView)
+                ((TextView) view).setText(media.toString());
+        }
     }
 
 }

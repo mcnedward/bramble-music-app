@@ -17,9 +17,11 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/albumArt"
+                android:id="@+id/bg_album_art"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/no_album_art"/>
 
         </LinearLayout>
     </com.mcnedward.bramble.view.ParallaxScrollView>
@@ -34,7 +36,19 @@
             android:id="@+id/parallax_main_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="false"
+            android:focusable="false">
+
+            <ListView
+                android:id="@+id/album_contents_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:transcriptMode="disabled"
+                android:nestedScrollingEnabled="false"
+                android:isScrollContainer="false"
+                android:drawSelectorOnTop="true">
+            </ListView>
 
         </LinearLayout>
 

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
@@ -32,7 +31,7 @@ public class AlbumPopup extends Activity {
         textView.setText(artist.getArtistName());
 
         GridView gridView = (GridView) findViewById(R.id.albumView);
-        List<Album> albums = MainActivity.mediaService.findAlbumsForArtist(artist);
+        List<Album> albums = MainActivity.mediaService.getAlbumsForArtist(artist);
         AlbumGridAdapter adapter = new AlbumGridAdapter(albums, this);
         gridView.setAdapter(adapter);
         gridView.setGravity(Gravity.CENTER);

@@ -30,7 +30,7 @@ public class ArtistDataLoader extends BaseDataLoader<Artist> {
 
     @Override
     protected String[] getMediaColumns() {
-        return new String[] {
+        return new String[]{
                 MediaStore.Audio.Artists._ID,
                 MediaStore.Audio.Artists.ARTIST,
                 MediaStore.Audio.Artists.ARTIST_KEY,
@@ -85,10 +85,16 @@ public class ArtistDataLoader extends BaseDataLoader<Artist> {
                 MediaStore.Audio.Artists.Albums.ALBUM_KEY,
                 MediaStore.Audio.Artists.Albums.ALBUM
         };
-        final Cursor cursor = context.getContentResolver().query(albumUri, albumCols, null, null, MediaStore.Audio.Artists.Albums.ALBUM + " ASC");
-        while (cursor.moveToNext()) {
-            String albumKey = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM_KEY));
-            albumKeys.add(albumKey);
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(albumUri, albumCols, null, null, MediaStore.Audio.Artists.Albums.ALBUM + " ASC");
+            while (cursor.moveToNext()) {
+                String albumKey = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM_KEY));
+                albumKeys.add(albumKey);
+            }
+        } finally {
+            if (cursor != null && !cursor.isClosed())
+                cursor.close();
         }
         return albumKeys;
     }

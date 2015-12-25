@@ -8,14 +8,16 @@
               android:orientation="vertical">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/album_art"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/ic_launcher"/>
+        android:scaleType="centerCrop"
+        android:src="@drawable/no_album_art"/>
 
     <TextView
-        android:id="@+id/albumName"
+        android:id="@+id/album_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxLines="1"

@@ -2,6 +2,8 @@ package com.mcnedward.bramble.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
 import android.widget.ScrollView;
 
 import com.mcnedward.bramble.utils.listener.ScrollViewListener;
@@ -10,6 +12,7 @@ import com.mcnedward.bramble.utils.listener.ScrollViewListener;
  * Created by edward on 23/12/15.
  */
 public class ParallaxScrollView extends ScrollView {
+    private final static String TAG = "ParallaxScrollView";
 
     private ScrollViewListener scrollViewListener = null;
 

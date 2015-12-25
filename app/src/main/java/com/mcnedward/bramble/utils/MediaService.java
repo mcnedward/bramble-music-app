@@ -23,7 +23,7 @@ public final class MediaService {
         songs = new ArrayList<>();
     }
 
-    public List<Album> findAlbumsForArtist(Artist artist) {
+    public List<Album> getAlbumsForArtist(Artist artist) {
         List<Album> albumList = new ArrayList<>();
 
         for (String artistAlbumKey : artist.getAlbumKeys()) {
@@ -36,6 +36,21 @@ public final class MediaService {
         }
 
         return albumList;
+    }
+
+    public List<Song> getSongsForAlbum(Album album) {
+        List<Song> songList = new ArrayList<>();
+
+        for (int albumId : album.getSongIds()) {
+            for (Song song : songs) {
+                if (song.getId() == albumId) {
+                    songList.add(song);
+                    break;
+                }
+            }
+        }
+
+        return songList;
     }
 
     public List<Artist> getArtists() {
