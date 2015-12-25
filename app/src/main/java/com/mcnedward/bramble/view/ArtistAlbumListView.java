@@ -36,12 +36,12 @@ public class ArtistAlbumListView extends LinearLayout {
 
         txtArtist = (TextView) findViewById(R.id.txtArtist);
 
-        List<Album> albums = artist.getAlbums();
-        int rowCount = albums.size() / 2;
-        gridLayout = new GridLayout(context);
-        gridLayout.setColumnCount(2);
-        gridLayout.setRowCount(rowCount);
-        addView(gridLayout);
+//        List<Album> albums = artist.getAlbums();
+//        int rowCount = albums.size() / 2;
+//        gridLayout = new GridLayout(context);
+//        gridLayout.setColumnCount(2);
+//        gridLayout.setRowCount(rowCount);
+//        addView(gridLayout);
     }
 
     public void addAlbum(Album album) {

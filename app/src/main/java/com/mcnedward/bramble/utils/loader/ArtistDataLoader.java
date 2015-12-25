@@ -5,7 +5,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.media.Artist;
+import com.mcnedward.bramble.media.MediaType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +17,10 @@ import java.util.List;
  */
 public class ArtistDataLoader extends BaseDataLoader<Artist> {
 
+    private List<Artist> artists;
+
     public ArtistDataLoader(Context context) {
-        super(context);
+        super(MediaType.ARTIST, context);
     }
 
     @Override
@@ -61,8 +65,31 @@ public class ArtistDataLoader extends BaseDataLoader<Artist> {
                     cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST_KEY));
             Integer numberOfAlbums = cursor.getInt(
                     cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.NUMBER_OF_ALBUMS));
-            artists.add(new Artist(artistId, artistName, artistKey, numberOfAlbums));
+
+            List<String> albumKeys = loadAlbumKeysForArtist(artistId);
+
+            artists.add(new Artist(artistId, artistName, artistKey, numberOfAlbums, albumKeys));
         }
         return artists;
+    }
+
+    @Override
+    public void addToMediaService(List<Artist> artistList) {
+        MainActivity.mediaService.setArtists(artistList);
+    }
+
+    private List<String> loadAlbumKeysForArtist(int artistId) {
+        List<String> albumKeys = new ArrayList<>();
+        final Uri albumUri = MediaStore.Audio.Artists.Albums.getContentUri("external", artistId);
+        final String[] albumCols = {
+                MediaStore.Audio.Artists.Albums.ALBUM_KEY,
+                MediaStore.Audio.Artists.Albums.ALBUM
+        };
+        final Cursor cursor = context.getContentResolver().query(albumUri, albumCols, null, null, MediaStore.Audio.Artists.Albums.ALBUM + " ASC");
+        while (cursor.moveToNext()) {
+            String albumKey = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM_KEY));
+            albumKeys.add(albumKey);
+        }
+        return albumKeys;
     }
 }

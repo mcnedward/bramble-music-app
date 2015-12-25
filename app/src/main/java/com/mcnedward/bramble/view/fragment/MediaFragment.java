@@ -5,7 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.mcnedward.bramble.R;
@@ -21,7 +23,6 @@ import java.util.Random;
  */
 public abstract class MediaFragment<T extends Media> extends Fragment implements LoaderManager.LoaderCallbacks<List<T>> {
     private final static String TAG = "ArtistFragment";
-    private final static int LOADER_ID = new Random().nextInt();
 
     private MediaType mediaType;
     protected ListView listView;
@@ -43,7 +44,11 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         return null;
     }
 
+    protected abstract void setOnItemClick(AdapterView<?> parent, View view, int position, long id);
+
     protected abstract MediaListAdapter<T> getMediaListAdapter();
+
+    protected abstract int getLoaderId();
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -66,16 +71,22 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         }
         listView = (ListView) getActivity().findViewById(resourceId);
         listView.setItemsCanFocus(true);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                setOnItemClick(parent, view, position, id);
+            }
+        });
         adapter = getMediaListAdapter();
         listView.setAdapter(adapter);
 
-        Log.d(TAG, "Calling ArtistFragment initLoader with id" + LOADER_ID + "!");
-        getLoaderManager().initLoader(LOADER_ID, savedInstanceState, this);
+        Log.d(TAG, String.format("Calling %s Fragment initLoader with id %s!", mediaType.type(), getLoaderId()));
+        getLoaderManager().initLoader(getLoaderId(), savedInstanceState, this);
     }
 
     @Override
     public void onLoadFinished(Loader<List<T>> loader, List<T> data) {
-        Log.d(TAG, "onLoadFinished() called! Loading data!");
+        Log.d(TAG, String.format("onLoadFinished() called! Loading %s data!", mediaType.type()));
         adapter.reset();
         adapter.setGroups(data);
         adapter.notifyDataSetChanged();

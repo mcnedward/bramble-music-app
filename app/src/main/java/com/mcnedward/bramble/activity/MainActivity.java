@@ -14,6 +14,7 @@ import android.view.MenuItem;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.utils.MediaService;
 import com.mcnedward.bramble.view.fragment.AlbumFragment;
 import com.mcnedward.bramble.view.fragment.ArtistFragment;
 import com.mcnedward.bramble.view.fragment.MediaFragment;
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+    public static MediaService mediaService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        // TODO This should probably be replaced with an SQLite database or something similar
+        mediaService = new MediaService();
     }
 
 

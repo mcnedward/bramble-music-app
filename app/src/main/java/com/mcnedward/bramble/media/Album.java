@@ -8,14 +8,16 @@ import java.io.Serializable;
 public class Album extends Media implements Serializable {
 
     private String albumName;
+    private String artist;
     private int numberOfSongs;
     private int firstYear;
     private int lastYear;
     private String albumArt;
 
-    public Album(int albumId, String albumName, String albumKey, int numberOfSongs, int firstYear, int lastYear, String albumArt) {
+    public Album(int albumId, String albumName, String albumKey, String artist, int numberOfSongs, int firstYear, int lastYear, String albumArt) {
         super(albumId, albumKey, MediaType.ALBUM);
         this.albumName = albumName;
+        this.artist = artist;
         this.numberOfSongs = numberOfSongs;
         this.firstYear = firstYear;
         this.lastYear = lastYear;

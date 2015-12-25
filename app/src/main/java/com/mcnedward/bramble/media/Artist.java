@@ -11,17 +11,13 @@ public class Artist extends Media implements Serializable {
 
     private String artistName;
     private int numberOfAlbums;
-    private List<Album> albums;
+    private List<String> albumKeys;
 
-    public Artist(int artistId, String artistName, String artistKey, int numberOfAlbums) {
+    public Artist(int artistId, String artistName, String artistKey, int numberOfAlbums, List<String> albumKeys) {
         super(artistId, artistKey, MediaType.ARTIST);
         this.artistName = artistName;
         this.numberOfAlbums = numberOfAlbums;
-        albums = new ArrayList<>();
-    }
-
-    public void addAlbum(Album album) {
-        albums.add(album);
+        this.albumKeys = albumKeys;
     }
 
     public String getArtistName() {
@@ -40,12 +36,12 @@ public class Artist extends Media implements Serializable {
         this.numberOfAlbums = numberOfAlbums;
     }
 
-    public List<Album> getAlbums() {
-        return albums;
+    public List<String> getAlbumKeys() {
+        return albumKeys;
     }
 
-    public void setAlbums(List<Album> albums) {
-        this.albums = albums;
+    public void setAlbumKeys(List<String> albumKeys) {
+        this.albumKeys = albumKeys;
     }
 
     @Override

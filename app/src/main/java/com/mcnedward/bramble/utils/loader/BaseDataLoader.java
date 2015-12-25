@@ -6,6 +6,9 @@ import android.net.Uri;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
+import com.mcnedward.bramble.activity.MainActivity;
+import com.mcnedward.bramble.media.MediaType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +19,13 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
     private final static String TAG = "BaseDataLoader";
 
     protected Context context;
+    private MediaType mediaType;
 
     private List<T> mDataList = null;
 
-    public BaseDataLoader(Context context) {
+    public BaseDataLoader(MediaType mediaType, Context context) {
         super(context);
+        this.mediaType = mediaType;
         this.context = context;
     }
 
@@ -36,6 +41,9 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
 
     protected abstract List<T> handleMediaCursor(Cursor cursor);
 
+    // TODO I really don't like this...
+    protected abstract void addToMediaService(List<T> mediaList);
+
     @Override
     public List<T> loadInBackground() {
         List<T> mediaList = null;
@@ -50,7 +58,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
         } finally {
             if (cursor != null && !cursor.isClosed())
                 cursor.close();
-            Log.d(TAG, "Done with media!");
+            Log.d(TAG, String.format("Done with %s media!", mediaType.type()));
         }
         return mediaList;
     }
@@ -62,8 +70,9 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
      */
     @Override
     public void deliverResult(List<T> dataList) {
+        Log.d(TAG, String.format("Delivering %s results!", mediaType.type()));
         if (isReset()) {
-            dataList = new ArrayList<>();
+            resetDataList(dataList);
             return;
         }
         List<T> oldDataList = mDataList;
@@ -72,8 +81,9 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
             super.deliverResult(dataList);
         }
         if (oldDataList != null && oldDataList != dataList && oldDataList.size() > 0) {
-            mDataList = new ArrayList<>();
+            resetDataList(mDataList);
         }
+        addToMediaService(dataList);
     }
 
     /**
@@ -109,7 +119,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
     public void onCanceled(List<T> dataList) {
         // TODO Change this
         if (dataList != null & dataList.size() > 0)
-            dataList = new ArrayList<>();
+            resetDataList(dataList);
     }
 
     /**
@@ -120,11 +130,16 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
     @Override
     public void onReset() {
         super.onReset();
+        Log.d(TAG, String.format("onReset called for %s loader...", mediaType.type()));
         // Ensure the loader is stopped
         onStopLoading();
         if (mDataList != null && mDataList.size() > 0) {
-            mDataList = new ArrayList<>();
+            resetDataList(mDataList);
         }
         mDataList = null;
+    }
+
+    private void resetDataList(List<T> dataList) {
+        dataList = new ArrayList<>();
     }
 }

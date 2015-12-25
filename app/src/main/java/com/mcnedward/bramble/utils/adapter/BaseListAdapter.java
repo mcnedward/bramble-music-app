@@ -48,14 +48,6 @@ public abstract class BaseListAdapter<T> extends BaseAdapter {
             convertView = getCustomView(position);
         }
         setViewContent(position, convertView);
-//        final int pos = position;
-//        final View view = convertView;
-//        convertView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                setOnClickListener(getItem(pos), view);
-//            }
-//        });
         return convertView;
     }
 

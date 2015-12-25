@@ -5,7 +5,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.media.Album;
+import com.mcnedward.bramble.media.Artist;
+import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.media.Song;
 
 import java.util.ArrayList;
@@ -17,7 +20,7 @@ import java.util.List;
 public class SongDataLoader extends BaseDataLoader<Song> {
 
     public SongDataLoader(Context context) {
-        super(context);
+        super(MediaType.SONG, context);
     }
 
     @Override
@@ -108,5 +111,10 @@ public class SongDataLoader extends BaseDataLoader<Song> {
                         duration, year, dateAdded, mimeType, data));
         }
         return songs;
+    }
+
+    @Override
+    public void addToMediaService(List<Song> songList) {
+        MainActivity.mediaService.setSongs(songList);
     }
 }

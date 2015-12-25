@@ -4,6 +4,4 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:padding="15dp"
-    android:text="@string/placeholder"
-    android:focusable="false"
-    android:clickable="false"/>
+    android:text="@string/placeholder"/>

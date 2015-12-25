@@ -1,18 +1,11 @@
 package com.mcnedward.bramble.utils.adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.Media;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by edward on 22/12/15.

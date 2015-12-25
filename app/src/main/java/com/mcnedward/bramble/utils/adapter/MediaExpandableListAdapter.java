@@ -41,7 +41,6 @@ public class MediaExpandableListAdapter extends BaseExpandableListAdapter {
 
     public void addGroup(Artist group) {
         groups.add(group);
-        children.add(group.getAlbums());
     }
 
     public ArtistAlbumListView getGenericView(Artist artist) {

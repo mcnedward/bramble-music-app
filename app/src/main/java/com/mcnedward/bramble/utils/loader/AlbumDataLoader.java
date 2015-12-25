@@ -5,8 +5,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
+import com.mcnedward.bramble.media.Media;
+import com.mcnedward.bramble.media.MediaType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +20,7 @@ import java.util.List;
 public class AlbumDataLoader extends BaseDataLoader<Album> {
 
     public AlbumDataLoader(Context context) {
-        super(context);
+        super(MediaType.ALBUM, context);
     }
 
     @Override
@@ -27,10 +30,11 @@ public class AlbumDataLoader extends BaseDataLoader<Album> {
 
     @Override
     protected String[] getMediaColumns() {
-        return new String[] {
+        return new String[]{
                 MediaStore.Audio.Albums._ID,
                 MediaStore.Audio.Albums.ALBUM,
                 MediaStore.Audio.Albums.ALBUM_KEY,
+                MediaStore.Audio.Albums.ARTIST,
                 MediaStore.Audio.Albums.NUMBER_OF_SONGS,
                 MediaStore.Audio.Albums.FIRST_YEAR,
                 MediaStore.Audio.Albums.LAST_YEAR,
@@ -56,33 +60,46 @@ public class AlbumDataLoader extends BaseDataLoader<Album> {
     @Override
     protected List<Album> handleMediaCursor(Cursor cursor) {
         List<Album> albums = new ArrayList<>();
-        while (cursor.moveToNext()) {
-            // Get album information
-            Integer albumId = cursor.getInt(cursor
-                    .getColumnIndexOrThrow(MediaStore.Audio.Albums._ID));
-            String albumName = cursor
-                    .getString(cursor
-                            .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM));
-            String albumKey = cursor
-                    .getString(cursor
-                            .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM_KEY));
-            Integer numberOfSongs = cursor
-                    .getInt(cursor
-                            .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.NUMBER_OF_SONGS));
-            Integer firstYear = cursor
-                    .getInt(cursor
-                            .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.FIRST_YEAR));
-            Integer lastYear = cursor
-                    .getInt(cursor
-                            .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.LAST_YEAR));
-            String albumArt = cursor
-                    .getString(cursor
-                            .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM_ART));
+        try {
+            while (cursor.moveToNext()) {
+                // Get album information
+                Integer albumId = cursor.getInt(cursor
+                        .getColumnIndexOrThrow(MediaStore.Audio.Albums._ID));
+                String albumName = cursor
+                        .getString(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM));
+                String albumKey = cursor
+                        .getString(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM_KEY));
+                String artist = cursor
+                        .getString(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ARTIST));
+                Integer numberOfSongs = cursor
+                        .getInt(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.NUMBER_OF_SONGS));
+                Integer firstYear = cursor
+                        .getInt(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.FIRST_YEAR));
+                Integer lastYear = cursor
+                        .getInt(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.LAST_YEAR));
+                String albumArt = cursor
+                        .getString(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM_ART));
 
-            // Create a new album and add it to the total album list and the artist album list
-            albums.add(new Album(albumId, albumName, albumKey,
-                    numberOfSongs, firstYear, lastYear, albumArt));
+                // Create a new album and add it to the total album list and the artist album list
+                albums.add(new Album(albumId, albumName, albumKey, artist,
+                        numberOfSongs, firstYear, lastYear, albumArt));
+            }
+        } finally {
+            cursor.close();
         }
+
         return albums;
+    }
+
+    @Override
+    public void addToMediaService(List<Album> albumList) {
+        MainActivity.mediaService.setAlbums(albumList);
     }
 }

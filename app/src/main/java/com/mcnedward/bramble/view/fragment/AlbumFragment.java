@@ -5,6 +5,7 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.Album;
@@ -14,12 +15,14 @@ import com.mcnedward.bramble.utils.adapter.MediaListAdapter;
 import com.mcnedward.bramble.utils.loader.AlbumDataLoader;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by edward on 24/12/15.
  */
 public class AlbumFragment extends MediaFragment<Album> {
     private final static String TAG = "AlbumFragment";
+    private final static int LOADER_ID = new Random().nextInt();
 
     public AlbumFragment() {
         super(MediaType.ALBUM);
@@ -37,7 +40,17 @@ public class AlbumFragment extends MediaFragment<Album> {
     }
 
     @Override
+    protected void setOnItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
     protected MediaListAdapter<Album> getMediaListAdapter() {
         return new AlbumListAdapter(getActivity());
+    }
+
+    @Override
+    protected int getLoaderId() {
+        return LOADER_ID;
     }
 }

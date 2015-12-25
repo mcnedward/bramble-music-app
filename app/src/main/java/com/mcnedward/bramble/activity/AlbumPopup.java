@@ -13,6 +13,8 @@ import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.utils.adapter.AlbumGridAdapter;
 
+import java.util.List;
+
 /**
  * Created by edward on 22/12/15.
  */
@@ -30,7 +32,8 @@ public class AlbumPopup extends Activity {
         textView.setText(artist.getArtistName());
 
         GridView gridView = (GridView) findViewById(R.id.albumView);
-        AlbumGridAdapter adapter = new AlbumGridAdapter(artist.getAlbums(), this);
+        List<Album> albums = MainActivity.mediaService.findAlbumsForArtist(artist);
+        AlbumGridAdapter adapter = new AlbumGridAdapter(albums, this);
         gridView.setAdapter(adapter);
         gridView.setGravity(Gravity.CENTER);
     }
