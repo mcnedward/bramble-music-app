@@ -9,15 +9,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.mcnedward.bramble.R;
-import com.mcnedward.bramble.utils.MediaType;
-import com.mcnedward.bramble.utils.task.RetrieveMediaTask;
+import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.view.fragment.AlbumFragment;
+import com.mcnedward.bramble.view.fragment.ArtistFragment;
+import com.mcnedward.bramble.view.fragment.MediaFragment;
+import com.mcnedward.bramble.view.fragment.SongFragment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -51,13 +54,10 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(3);
+        mViewPager.setOffscreenPageLimit(2);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
-        RetrieveMediaTask task = new RetrieveMediaTask(this);
-        task.execute();
     }
 
 
@@ -84,69 +84,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class MediaFragment extends Fragment {
-
-        private static final String POSITION = "position";
-        private int position;
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static MediaFragment newInstance(int position) {
-            Bundle args = new Bundle();
-            args.putInt(POSITION, position);
-            MediaFragment fragment = new MediaFragment();
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            position = getArguments().getInt(POSITION);
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            MediaType mediaType = MediaType.values()[position];
-            int layout;
-            switch(mediaType) {
-                case ARTIST:
-                    layout = R.layout.artist_fragment_view;
-                    break;
-                case ALBUM:
-                    layout = R.layout.album_fragment_view;
-                    break;
-                default:
-                    layout = R.layout.media_fragment_view;
-                    break;
-            }
-            return inflater.inflate(layout, container, false);
-        }
-    }
-
-    /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter implements
             ViewPager.OnPageChangeListener {
 
-        final private static int PAGE_COUNT = 4;
+        final private static int PAGE_COUNT = 3;
+        private List<MediaFragment> fragments;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+            fragments = new ArrayList<>();
+            for (MediaType mediaType : MediaType.values()) {
+                switch (mediaType) {
+                    case ARTIST:
+                        fragments.add(new ArtistFragment());
+                        break;
+                    case ALBUM:
+                        fragments.add(new AlbumFragment());
+                        break;
+                    case SONG:
+                        fragments.add(new SongFragment());
+                        break;
+                }
+            }
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a MediaFragment (defined as a static inner class below).
-            return MediaFragment.newInstance(position);
+            return MediaFragment.newInstance(MediaType.values()[position]);//fragments.get(position);
         }
 
         @Override

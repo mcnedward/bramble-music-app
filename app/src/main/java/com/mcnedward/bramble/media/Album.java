@@ -5,36 +5,21 @@ import java.io.Serializable;
 /**
  * Created by edward on 22/12/15.
  */
-public class Album implements Serializable {
+public class Album extends Media implements Serializable {
 
-    private int albumId;
     private String albumName;
-    private String albumKey;
     private int numberOfSongs;
     private int firstYear;
     private int lastYear;
     private String albumArt;
 
-    public Album(String albumName) {
-        this.albumName = albumName;
-    }
-
     public Album(int albumId, String albumName, String albumKey, int numberOfSongs, int firstYear, int lastYear, String albumArt) {
-        this.albumId = albumId;
+        super(albumId, albumKey, MediaType.ALBUM);
         this.albumName = albumName;
-        this.albumKey = albumKey;
         this.numberOfSongs = numberOfSongs;
         this.firstYear = firstYear;
         this.lastYear = lastYear;
         this.albumArt = albumArt;
-    }
-
-    public int getAlbumId() {
-        return albumId;
-    }
-
-    public void setAlbumId(int albumId) {
-        this.albumId = albumId;
     }
 
     public String getAlbumName() {
@@ -43,14 +28,6 @@ public class Album implements Serializable {
 
     public void setAlbumName(String albumName) {
         this.albumName = albumName;
-    }
-
-    public String getAlbumKey() {
-        return albumKey;
-    }
-
-    public void setAlbumKey(String albumKey) {
-        this.albumKey = albumKey;
     }
 
     public int getNumberOfSongs() {

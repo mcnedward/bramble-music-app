@@ -1,7 +1,10 @@
 package com.mcnedward.bramble.utils.loader;
 
-import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.support.v4.content.AsyncTaskLoader;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,29 +13,46 @@ import java.util.List;
  * Created by edward on 23/12/15.
  */
 public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
+    private final static String TAG = "BaseDataLoader";
+
+    protected Context context;
 
     private List<T> mDataList = null;
+
     public BaseDataLoader(Context context) {
         super(context);
+        this.context = context;
     }
 
-    public abstract List<T> buildList();
+    protected abstract Uri getMediaUri();
 
-    public void insert(T entity) {
-//        new InsertTask<T>(this, entity, mDataSource).execute();
-    }
+    protected abstract String[] getMediaColumns();
 
-    public void update(T entity) {
-//        new UpdateTask<T>(this, entity, mDataSource).execute();
-    }
+    protected abstract String getMediaSelection();
 
-    public void delete(T entity) {
-//        new DeleteTask<T>(this, entity, mDataSource).execute();
-    }
+    protected abstract String[] getMediaSelectionArgs();
+
+    protected abstract String getMediaSrtOrder();
+
+    protected abstract List<T> handleMediaCursor(Cursor cursor);
 
     @Override
     public List<T> loadInBackground() {
-        return buildList();
+        List<T> mediaList = null;
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(getMediaUri(), getMediaColumns(), getMediaSelection(), getMediaSelectionArgs(), getMediaSrtOrder());
+            while (cursor.moveToNext()) {
+                mediaList = handleMediaCursor(cursor);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage(), e);
+        } finally {
+            if (cursor != null && !cursor.isClosed())
+                cursor.close();
+            Log.d(TAG, "Done with media!");
+        }
+        return mediaList;
     }
 
     /**

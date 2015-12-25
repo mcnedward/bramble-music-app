@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
+import com.mcnedward.bramble.media.Song;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,6 @@ public class MediaLoader {
 
     public MediaLoader(Context context) {
         this.context = context;
-        artistDataLoader = new ArtistDataLoader(context, null, null, null, null, null);
     }
 
     public List<Artist> getArtists() {
@@ -62,7 +62,7 @@ public class MediaLoader {
         } finally {
             if (cursor != null && !cursor.isClosed())
                 cursor.close();
-            Log.d(TAG, "Done with artists");
+            Log.d(TAG, "Done with artists!");
         }
         return artists;
     }
@@ -108,8 +108,7 @@ public class MediaLoader {
                         .getString(cursor
                                 .getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM_ART));
 
-                // Create a new album and add it to the total album list
-                // and the artist album list
+                // Create a new album and add it to the total album list and the artist album list
                 albums.add(new Album(albumId, albumName, albumKey,
                         numberOfSongs, firstYear, lastYear, albumArt));
             }
@@ -118,8 +117,88 @@ public class MediaLoader {
         } finally {
             if (cursor != null && !cursor.isClosed())
                 cursor.close();
-            Log.d(TAG, "Done with albums");
+            Log.d(TAG, "Done with albums@");
         }
         return albums;
+    }
+
+    public List<Song> getSongs() {
+        List<Song> songs = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+            // Set the Uri and columns for extracting artist media data
+            final Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+            final String[] cols = { MediaStore.Audio.Media._ID,
+                    MediaStore.Audio.Media.TITLE,
+                    MediaStore.Audio.Media.TITLE_KEY,
+                    MediaStore.Audio.Media.DISPLAY_NAME,
+                    MediaStore.Audio.Media.ARTIST_ID,
+                    MediaStore.Audio.Media.ALBUM_ID,
+                    MediaStore.Audio.Media.COMPOSER,
+                    MediaStore.Audio.Media.TRACK,
+                    MediaStore.Audio.Media.DURATION,
+                    MediaStore.Audio.Media.YEAR,
+                    MediaStore.Audio.Media.DATE_ADDED,
+                    MediaStore.Audio.Media.MIME_TYPE,
+                    MediaStore.Audio.Media.DATA,
+                    MediaStore.Audio.Media.IS_MUSIC };
+
+            cursor = context.getContentResolver().query(uri, cols,
+                    null, null, null);
+
+            int songCount = cursor.getCount();
+            Log.d(TAG, "Number of results for artist retrieval: " + songCount);
+            while (cursor.moveToNext()) {
+                Integer titleId = cursor.getInt(cursor
+                        .getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+                String title = cursor.getString(cursor
+                        .getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+                String titleKey = cursor
+                        .getString(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE_KEY));
+                String displayName = cursor
+                        .getString(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
+                Integer artistId = cursor
+                        .getInt(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST_ID));
+                Integer albumId = cursor
+                        .getInt(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
+                String composer = cursor
+                        .getString(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Media.COMPOSER));
+                Integer track = cursor.getInt(cursor
+                        .getColumnIndexOrThrow(MediaStore.Audio.Media.TRACK));
+                Integer duration = cursor
+                        .getInt(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+                Integer year = cursor.getInt(cursor
+                        .getColumnIndexOrThrow(MediaStore.Audio.Media.YEAR));
+                Integer dateAdded = cursor
+                        .getInt(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED));
+                String mimeType = cursor
+                        .getString(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE));
+                String data = cursor.getString(cursor
+                        .getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                Integer isMusic = Integer
+                        .parseInt(cursor.getString(cursor
+                                .getColumnIndexOrThrow(MediaStore.Audio.Media.IS_MUSIC)));
+
+                if (isMusic == 1)
+                songs.add(new Song(titleId, title, titleKey,
+                        displayName, artistId, albumId, composer, track,
+                        duration, year, dateAdded, mimeType, data));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage(), e);
+        } finally {
+            if (cursor != null && !cursor.isClosed())
+                cursor.close();
+            Log.d(TAG, "Done with songs!");
+        }
+        return songs;
     }
 }

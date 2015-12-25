@@ -1,9 +1,11 @@
-package com.mcnedward.bramble.utils;
+package com.mcnedward.bramble.media;
+
+import java.io.Serializable;
 
 /**
  * Created by edward on 24/12/15.
  */
-public enum MediaType {
+public enum MediaType implements Serializable {
 
     ARTIST ("Artist"),
     ALBUM ("Album"),

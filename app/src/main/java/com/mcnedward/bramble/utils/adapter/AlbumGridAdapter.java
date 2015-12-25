@@ -1,10 +1,9 @@
 package com.mcnedward.bramble.utils.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.View;
+import android.view.ViewGroup;
 
-import com.mcnedward.bramble.activity.AlbumActivity;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.view.AlbumPopupItem;
 
@@ -13,7 +12,7 @@ import java.util.List;
 /**
  * Created by edward on 22/12/15.
  */
-public class AlbumGridAdapter extends BrambleBaseAdapter<Album> {
+public class AlbumGridAdapter extends BaseListAdapter<Album> {
     final private static String TAG = "AlbumGridAdapter";
 
     public AlbumGridAdapter(List<Album> albums, Context context) {
@@ -21,7 +20,12 @@ public class AlbumGridAdapter extends BrambleBaseAdapter<Album> {
     }
 
     @Override
-    protected View getCustomView(final int position) {
+    protected void setOnClickListener(Album media, View view) {
+
+    }
+
+    @Override
+    protected View getCustomView(int position) {
         AlbumPopupItem albumPopupItem = new AlbumPopupItem(getItem(position), context);
         return albumPopupItem;
     }
