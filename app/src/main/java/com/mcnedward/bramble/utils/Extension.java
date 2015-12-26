@@ -13,7 +13,7 @@ import com.mcnedward.bramble.R;
  */
 public class Extension {
 
-    public static RippleDrawable rippleDrawable(Context context) {
+    public static RippleDrawable rippleDrawable(int rippleColor, int backgroundColor, Context context) {
         return new RippleDrawable(
                 new ColorStateList(
                         new int[][]
@@ -22,10 +22,14 @@ public class Extension {
                                 },
                         new int[]
                                 {
-                                        ContextCompat.getColor(context, R.color.FireBrick),
+                                        ContextCompat.getColor(context, rippleColor),
                                 }),
-                new ColorDrawable(ContextCompat.getColor(context, R.color.WhiteSmoke)),
+                new ColorDrawable(ContextCompat.getColor(context, backgroundColor)),
                 null);
+    }
+
+    public static RippleDrawable rippleDrawable(Context context) {
+        return rippleDrawable(R.color.FireBrick, R.color.GhostWhite, context);
     }
 
 }

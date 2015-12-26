@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.RippleDrawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.AlbumActivity;
 import com.mcnedward.bramble.media.Album;
+import com.mcnedward.bramble.utils.Extension;
 
 import java.io.File;
 
@@ -33,7 +36,10 @@ public class AlbumPopupItem extends LinearLayout {
         this.context = context;
         inflate(context, R.layout.album_popup_item, this);
 
-        txtAlbumName = (TextView) findViewById(R.id.album_name);
+        RippleDrawable rippleDrawable = Extension.rippleDrawable(R.color.FireBrick, R.color.White, context);
+        setBackground(rippleDrawable);
+
+        txtAlbumName = (TextView) findViewById(R.id.album_popup_name);
         setAlbumName(album.getAlbumName());
 
         imgAlbumArt = (ImageView) findViewById(R.id.album_art);
@@ -59,13 +65,14 @@ public class AlbumPopupItem extends LinearLayout {
         DisplayMetrics dm = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
 
-        int width = (int) (dm.widthPixels * 0.75);
+        int width = (int) (dm.widthPixels * 0.7);
         int height = (int) (dm.heightPixels * 0.6);
 
         ((Activity) context).getWindow().setLayout(width, height);
     }
 
     private void startAlbumActivity(Album album) {
+        // TODO Maybe put this in Extensions
         Log.d(TAG, "Starting AlbumActivity for " + album + "!");
         Intent intent = new Intent(context, AlbumActivity.class);
         intent.putExtra("album", album);

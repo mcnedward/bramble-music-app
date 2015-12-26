@@ -19,7 +19,7 @@ public abstract class MediaListAdapter<T extends Media> extends BaseListAdapter<
 
     @Override
     protected View getCustomView(int position) {
-        return inflater.inflate(R.layout.simple_list_item, null);
+        return inflater.inflate(R.layout.simple_text_item, null);
     }
 
     @Override

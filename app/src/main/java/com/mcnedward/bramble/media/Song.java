@@ -1,6 +1,7 @@
 package com.mcnedward.bramble.media;
 
 import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by edward on 24/12/15.
@@ -82,8 +83,12 @@ public class Song extends Media implements Serializable {
         this.track = track;
     }
 
-    public int getDuration() {
-        return duration;
+    public String getDuration() {
+        return String.format("%d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(duration),
+                TimeUnit.MILLISECONDS.toSeconds(duration) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration))
+        );
     }
 
     public void setDuration(int duration) {

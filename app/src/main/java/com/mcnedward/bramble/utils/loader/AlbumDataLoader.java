@@ -54,7 +54,7 @@ public class AlbumDataLoader extends BaseDataLoader<Album> {
 
     @Override
     protected String getMediaSrtOrder() {
-        return MediaStore.Audio.Albums.ALBUM + " DESC";
+        return MediaStore.Audio.Albums.ALBUM + " ASC";
     }
 
     @Override
@@ -106,13 +106,13 @@ public class AlbumDataLoader extends BaseDataLoader<Album> {
         final Uri songUri = MediaStore.Audio.Media.getContentUri("external");
         final String[] songCols = {
                 MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.TITLE
+                MediaStore.Audio.Media.TRACK
         };
         final String selection = String.format("%s = ?", MediaStore.Audio.Media.ALBUM_ID);
         final String[] selectionArgs = new String[] { String.valueOf(albumId) };
         Cursor cursor = null;
         try {
-            cursor = context.getContentResolver().query(songUri, songCols, selection, selectionArgs, MediaStore.Audio.Media.TITLE + " ASC");
+            cursor = context.getContentResolver().query(songUri, songCols, selection, selectionArgs, MediaStore.Audio.Media.TRACK + " ASC");
             while (cursor.moveToNext()) {
                 Integer songId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
                 songIds.add(songId);

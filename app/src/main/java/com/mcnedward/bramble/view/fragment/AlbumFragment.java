@@ -1,13 +1,16 @@
 package com.mcnedward.bramble.view.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.activity.AlbumActivity;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.utils.adapter.AlbumListAdapter;
@@ -41,7 +44,11 @@ public class AlbumFragment extends MediaFragment<Album> {
 
     @Override
     protected void setOnItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        Album album = (Album) listView.getItemAtPosition(position);
+        Log.d(TAG, "Starting AlbumActivity for " + album + "!");
+        Intent intent = new Intent(getActivity(), AlbumActivity.class);
+        intent.putExtra("album", album);
+        getActivity().startActivity(intent);
     }
 
     @Override

@@ -2,36 +2,26 @@ package com.mcnedward.bramble.view;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.Typeface;
 import android.graphics.drawable.RippleDrawable;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Space;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.Extension;
-import com.mcnedward.bramble.utils.adapter.AlbumPopupListAdapter;
-import com.mcnedward.bramble.utils.adapter.MediaListAdapter;
-import com.mcnedward.bramble.utils.adapter.SongListAdapter;
 import com.mcnedward.bramble.utils.listener.ScrollViewListener;
 
 import java.io.File;
@@ -79,32 +69,27 @@ public class AlbumParallaxView extends LinearLayout {
 
     private void setForegroundContent(Context context) {
         LinearLayout layout = (LinearLayout) findViewById(R.id.parallax_main_content);
+
+        // Set the empty space to push list below album art
         int spaceHeight = (dm.heightPixels / 2);
         Space space = new Space(context);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, spaceHeight);
         space.setLayoutParams(layoutParams);
         layout.addView(space);
 
+        // Set the album and artist name
+        LinearLayout albumTitleView = (LinearLayout) inflate(context, R.layout.album_title_view, null);
+        TextView txtAlbumName = (TextView) albumTitleView.findViewById(R.id.album_title_title);
+        txtAlbumName.setText(album.getAlbumName());
+        TextView txtArtistName = (TextView) albumTitleView.findViewById(R.id.album_title_artist);
+        txtArtistName.setText(album.getArtist());
+        layout.addView(albumTitleView);
+
+        // Set the list of songs
         List<Song> songs = MainActivity.mediaService.getSongsForAlbum(album);
-
         for (Song song : songs) {
-            TextView textView = (TextView) inflate(context, R.layout.simple_list_item, null);
-            textView.setText(song.getTitle());
-            textView.setClickable(true);
-            textView.setFocusable(true);
-
-            RippleDrawable newImage = Extension.rippleDrawable(context);
-            textView.setBackground(newImage);
-
-            final Context c = context;
-            final String title = song.getTitle();
-            textView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, title + " CLICKED!");
-                }
-            });
-            layout.addView(textView);
+            AlbumSongItem songItem = new AlbumSongItem(song, context);
+            layout.addView(songItem);
         }
     }
 
