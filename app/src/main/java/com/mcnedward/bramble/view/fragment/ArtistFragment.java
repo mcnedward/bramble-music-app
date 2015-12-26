@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import com.mcnedward.bramble.activity.AlbumPopup;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.utils.adapter.ArtistListAdapter;
 import com.mcnedward.bramble.utils.adapter.MediaListAdapter;
 import com.mcnedward.bramble.utils.loader.ArtistDataLoader;
@@ -34,9 +35,7 @@ public class ArtistFragment extends MediaFragment<Artist> {
 
     @Override
     protected void setOnItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(getActivity(), AlbumPopup.class);
-        intent.putExtra("artist", (Artist) listView.getItemAtPosition(position));
-        getActivity().startActivity(intent);
+        Extension.startAlbumPopup((Artist) listView.getItemAtPosition(position), getActivity());
     }
 
     @Override

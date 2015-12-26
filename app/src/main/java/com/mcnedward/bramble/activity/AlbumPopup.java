@@ -13,13 +13,14 @@ import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.utils.adapter.AlbumGridAdapter;
+import com.mcnedward.bramble.utils.listener.AlbumLoadListener;
 
 import java.util.List;
 
 /**
  * Created by edward on 22/12/15.
  */
-public class AlbumPopup extends Activity {
+public class AlbumPopup extends Activity implements AlbumLoadListener {
 
     private Artist artist;
 
@@ -52,6 +53,7 @@ public class AlbumPopup extends Activity {
         getWindow().setLayout(width, height);
     }
 
+    @Override
     public void notifyAlbumLoadReady() {
         GridView gridView = (GridView) findViewById(R.id.albumView);
         List<Album> albums = MainActivity.mediaService.getAlbumsForArtist(artist);

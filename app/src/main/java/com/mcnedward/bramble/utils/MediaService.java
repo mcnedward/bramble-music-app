@@ -1,10 +1,14 @@
 package com.mcnedward.bramble.utils;
 
+import android.app.Activity;
+
 import com.mcnedward.bramble.activity.AlbumPopup;
+import com.mcnedward.bramble.exception.MediaNotFoundException;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.utils.listener.AlbumLoadListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +22,7 @@ public final class MediaService {
     private List<Album> albums;
     private List<Song> songs;
 
-    private AlbumPopup albumPopup;
+    private AlbumLoadListener listener;
 
     private boolean loadingArtists, loadingAlbums, loadingSongs;
 
@@ -43,6 +47,7 @@ public final class MediaService {
         return albumList;
     }
 
+    // TODO Add exceptions
     public List<Song> getSongsForAlbum(Album album) {
         List<Song> songList = new ArrayList<>();
 
@@ -58,14 +63,23 @@ public final class MediaService {
         return songList;
     }
 
-    public void registerAlbumLoadListener(AlbumPopup albumPopup) {
-        this.albumPopup = albumPopup;
+    public Album getAlbumForSong(Song song) throws MediaNotFoundException {
+        for (Album album : albums) {
+            if (album.getId() == song.getAlbumId())
+                return album;
+        }
+        throw new MediaNotFoundException(String.format("Could not find an album for the song '%s' with the album id: %s", song, song.getAlbumId()));
+    }
+
+    public void registerAlbumLoadListener(AlbumLoadListener listener) {
+        this.listener = listener;
         if (!loadingAlbums)
             notifyAlbumLoadListener();
     }
 
     public void notifyAlbumLoadListener() {
-        albumPopup.notifyAlbumLoadReady();
+        if (listener != null)
+            listener.notifyAlbumLoadReady();
     }
 
     public List<Artist> getArtists() {

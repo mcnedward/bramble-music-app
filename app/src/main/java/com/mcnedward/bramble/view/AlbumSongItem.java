@@ -1,8 +1,8 @@
 package com.mcnedward.bramble.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.RippleDrawable;
-import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,12 +29,12 @@ public class AlbumSongItem extends RelativeLayout {
         RippleDrawable rippleDrawable = Extension.rippleDrawable(context);
         setBackground(rippleDrawable);
 
-        final Context c = context;
-        final String title = song.getTitle();
+        final Activity activity = (Activity) context;
+        final Song nowPlayingSong = song;
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, title + " CLICKED!");
+                Extension.startNowPlayingActivity(nowPlayingSong, activity);
             }
         });
     }

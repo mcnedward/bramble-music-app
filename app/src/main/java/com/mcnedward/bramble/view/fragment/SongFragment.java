@@ -2,11 +2,16 @@ package com.mcnedward.bramble.view.fragment;
 
 import android.os.Bundle;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.mcnedward.bramble.activity.MainActivity;
+import com.mcnedward.bramble.exception.MediaNotFoundException;
+import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.utils.adapter.MediaListAdapter;
 import com.mcnedward.bramble.utils.adapter.SongListAdapter;
 import com.mcnedward.bramble.utils.loader.SongDataLoader;
@@ -32,7 +37,8 @@ public class SongFragment extends MediaFragment<Song> {
 
     @Override
     protected void setOnItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        Song song = (Song) listView.getItemAtPosition(position);
+        Extension.startNowPlayingActivity(song, getActivity());
     }
 
     @Override
