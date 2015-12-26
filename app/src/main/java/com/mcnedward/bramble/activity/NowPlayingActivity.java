@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -14,6 +15,7 @@ import com.mcnedward.bramble.exception.MediaNotFoundException;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.listener.AlbumLoadListener;
+import com.mcnedward.bramble.utils.task.PlayMediaTask;
 
 import java.io.File;
 
@@ -25,6 +27,13 @@ public class NowPlayingActivity extends Activity implements AlbumLoadListener {
 
     private Song song;
     private Album album;
+
+    private TextView txtPassed;
+    private SeekBar seekBar;
+    private TextView txtDuration;
+    private Button btnPrevious;
+    private Button btnPlay;
+    private Button btnForward;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,15 +69,47 @@ public class NowPlayingActivity extends Activity implements AlbumLoadListener {
         }
 
         // Load controls
-        TextView txtPassed = (TextView) findViewById(R.id.now_playing_passed);
-        TextView txtDuration = (TextView) findViewById(R.id.now_playing_duration);
-        SeekBar seekBar = (SeekBar) findViewById(R.id.now_playing_seek);
+        txtPassed = (TextView) findViewById(R.id.now_playing_passed);
+        txtDuration = (TextView) findViewById(R.id.now_playing_duration);
+        seekBar = (SeekBar) findViewById(R.id.now_playing_seek);
         txtPassed.setText("0:00");
         txtDuration.setText(song.getDuration());
+
+        btnPrevious = (Button) findViewById(R.id.btnPrevious);
+        btnPlay = (Button) findViewById(R.id.btnPlay);
+        btnForward = (Button) findViewById(R.id.btnForward);
+
+        // Start playing music!
+        PlayMediaTask playMediaTask = new PlayMediaTask(this);
+        playMediaTask.execute(song);
     }
 
     @Override
     public void notifyAlbumLoadReady() {
         load();
+    }
+
+    public TextView getTxtPassed() {
+        return txtPassed;
+    }
+
+    public SeekBar getSeekBar() {
+        return seekBar;
+    }
+
+    public TextView getTxtDuration() {
+        return txtDuration;
+    }
+
+    public Button getBtnPrevious() {
+        return btnPrevious;
+    }
+
+    public Button getBtnPlay() {
+        return btnPlay;
+    }
+
+    public Button getBtnForward() {
+        return btnForward;
     }
 }
