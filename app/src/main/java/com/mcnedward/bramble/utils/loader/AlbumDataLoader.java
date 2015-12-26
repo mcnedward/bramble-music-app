@@ -99,6 +99,7 @@ public class AlbumDataLoader extends BaseDataLoader<Album> {
     @Override
     public void addToMediaService(List<Album> albumList) {
         MainActivity.mediaService.setAlbums(albumList);
+        MainActivity.mediaService.notifyAlbumLoadListener();
     }
 
     private List<Integer> loadSongsForAlbum(int albumId) {

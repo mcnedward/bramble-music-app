@@ -5,4 +5,5 @@
     <string name="artist_loading_text">LOADING ARTISTS!</string>
     <string name="album_loading_text">LOADING ALBUMS!</string>
     <string name="song_loading_text">LOADING SONGS!</string>
+    <string name="album_popup_loading_text">WAITING FOR ALBUMS TO LOAD!</string>
 </resources>

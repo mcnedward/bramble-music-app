@@ -3,6 +3,7 @@ package com.mcnedward.bramble.view.fragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -73,6 +74,17 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
 
         progressBar = (ProgressBar) thisView.findViewById(R.id.media_progress_bar);
         txtProgress = (TextView) thisView.findViewById(R.id.media_progress_text);
+        switch (mediaType) {
+            case ARTIST:
+                txtProgress.setText(getContext().getString(R.string.artist_loading_text));
+                break;
+            case ALBUM:
+                txtProgress.setText(getContext().getString(R.string.album_loading_text));
+                break;
+            case SONG:
+                txtProgress.setText(getContext().getString(R.string.song_loading_text));
+                break;
+        }
 
         return thisView;
     }

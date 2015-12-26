@@ -1,5 +1,6 @@
 package com.mcnedward.bramble.utils;
 
+import com.mcnedward.bramble.activity.AlbumPopup;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.MediaType;
@@ -16,6 +17,8 @@ public final class MediaService {
     private List<Artist> artists;
     private List<Album> albums;
     private List<Song> songs;
+
+    private AlbumPopup albumPopup;
 
     private boolean loadingArtists, loadingAlbums, loadingSongs;
 
@@ -53,6 +56,16 @@ public final class MediaService {
         }
 
         return songList;
+    }
+
+    public void registerAlbumLoadListener(AlbumPopup albumPopup) {
+        this.albumPopup = albumPopup;
+        if (!loadingAlbums)
+            notifyAlbumLoadListener();
+    }
+
+    public void notifyAlbumLoadListener() {
+        albumPopup.notifyAlbumLoadReady();
     }
 
     public List<Artist> getArtists() {

@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
@@ -19,6 +21,11 @@ import java.util.List;
  */
 public class AlbumPopup extends Activity {
 
+    private Artist artist;
+
+    private ProgressBar progressBar;
+    private TextView txtProgress;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,19 +33,13 @@ public class AlbumPopup extends Activity {
 
         initializeWindow();
 
-        Artist artist = (Artist) getIntent().getSerializableExtra("artist");
+        artist = (Artist) getIntent().getSerializableExtra("artist");
         TextView txtArtistName = (TextView) findViewById(R.id.artistName);
         txtArtistName.setText(artist.getArtistName());
 
-        if (MainActivity.mediaService.isLoadingAlbums()) {
-            txtArtistName.setText("LOADING ALBUMS");
-        } else {
-            GridView gridView = (GridView) findViewById(R.id.albumView);
-            List<Album> albums = MainActivity.mediaService.getAlbumsForArtist(artist);
-            AlbumGridAdapter adapter = new AlbumGridAdapter(albums, this);
-            gridView.setAdapter(adapter);
-            gridView.setGravity(Gravity.CENTER);
-        }
+        ((TextView) findViewById(R.id.album_popup_progress_text)).setText(getString(R.string.album_popup_loading_text));
+
+        MainActivity.mediaService.registerAlbumLoadListener(this);
     }
 
     private void initializeWindow() {
@@ -49,6 +50,17 @@ public class AlbumPopup extends Activity {
         int height = (int) (dm.heightPixels * 0.6);
 
         getWindow().setLayout(width, height);
+    }
+
+    public void notifyAlbumLoadReady() {
+        GridView gridView = (GridView) findViewById(R.id.albumView);
+        List<Album> albums = MainActivity.mediaService.getAlbumsForArtist(artist);
+        AlbumGridAdapter adapter = new AlbumGridAdapter(albums, this);
+        gridView.setAdapter(adapter);
+        gridView.setGravity(Gravity.CENTER);
+
+        findViewById(R.id.album_popup_progress_bar).setVisibility(View.GONE);
+        findViewById(R.id.album_popup_progress_text).setVisibility(View.GONE);
     }
 
 }
