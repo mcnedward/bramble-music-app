@@ -20,11 +20,12 @@
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@+id/song_duration"
         android:layout_toRightOf="@id/song_track"
+        android:singleLine="true"
         android:ellipsize="marquee"
-        android:maxLines="1"
-        android:padding="15dp"
+        android:marqueeRepeatLimit="marquee_forever"
         android:scrollHorizontally="true"
-        android:text="SONG TITLE HERE JHDASFLKJHDASFKJHSDLFKJH"/>
+        android:padding="15dp"
+        android:text="SONG TITLE HERE"/>
 
     <TextView
         android:id="@+id/song_duration"

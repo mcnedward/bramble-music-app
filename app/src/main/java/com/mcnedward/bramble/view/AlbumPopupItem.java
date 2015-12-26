@@ -81,6 +81,8 @@ public class AlbumPopupItem extends LinearLayout {
 
     public void setAlbumName(String name) {
         txtAlbumName.setText(name);
+        // Needed for scrolling marquee!
+        txtAlbumName.setSelected(true);
     }
 
 }

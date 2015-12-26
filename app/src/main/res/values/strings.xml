@@ -2,4 +2,7 @@
     <string name="app_name">Bramble</string>
     <string name="action_settings">Settings</string>
     <string name="placeholder">Replace me!</string>
+    <string name="artist_loading_text">LOADING ARTISTS!</string>
+    <string name="album_loading_text">LOADING ALBUMS!</string>
+    <string name="song_loading_text">LOADING SONGS!</string>
 </resources>

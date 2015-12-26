@@ -3,12 +3,9 @@ package com.mcnedward.bramble.view.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 
-import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.AlbumPopup;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.MediaType;
@@ -28,11 +25,6 @@ public class ArtistFragment extends MediaFragment<Artist> {
 
     public ArtistFragment() {
         super(MediaType.ARTIST);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.artist_fragment_view, container, false);
     }
 
     @Override

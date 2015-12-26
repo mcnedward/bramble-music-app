@@ -17,6 +17,8 @@ public final class MediaService {
     private List<Album> albums;
     private List<Song> songs;
 
+    private boolean loadingArtists, loadingAlbums, loadingSongs;
+
     public MediaService() {
         artists = new ArrayList<>();
         albums = new ArrayList<>();
@@ -75,5 +77,31 @@ public final class MediaService {
 
     public void setSongs(List<Song> songs) {
         this.songs = songs;
+    }
+
+    public void setLoading(MediaType mediaType, boolean loading) {
+        switch (mediaType) {
+            case ARTIST:
+                loadingArtists = loading;
+                break;
+            case ALBUM:
+                loadingAlbums = loading;
+                break;
+            case SONG:
+                loadingSongs = loading;
+                break;
+        }
+    }
+
+    public boolean isLoadingArtists() {
+        return loadingArtists;
+    }
+
+    public boolean isLoadingAlbums() {
+        return loadingAlbums;
+    }
+
+    public boolean isLoadingSongs() {
+        return loadingSongs;
     }
 }

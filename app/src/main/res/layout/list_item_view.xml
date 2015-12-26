@@ -13,6 +13,10 @@
         android:id="@+id/txtAlbum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="10dp"
         android:paddingRight="5dp" />

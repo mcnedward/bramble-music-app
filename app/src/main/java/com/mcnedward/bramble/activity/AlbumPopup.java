@@ -27,14 +27,18 @@ public class AlbumPopup extends Activity {
         initializeWindow();
 
         Artist artist = (Artist) getIntent().getSerializableExtra("artist");
-        TextView textView = (TextView) findViewById(R.id.artistName);
-        textView.setText(artist.getArtistName());
+        TextView txtArtistName = (TextView) findViewById(R.id.artistName);
+        txtArtistName.setText(artist.getArtistName());
 
-        GridView gridView = (GridView) findViewById(R.id.albumView);
-        List<Album> albums = MainActivity.mediaService.getAlbumsForArtist(artist);
-        AlbumGridAdapter adapter = new AlbumGridAdapter(albums, this);
-        gridView.setAdapter(adapter);
-        gridView.setGravity(Gravity.CENTER);
+        if (MainActivity.mediaService.isLoadingAlbums()) {
+            txtArtistName.setText("LOADING ALBUMS");
+        } else {
+            GridView gridView = (GridView) findViewById(R.id.albumView);
+            List<Album> albums = MainActivity.mediaService.getAlbumsForArtist(artist);
+            AlbumGridAdapter adapter = new AlbumGridAdapter(albums, this);
+            gridView.setAdapter(adapter);
+            gridView.setGravity(Gravity.CENTER);
+        }
     }
 
     private void initializeWindow() {

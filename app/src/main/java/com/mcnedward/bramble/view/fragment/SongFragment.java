@@ -2,12 +2,9 @@ package com.mcnedward.bramble.view.fragment;
 
 import android.os.Bundle;
 import android.support.v4.content.Loader;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 
-import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.adapter.MediaListAdapter;
@@ -26,12 +23,6 @@ public class SongFragment extends MediaFragment<Song> {
 
     public SongFragment() {
         super(MediaType.SONG);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        return inflater.inflate(R.layout.song_fragment_view, container, false);
     }
 
     @Override
