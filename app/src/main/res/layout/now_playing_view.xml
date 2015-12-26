@@ -89,25 +89,32 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
-            android:layout_margin="5dp">
+            android:layout_margin="5dp"
+            android:weightSum="1">
 
-            <Button
+            <ImageView
+                android:id="@+id/btn_previous"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="BACK"
-                android:id="@+id/btnPrevious"/>
+                android:layout_height="50dp"
+                android:src="@drawable/btn_previous"
+                android:scaleType="fitCenter"
+                android:layout_weight="0.15"/>
 
-            <Button
+            <ImageView
+                android:id="@+id/btn_play"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PLAY"
-                android:id="@+id/btnPlay"/>
+                android:layout_height="50dp"
+                android:src="@drawable/btn_play"
+                android:scaleType="fitCenter"
+                android:layout_weight="0.15"/>
 
-            <Button
+            <ImageView
+                android:id="@+id/btn_forward"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FORWARD"
-                android:id="@+id/btnForward"/>
+                android:layout_height="50dp"
+                android:src="@drawable/btn_forward"
+                android:scaleType="fitCenter"
+                android:layout_weight="0.15"/>
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

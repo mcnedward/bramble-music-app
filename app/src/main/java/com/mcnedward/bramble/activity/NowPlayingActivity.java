@@ -3,7 +3,10 @@ package com.mcnedward.bramble.activity;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,6 +17,7 @@ import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.exception.MediaNotFoundException;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.utils.listener.AlbumLoadListener;
 import com.mcnedward.bramble.utils.task.PlayMediaTask;
 
@@ -31,9 +35,9 @@ public class NowPlayingActivity extends Activity implements AlbumLoadListener {
     private TextView txtPassed;
     private SeekBar seekBar;
     private TextView txtDuration;
-    private Button btnPrevious;
-    private Button btnPlay;
-    private Button btnForward;
+    private ImageView btnPrevious;
+    private ImageView btnPlay;
+    private ImageView btnForward;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,12 +76,19 @@ public class NowPlayingActivity extends Activity implements AlbumLoadListener {
         txtPassed = (TextView) findViewById(R.id.now_playing_passed);
         txtDuration = (TextView) findViewById(R.id.now_playing_duration);
         seekBar = (SeekBar) findViewById(R.id.now_playing_seek);
+        seekBar.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(this, R.color.Red), PorterDuff.Mode.MULTIPLY));
+        seekBar.getThumb().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(this, R.color.Red), PorterDuff.Mode.SRC_IN));
         txtPassed.setText("0:00");
         txtDuration.setText(song.getDuration());
 
-        btnPrevious = (Button) findViewById(R.id.btnPrevious);
-        btnPlay = (Button) findViewById(R.id.btnPlay);
-        btnForward = (Button) findViewById(R.id.btnForward);
+        btnPrevious = (ImageView) findViewById(R.id.btn_previous);
+        btnPlay = (ImageView) findViewById(R.id.btn_play);
+        btnForward = (ImageView) findViewById(R.id.btn_forward);
+        int rippleColor = R.color.FireBrick;
+        int backgroundColor = 0;
+        btnPrevious.setBackground(Extension.rippleDrawable(rippleColor, backgroundColor, this));
+        btnPlay.setBackground(Extension.rippleDrawable(rippleColor, backgroundColor, this));
+        btnForward.setBackground(Extension.rippleDrawable(rippleColor, backgroundColor, this));
 
         // Start playing music!
         PlayMediaTask playMediaTask = new PlayMediaTask(this);
@@ -101,15 +112,15 @@ public class NowPlayingActivity extends Activity implements AlbumLoadListener {
         return txtDuration;
     }
 
-    public Button getBtnPrevious() {
+    public ImageView getBtnPrevious() {
         return btnPrevious;
     }
 
-    public Button getBtnPlay() {
+    public ImageView getBtnPlay() {
         return btnPlay;
     }
 
-    public Button getBtnForward() {
+    public ImageView getBtnForward() {
         return btnForward;
     }
 }

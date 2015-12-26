@@ -20,6 +20,13 @@ import com.mcnedward.bramble.activity.NowPlayingActivity;
  */
 public class Extension {
 
+    /**
+     * Creates a new RippleDrawable for a ripple effect on a View.
+     * @param rippleColor The color of the ripple.
+     * @param backgroundColor The color of the background for the ripple. If this is 0, then there will be no background and the ripple effect will be circular.
+     * @param context The context.
+     * @return A RippleDrawable.
+     */
     public static RippleDrawable rippleDrawable(int rippleColor, int backgroundColor, Context context) {
         return new RippleDrawable(
                 new ColorStateList(
@@ -31,10 +38,15 @@ public class Extension {
                                 {
                                         ContextCompat.getColor(context, rippleColor),
                                 }),
-                new ColorDrawable(ContextCompat.getColor(context, backgroundColor)),
+                backgroundColor == 0 ? null : new ColorDrawable(ContextCompat.getColor(context, backgroundColor)),
                 null);
     }
 
+    /**
+     * Creates a new RippleDrawable for a ripple effect on a View. This will create a ripple with the default color of FireBrick for the ripple and GhostWhite for the background.
+     * @param context The context.
+     * @return A RippleDrawable.
+     */
     public static RippleDrawable rippleDrawable(Context context) {
         return rippleDrawable(R.color.FireBrick, R.color.GhostWhite, context);
     }

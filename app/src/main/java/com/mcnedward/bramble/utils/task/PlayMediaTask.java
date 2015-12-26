@@ -1,14 +1,16 @@
 package com.mcnedward.bramble.utils.task;
 
-import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 
+import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.NowPlayingActivity;
 import com.mcnedward.bramble.media.Song;
 
@@ -45,10 +47,15 @@ public class PlayMediaTask extends AsyncTask<Song, Integer, Void> {
         nowPlaying.getBtnPlay().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (player.isPlaying())
+                ImageView btnPlay = nowPlaying.getBtnPlay();
+                if (player.isPlaying()) {
                     player.pause();
-                else
+                    btnPlay.setImageDrawable(ContextCompat.getDrawable(nowPlaying, R.drawable.btn_pause));
+                }
+                else {
                     player.start();
+                    btnPlay.setImageDrawable(ContextCompat.getDrawable(nowPlaying, R.drawable.btn_play));
+                }
             }
         });
         nowPlaying.getBtnForward().setOnClickListener(new View.OnClickListener() {
