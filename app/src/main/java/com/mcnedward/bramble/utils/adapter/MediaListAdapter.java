@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.Media;
+import com.mcnedward.bramble.utils.Extension;
 
 /**
  * Created by edward on 22/12/15.
@@ -23,11 +24,10 @@ public abstract class MediaListAdapter<T extends Media> extends BaseListAdapter<
 
     @Override
     protected void setViewContent(int position, View view) {
-        if (position != 0) {
-            final T media = getItem(position);
-            if (view instanceof TextView)
-                ((TextView) view).setText(media.toString());
-        }
+        T media = getItem(position);
+        TextView textView = ((TextView) view);
+        textView.setText(media.toString());
+        textView.setBackground(Extension.rippleDrawable(context));
     }
 
 }

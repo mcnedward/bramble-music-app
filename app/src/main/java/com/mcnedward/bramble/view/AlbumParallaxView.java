@@ -2,8 +2,12 @@ package com.mcnedward.bramble.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -24,6 +28,7 @@ import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.utils.adapter.AlbumPopupListAdapter;
 import com.mcnedward.bramble.utils.adapter.MediaListAdapter;
 import com.mcnedward.bramble.utils.adapter.SongListAdapter;
@@ -79,21 +84,18 @@ public class AlbumParallaxView extends LinearLayout {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, spaceHeight);
         space.setLayoutParams(layoutParams);
         layout.addView(space);
-        space.setBackgroundColor(ContextCompat.getColor(context, R.color.Red));
 
-        AlbumPopupListAdapter adapter = new AlbumPopupListAdapter(spaceHeight, context);
         List<Song> songs = MainActivity.mediaService.getSongsForAlbum(album);
-        adapter.setGroups(songs);
 
         for (Song song : songs) {
-            TextView textView = new TextView(context);
-            textView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            textView.setPadding(15, 15, 15, 15);
+            TextView textView = (TextView) inflate(context, R.layout.simple_list_item, null);
             textView.setText(song.getTitle());
-            textView.setBackgroundColor(ContextCompat.getColor(context, R.color.WhiteSmoke));
             textView.setClickable(true);
             textView.setFocusable(true);
-            textView.setFocusableInTouchMode(true);
+
+            RippleDrawable newImage = Extension.rippleDrawable(context);
+            textView.setBackground(newImage);
+
             final Context c = context;
             final String title = song.getTitle();
             textView.setOnClickListener(new OnClickListener() {
@@ -104,28 +106,6 @@ public class AlbumParallaxView extends LinearLayout {
             });
             layout.addView(textView);
         }
-
-//        final ListView listView = new ListView(context);
-//        listView.setAdapter(adapter);
-//        listView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-//        listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_DISABLED);
-//        listView.setNestedScrollingEnabled(true);
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Log.d(TAG, listView.getItemAtPosition(position) + " CLICKED!");
-//            }
-//        });
-//        layout.addView(listView);
-
-//        ListView listView = (ListView) findViewById(R.id.album_contents_list);
-//        listView.setAdapter(adapter);
-//        for (int x = 0; x < 51; x++) {
-//            TextView textView = new TextView(context);
-//            textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 50));
-//            textView.setText("SOMETHING HERE!");
-//            layout.addView(textView);
-//        }
     }
 
     private void setBackgroundContent(Context context) {
@@ -139,7 +119,7 @@ public class AlbumParallaxView extends LinearLayout {
         space.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, spaceHeight));
         layout.addView(space);
 
-        imgAlbumArt.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, imageHeight));
+        imgAlbumArt.setLayoutParams(new LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, imageHeight));
         String albumArt = album.getAlbumArt();
         if (albumArt != null) {
             // Create the album art bitmap and scale it to fit properly and avoid over using memory

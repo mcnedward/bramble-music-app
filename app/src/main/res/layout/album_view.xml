@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/Silver">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/Silver">
 
     <com.mcnedward.bramble.view.ParallaxScrollView
         android:id="@+id/background_sv"
@@ -36,20 +36,7 @@
             android:id="@+id/parallax_main_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:clickable="false"
-            android:focusable="false">
-
-            <ListView
-                android:id="@+id/album_contents_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:transcriptMode="disabled"
-                android:nestedScrollingEnabled="false"
-                android:isScrollContainer="false"
-                android:drawSelectorOnTop="true">
-            </ListView>
-
+            android:orientation="vertical">
         </LinearLayout>
 
     </com.mcnedward.bramble.view.ParallaxScrollView>

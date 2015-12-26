@@ -6,14 +6,14 @@
     android:baselineAligned="false">
 
     <RelativeLayout
-        android:id="@+id/top_content"
+        android:id="@+id/top_contentt"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/bottom_content"
+        android:id="@+id/bottom_contentt"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
