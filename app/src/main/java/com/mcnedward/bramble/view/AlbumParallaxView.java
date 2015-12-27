@@ -4,12 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
-import android.graphics.drawable.RippleDrawable;
-import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,7 +16,6 @@ import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
-import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.utils.listener.ScrollViewListener;
 
 import java.io.File;
@@ -86,7 +80,7 @@ public class AlbumParallaxView extends LinearLayout {
         layout.addView(albumTitleView);
 
         // Set the list of songs
-        List<Song> songs = MainActivity.mediaService.getSongsForAlbum(album);
+        List<Song> songs = MainActivity.mediaCache.getSongsForAlbum(album);
         for (Song song : songs) {
             AlbumSongItem songItem = new AlbumSongItem(song, context);
             layout.addView(songItem);

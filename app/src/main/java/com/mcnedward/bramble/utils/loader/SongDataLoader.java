@@ -6,8 +6,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 import com.mcnedward.bramble.activity.MainActivity;
-import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.media.Song;
 
@@ -115,6 +113,6 @@ public class SongDataLoader extends BaseDataLoader<Song> {
 
     @Override
     public void addToMediaService(List<Song> songList) {
-        MainActivity.mediaService.setSongs(songList);
+        MainActivity.mediaCache.setSongs(songList);
     }
 }

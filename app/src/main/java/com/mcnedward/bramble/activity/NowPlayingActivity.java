@@ -1,6 +1,7 @@
 package com.mcnedward.bramble.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
@@ -8,7 +9,6 @@ import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -17,6 +17,7 @@ import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.exception.MediaNotFoundException;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.utils.listener.AlbumLoadListener;
 import com.mcnedward.bramble.utils.task.PlayMediaTask;
@@ -39,6 +40,8 @@ public class NowPlayingActivity extends Activity implements AlbumLoadListener {
     private ImageView btnPlay;
     private ImageView btnForward;
 
+    private boolean loaded = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,12 +50,12 @@ public class NowPlayingActivity extends Activity implements AlbumLoadListener {
         song = (Song) getIntent().getSerializableExtra("song");
         ((TextView) findViewById(R.id.now_playing_title)).setText(song.getTitle());
 
-        MainActivity.mediaService.registerAlbumLoadListener(this);
+        MainActivity.mediaCache.registerAlbumLoadListener(this);
     }
 
     private void load() {
         try {
-            album = MainActivity.mediaService.getAlbumForSong(song);
+            album = MainActivity.mediaCache.getAlbumForSong(song);
         } catch (MediaNotFoundException e) {
             Log.e(TAG, e.getMessage(), e);
         }
@@ -91,13 +94,17 @@ public class NowPlayingActivity extends Activity implements AlbumLoadListener {
         btnForward.setBackground(Extension.rippleDrawable(rippleColor, backgroundColor, this));
 
         // Start playing music!
-        PlayMediaTask playMediaTask = new PlayMediaTask(this);
-        playMediaTask.execute(song);
+        Intent intent = new Intent(this, MediaService.class);
+        intent.putExtra("song", song);
+        startService(intent);
+
+        loaded = true;
     }
 
     @Override
     public void notifyAlbumLoadReady() {
-        load();
+        if (!loaded)
+            load();
     }
 
     public TextView getTxtPassed() {

@@ -40,7 +40,7 @@ public class AlbumPopup extends Activity implements AlbumLoadListener {
 
         ((TextView) findViewById(R.id.album_popup_progress_text)).setText(getString(R.string.album_popup_loading_text));
 
-        MainActivity.mediaService.registerAlbumLoadListener(this);
+        MainActivity.mediaCache.registerAlbumLoadListener(this);
     }
 
     private void initializeWindow() {
@@ -56,7 +56,7 @@ public class AlbumPopup extends Activity implements AlbumLoadListener {
     @Override
     public void notifyAlbumLoadReady() {
         GridView gridView = (GridView) findViewById(R.id.albumView);
-        List<Album> albums = MainActivity.mediaService.getAlbumsForArtist(artist);
+        List<Album> albums = MainActivity.mediaCache.getAlbumsForArtist(artist);
         AlbumGridAdapter adapter = new AlbumGridAdapter(albums, this);
         gridView.setAdapter(adapter);
         gridView.setGravity(Gravity.CENTER);

@@ -7,8 +7,6 @@ import android.provider.MediaStore;
 
 import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.media.Artist;
-import com.mcnedward.bramble.media.Media;
 import com.mcnedward.bramble.media.MediaType;
 
 import java.util.ArrayList;
@@ -98,8 +96,8 @@ public class AlbumDataLoader extends BaseDataLoader<Album> {
 
     @Override
     public void addToMediaService(List<Album> albumList) {
-        MainActivity.mediaService.setAlbums(albumList);
-        MainActivity.mediaService.notifyAlbumLoadListener();
+        MainActivity.mediaCache.setAlbums(albumList);
+        MainActivity.mediaCache.notifyAlbumLoadListener();
     }
 
     private List<Integer> loadSongsForAlbum(int albumId) {

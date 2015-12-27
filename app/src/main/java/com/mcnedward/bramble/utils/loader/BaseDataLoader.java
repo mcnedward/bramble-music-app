@@ -1,16 +1,12 @@
 package com.mcnedward.bramble.utils.loader;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.content.AsyncTaskLoader;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ProgressBar;
 
-import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.media.MediaType;
 
@@ -53,7 +49,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
 
     @Override
     public List<T> loadInBackground() {
-        MainActivity.mediaService.setLoading(mediaType, true);
+        MainActivity.mediaCache.setLoading(mediaType, true);
         List<T> mediaList = null;
         Cursor cursor = null;
         try {
@@ -92,7 +88,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
             resetDataList(mDataList);
         }
         addToMediaService(dataList);
-        MainActivity.mediaService.setLoading(mediaType, false);
+        MainActivity.mediaCache.setLoading(mediaType, false);
     }
 
     /**
@@ -117,7 +113,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
     @Override
     public void onStopLoading() {
         cancelLoad();
-        MainActivity.mediaService.setLoading(mediaType, false);
+        MainActivity.mediaCache.setLoading(mediaType, false);
     }
 
     /**
@@ -130,7 +126,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
         // TODO Change this
         if (dataList != null & dataList.size() > 0)
             resetDataList(dataList);
-        MainActivity.mediaService.setLoading(mediaType, false);
+        MainActivity.mediaCache.setLoading(mediaType, false);
     }
 
     /**

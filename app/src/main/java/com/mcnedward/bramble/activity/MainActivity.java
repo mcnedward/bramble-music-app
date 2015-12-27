@@ -1,5 +1,6 @@
 package com.mcnedward.bramble.activity;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -9,12 +10,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.MediaType;
-import com.mcnedward.bramble.utils.MediaService;
+import com.mcnedward.bramble.service.MediaService;
+import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.view.fragment.AlbumFragment;
 import com.mcnedward.bramble.view.fragment.ArtistFragment;
 import com.mcnedward.bramble.view.fragment.MediaFragment;
@@ -25,6 +28,7 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
+    private final static String TAG = "MainActivity";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -41,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
-    public static MediaService mediaService;
+    public static MediaCache mediaCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
 
         // TODO This should probably be replaced with an SQLite database or something similar
-        mediaService = new MediaService();
+        mediaCache = new MediaCache();
     }
 
 
@@ -87,6 +91,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "BRAMBLE CLOSED");
+        super.onDestroy();
+        stopService(new Intent(this, MediaService.class));
     }
 
     /**

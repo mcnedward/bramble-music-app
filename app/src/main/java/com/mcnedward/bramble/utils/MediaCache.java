@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by edward on 25/12/15.
  */
-public final class MediaService {
+public final class MediaCache {
 
     private List<Artist> artists;
     private List<Album> albums;
@@ -26,7 +26,7 @@ public final class MediaService {
 
     private boolean loadingArtists, loadingAlbums, loadingSongs;
 
-    public MediaService() {
+    public MediaCache() {
         artists = new ArrayList<>();
         albums = new ArrayList<>();
         songs = new ArrayList<>();

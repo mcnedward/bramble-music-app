@@ -75,7 +75,7 @@ public class ArtistDataLoader extends BaseDataLoader<Artist> {
 
     @Override
     public void addToMediaService(List<Artist> artistList) {
-        MainActivity.mediaService.setArtists(artistList);
+        MainActivity.mediaCache.setArtists(artistList);
     }
 
     private List<String> loadAlbumKeysForArtist(int artistId) {
