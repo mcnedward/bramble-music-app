@@ -1,120 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<RelativeLayout android:id="@+id/now_playing_root"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/now_playing_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/now_playing_album_art"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/no_album_art"/>
-    </LinearLayout>
+            android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/GhostWhiteTransparent">
-        <TextView
-            android:id="@+id/now_playing_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/placeholder"
-            android:textStyle="bold"
-            android:textSize="18dp"
-            android:textColor="@color/Black"
-            android:singleLine="true"
-            android:ellipsize="marquee"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:scrollHorizontally="true"
-            android:paddingBottom="5dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:paddingTop="15dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/now_playing_album"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/placeholder"
-            android:textSize="14dp"
-            android:textColor="@color/Black"
-            android:paddingBottom="15dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:paddingTop="5dp"/>
-    </LinearLayout>
+                <ImageView
+                    android:id="@+id/now_playing_album_art"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/no_album_art"/>
+            </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="bottom"
-        android:background="@color/GhostWhiteTransparent">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:id="@+id/album_song_item"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:layout_margin="5dp">
+                <com.mcnedward.bramble.view.nowPlaying.NowPlayingTitleBar
+                    android:id="@+id/now_playing_title_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <com.mcnedward.bramble.view.nowPlaying.NowPlayingSubControlsView
+                    android:id="@+id/now_playing_sub_controls"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"/>
+            </FrameLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/placeholder"
-                android:id="@+id/now_playing_passed"/>
+                android:layout_gravity="bottom"
+                android:background="@color/GhostWhiteTransparent"
+                android:orientation="vertical">
 
-            <SeekBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/now_playing_seek"
-                android:layout_weight="1"/>
+                <LinearLayout
+                    android:id="@+id/album_song_item"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/placeholder"
-                android:id="@+id/now_playing_duration"/>
-        </LinearLayout>
+                    <TextView
+                        android:id="@+id/now_playing_passed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/placeholder"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:layout_margin="5dp"
-            android:weightSum="1">
+                    <SeekBar
+                        android:id="@+id/now_playing_seek"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
 
-            <ImageView
-                android:id="@+id/btn_previous"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:src="@drawable/btn_previous"
-                android:scaleType="fitCenter"
-                android:layout_weight="0.15"/>
+                    <TextView
+                        android:id="@+id/now_playing_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/placeholder"/>
+                </LinearLayout>
 
-            <ImageView
-                android:id="@+id/btn_play"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:src="@drawable/btn_play"
-                android:scaleType="fitCenter"
-                android:layout_weight="0.15"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
 
-            <ImageView
-                android:id="@+id/btn_forward"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:src="@drawable/btn_forward"
-                android:scaleType="fitCenter"
-                android:layout_weight="0.15"/>
-        </LinearLayout>
-    </LinearLayout>
-</FrameLayout>
+                    <ImageView
+                        android:id="@+id/btn_previous"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="0.15"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/btn_previous"/>
+
+                    <ImageView
+                        android:id="@+id/btn_play"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="0.15"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/btn_play"/>
+
+                    <ImageView
+                        android:id="@+id/btn_forward"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="0.15"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/btn_forward"/>
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

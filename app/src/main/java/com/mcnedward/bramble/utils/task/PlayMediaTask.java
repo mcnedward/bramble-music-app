@@ -32,38 +32,38 @@ public class PlayMediaTask extends AsyncTask<Song, Integer, Void> {
         player = new MediaPlayer();
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
-        seekBar = nowPlaying.getSeekBar();
+//        seekBar = nowPlaying.getSeekBar();
 
         setButtonOnClickEvents();
     }
 
     private void setButtonOnClickEvents() {
-        nowPlaying.getBtnPrevious().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        nowPlaying.getBtnPlay().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ImageView btnPlay = nowPlaying.getBtnPlay();
-                if (player.isPlaying()) {
-                    player.pause();
-                    btnPlay.setImageDrawable(ContextCompat.getDrawable(nowPlaying, R.drawable.btn_pause));
-                }
-                else {
-                    player.start();
-                    btnPlay.setImageDrawable(ContextCompat.getDrawable(nowPlaying, R.drawable.btn_play));
-                }
-            }
-        });
-        nowPlaying.getBtnForward().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+//        nowPlaying.getBtnPrevious().setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
+//        nowPlaying.getBtnPlay().setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ImageView btnPlay = nowPlaying.getBtnPlay();
+//                if (player.isPlaying()) {
+//                    player.pause();
+//                    btnPlay.setImageDrawable(ContextCompat.getDrawable(nowPlaying, R.drawable.btn_pause));
+//                }
+//                else {
+//                    player.start();
+//                    btnPlay.setImageDrawable(ContextCompat.getDrawable(nowPlaying, R.drawable.btn_play));
+//                }
+//            }
+//        });
+//        nowPlaying.getBtnForward().setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
     }
 
     @Override
@@ -142,9 +142,9 @@ public class PlayMediaTask extends AsyncTask<Song, Integer, Void> {
                         String duration = getTimeString(player.getDuration());
 
                         // Find the TextViews from the NowPlayingActivity and update UI
-                        nowPlaying.getTxtPassed().setText(currentTime);
-
-                        nowPlaying.getTxtDuration().setText(String.valueOf(duration));
+//                        nowPlaying.getTxtPassed().setText(currentTime);
+//
+//                        nowPlaying.getTxtDuration().setText(String.valueOf(duration));
                     }
                 });
             }

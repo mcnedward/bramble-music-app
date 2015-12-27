@@ -2,8 +2,6 @@ package com.mcnedward.bramble.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.view.nowPlaying.NowPlayingSubControlsView;
 
 /**
  * Created by edward on 27/12/15.
@@ -20,8 +19,7 @@ public class MoveableActivity extends Activity implements View.OnTouchListener {
 
     private ViewGroup root;
     private TextView txtStuff;
-    private RelativeLayout bottomControls;
-    private RelativeLayout.LayoutParams layoutParams;
+    private NowPlayingSubControlsView bottomControls;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,8 +28,8 @@ public class MoveableActivity extends Activity implements View.OnTouchListener {
         root = (ViewGroup) findViewById(R.id.root);
         txtStuff = (TextView) findViewById(R.id.txt_stuff);
 
-        bottomControls = (RelativeLayout) getLayoutInflater().inflate(R.layout.now_playing_bottom_control, null);
-        layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        bottomControls = new NowPlayingSubControlsView(this);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         bottomControls.setLayoutParams(layoutParams);
         root.addView(bottomControls);
@@ -78,6 +76,15 @@ public class MoveableActivity extends Activity implements View.OnTouchListener {
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                if (controlsTouched) {
+                    // TODO Need animations here!
+                    if (event.getY() < root.getHeight() / 2) {
+                        // -5 to take shadow into account
+                        bottomControls.setY(-5);
+                    } else {
+                        bottomControls.setY(root.getHeight() - bHeight);
+                    }
+                }
                 controlsTouched = false;
                 break;
         }

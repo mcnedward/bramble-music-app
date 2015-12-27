@@ -16,7 +16,7 @@
         android:src="@drawable/no_album_art"/>
 
     <TextView
-        android:id="@+id/song_title"
+        android:id="@+id/now_playing_bottom_song"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_toLeftOf="@+id/now_playing_bottom_play"
