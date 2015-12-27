@@ -3,6 +3,7 @@ package com.mcnedward.bramble.activity;
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.listener.AlbumLoadListener;
@@ -26,9 +27,8 @@ public class NowPlayingActivity extends Activity implements AlbumLoadListener {
         super.onCreate(savedInstanceState);
         song = (Song) getIntent().getSerializableExtra("song");
 
-        nowPlayingView = new NowPlayingView(song, this);
+        nowPlayingView = (NowPlayingView) findViewById(R.id.now_playing);
         setContentView(nowPlayingView);
-//        ((TextView) findViewById(R.id.now_playing_title)).setText(song.getTitle());
 
         MainActivity.mediaCache.registerAlbumLoadListener(this);
     }

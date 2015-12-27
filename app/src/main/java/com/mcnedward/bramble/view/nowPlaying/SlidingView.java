@@ -1,6 +1,7 @@
 package com.mcnedward.bramble.view.nowPlaying;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -8,8 +9,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
-
-import com.mcnedward.bramble.R;
 
 /**
  * Created by edward on 27/12/15.
@@ -27,14 +26,20 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
     public SlidingView(int resourceId, Context context) {
         super(context);
         inflate(context, resourceId, this);
-        root = (ViewGroup) findViewById(R.id.now_playing_root);
-        root.setOnTouchListener(this);
+        setOnTouchListener(this);
+    }
+
+    public SlidingView(int resourceId, Context context, AttributeSet attrs) {
+        super(context, attrs);
+        inflate(context, resourceId, this);
+        setOnTouchListener(this);
     }
 
     protected abstract void switchSlidable(boolean top);
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        Log.d(TAG, "TOUCHED");
         int action = event.getAction();
         int slidableY = (int) content.getY();
         int slidableHeight = slidable.getHeight();
@@ -42,8 +47,10 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 anchorY = (int) event.getY();
-                if (anchorY > slidableY && anchorY < (slidableY + slidableHeight))
+                if (anchorY > slidableY && anchorY < (slidableY + slidableHeight)) {
                     controlsTouched = true;
+                    return true;
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (controlsTouched) {
@@ -76,6 +83,7 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                     } else {
                         switchSlidable(true);
                     }
+                    return true;
                 }
                 break;
             case MotionEvent.ACTION_UP:
@@ -93,35 +101,16 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                         content.animate().translationYBy(animationDistance);
                         slidable.animate().alpha(1.0f);
                     }
+                    return true;
                 }
                 controlsTouched = false;
                 break;
         }
-        return true;
+        return false;
     }
 
-    private void animateView(final View view, final int fromYDelta, final int toYDelta) {
-        TranslateAnimation anim = new TranslateAnimation(0, 0, fromYDelta, toYDelta);
-        anim.setDuration(1000);
-        anim.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                Log.d(TAG, "STARTING ANIMATION!");
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                Log.d(TAG, "ENDING ANIMATION!");
-                view.setY(toYDelta);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        anim.setFillAfter(false);
-        view.startAnimation(anim);
+    public void setRoot(ViewGroup root) {
+        this.root = root;
     }
 
     public void setSlidable(View slidable) {

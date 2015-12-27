@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.MediaType;
@@ -22,6 +24,7 @@ import com.mcnedward.bramble.view.fragment.AlbumFragment;
 import com.mcnedward.bramble.view.fragment.ArtistFragment;
 import com.mcnedward.bramble.view.fragment.MediaFragment;
 import com.mcnedward.bramble.view.fragment.SongFragment;
+import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ((NowPlayingView) findViewById(R.id.now_playing)).setRoot((ViewGroup) findViewById(R.id.now_playing_container));
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -132,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a MediaFragment (defined as a static inner class below).
-            return MediaFragment.newInstance(MediaType.values()[position]);//fragments.get(position);
+            return MediaFragment.newInstance(MediaType.values()[position]);
         }
 
         @Override

@@ -2,11 +2,10 @@ package com.mcnedward.bramble.view.nowPlaying;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.support.v4.content.ContextCompat;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,8 +20,6 @@ import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.Extension;
-
-import java.io.File;
 
 /**
  * Created by edward on 27/12/15.
@@ -56,7 +53,15 @@ public class NowPlayingView extends SlidingView {
         this.song = song;
         this.context = context;
 
-        root = (ViewGroup) findViewById(R.id.now_playing_root);
+        initialize();
+
+        setSlidable(bottomControls);
+        setContent(findViewById(R.id.now_playing_content));
+    }
+
+    public NowPlayingView(Context context, AttributeSet attrs) {
+        super(R.layout.now_playing_view, context, attrs);
+        this.context = context;
 
         initialize();
 

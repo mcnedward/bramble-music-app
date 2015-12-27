@@ -1,113 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:id="@+id/now_playing_root"
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+<RelativeLayout
+    android:id="@+id/now_playing_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/now_playing_content"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <ImageView
+                android:id="@+id/now_playing_album_art"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/no_album_art"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.mcnedward.bramble.view.nowPlaying.NowPlayingTitleBar
+                android:id="@+id/now_playing_title_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.mcnedward.bramble.view.nowPlaying.NowPlayingSubControlsView
+                android:id="@+id/now_playing_sub_controls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"/>
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@color/GhostWhiteTransparent"
+            android:orientation="vertical">
+
             <LinearLayout
+                android:id="@+id/album_song_item"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/now_playing_album_art"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/no_album_art"/>
-            </LinearLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.mcnedward.bramble.view.nowPlaying.NowPlayingTitleBar
-                    android:id="@+id/now_playing_title_bar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-                <com.mcnedward.bramble.view.nowPlaying.NowPlayingSubControlsView
-                    android:id="@+id/now_playing_sub_controls"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/now_playing_passed"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="invisible"/>
-            </FrameLayout>
+                    android:text="@string/placeholder"/>
+
+                <SeekBar
+                    android:id="@+id/now_playing_seek"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/now_playing_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/placeholder"/>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:background="@color/GhostWhiteTransparent"
-                android:orientation="vertical">
+                android:layout_margin="5dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:weightSum="1">
 
-                <LinearLayout
-                    android:id="@+id/album_song_item"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:gravity="center_horizontal"
-                    android:orientation="horizontal">
+                <ImageView
+                    android:id="@+id/btn_previous"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.15"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/btn_previous"/>
 
-                    <TextView
-                        android:id="@+id/now_playing_passed"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/placeholder"/>
+                <ImageView
+                    android:id="@+id/btn_play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.15"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/btn_play"/>
 
-                    <SeekBar
-                        android:id="@+id/now_playing_seek"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"/>
-
-                    <TextView
-                        android:id="@+id/now_playing_duration"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/placeholder"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:gravity="center_horizontal"
-                    android:orientation="horizontal"
-                    android:weightSum="1">
-
-                    <ImageView
-                        android:id="@+id/btn_previous"
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:layout_weight="0.15"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/btn_previous"/>
-
-                    <ImageView
-                        android:id="@+id/btn_play"
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:layout_weight="0.15"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/btn_play"/>
-
-                    <ImageView
-                        android:id="@+id/btn_forward"
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:layout_weight="0.15"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/btn_forward"/>
-                </LinearLayout>
+                <ImageView
+                    android:id="@+id/btn_forward"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.15"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/btn_forward"/>
             </LinearLayout>
-        </FrameLayout>
-    </RelativeLayout>
-
+        </LinearLayout>
+    </FrameLayout>
 </RelativeLayout>
