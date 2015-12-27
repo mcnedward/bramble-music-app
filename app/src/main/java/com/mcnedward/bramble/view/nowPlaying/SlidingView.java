@@ -1,9 +1,12 @@
 package com.mcnedward.bramble.view.nowPlaying;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 
 import com.mcnedward.bramble.R;
@@ -58,7 +61,6 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                     if (eventY >= root.getHeight()) {
                         // Prevent moving below bottom of screen
                         content.setY(root.getHeight() - slidableHeight);
-                        switchSlidable(false);
                     }
                     if (eventY < 0) {
                         // Prevent moving above top of screen
@@ -66,26 +68,60 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                         content.setY(-5);
                         switchSlidable(true);
                     }
+                    if (eventY > root.getHeight() / 4) {
+                        // Content is in bottom half
+                        switchSlidable(false);
+                        float opacity = ((float) eventY) / ((float) root.getHeight());
+                        slidable.setAlpha(opacity);
+                    } else {
+                        switchSlidable(true);
+                    }
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 if (controlsTouched) {
-                    // TODO Need animations here!
                     if (event.getY() < root.getHeight() / 2) {
                         // Stick to top of screen
                         // -5 to take shadow into account
-                        content.setY(-5);
                         switchSlidable(true);
+                        content.animate().translationY(0);
                     } else {
                         // Stick to bottom of screen
-                        content.setY(root.getHeight() - slidableHeight);
                         switchSlidable(false);
+                        int contentY = (int) (content.getY() + slidableHeight);
+                        int animationDistance = Math.abs(contentY - root.getHeight());
+                        content.animate().translationYBy(animationDistance);
+                        slidable.animate().alpha(1.0f);
                     }
                 }
                 controlsTouched = false;
                 break;
         }
         return true;
+    }
+
+    private void animateView(final View view, final int fromYDelta, final int toYDelta) {
+        TranslateAnimation anim = new TranslateAnimation(0, 0, fromYDelta, toYDelta);
+        anim.setDuration(1000);
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                Log.d(TAG, "STARTING ANIMATION!");
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                Log.d(TAG, "ENDING ANIMATION!");
+                view.setY(toYDelta);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        anim.setFillAfter(false);
+        view.startAnimation(anim);
     }
 
     public void setSlidable(View slidable) {
