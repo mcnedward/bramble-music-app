@@ -26,6 +26,7 @@
         <activity android:name=".activity.AlbumActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".activity.NowPlayingActivity"/>
+        <activity android:name=".activity.MoveableActivity"/>
         <service android:name=".service.MediaService"
             android:exported="false"/>
     </application>
