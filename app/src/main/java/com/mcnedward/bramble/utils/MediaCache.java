@@ -1,8 +1,5 @@
 package com.mcnedward.bramble.utils;
 
-import android.app.Activity;
-
-import com.mcnedward.bramble.activity.AlbumPopup;
 import com.mcnedward.bramble.exception.MediaNotFoundException;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;

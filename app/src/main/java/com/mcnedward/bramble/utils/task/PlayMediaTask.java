@@ -158,7 +158,6 @@ public class PlayMediaTask extends AsyncTask<Song, Integer, Void> {
      *            - The time in milliseconds to format
      * @return - The formatted time
      */
-
     private String getTimeString(long millis) {
         int minutes = (int) (millis / (1000 * 60));
         int seconds = (int) ((millis / 1000) % 60);

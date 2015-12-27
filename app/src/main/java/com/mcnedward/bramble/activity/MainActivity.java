@@ -96,8 +96,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         Log.d(TAG, "BRAMBLE CLOSED");
-        super.onDestroy();
         stopService(new Intent(this, MediaService.class));
+        super.onDestroy();
     }
 
     /**

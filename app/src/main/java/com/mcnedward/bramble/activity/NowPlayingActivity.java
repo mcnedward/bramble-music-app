@@ -20,7 +20,6 @@ import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.utils.listener.AlbumLoadListener;
-import com.mcnedward.bramble.utils.task.PlayMediaTask;
 
 import java.io.File;
 
@@ -41,6 +40,7 @@ public class NowPlayingActivity extends Activity implements AlbumLoadListener {
     private ImageView btnForward;
 
     private boolean loaded = false;
+    private boolean paused = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +51,23 @@ public class NowPlayingActivity extends Activity implements AlbumLoadListener {
         ((TextView) findViewById(R.id.now_playing_title)).setText(song.getTitle());
 
         MainActivity.mediaCache.registerAlbumLoadListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        paused = true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        paused = false;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     private void load() {
@@ -97,6 +114,7 @@ public class NowPlayingActivity extends Activity implements AlbumLoadListener {
         Intent intent = new Intent(this, MediaService.class);
         intent.putExtra("song", song);
         startService(intent);
+        MediaService.getInstance().registerNowPlayingActivity(this);
 
         loaded = true;
     }
@@ -105,6 +123,10 @@ public class NowPlayingActivity extends Activity implements AlbumLoadListener {
     public void notifyAlbumLoadReady() {
         if (!loaded)
             load();
+    }
+
+    public boolean isPaused() {
+        return paused;
     }
 
     public TextView getTxtPassed() {
