@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.mcnedward.bramble.R;
@@ -33,8 +34,8 @@ public class Extension {
      * @param context The context.
      * @return A RippleDrawable.
      */
-    public static RippleDrawable rippleDrawable(int rippleColor, int backgroundColor, Context context) {
-        return new RippleDrawable(
+    public static void setRippleBackground(View view, int rippleColor, int backgroundColor, Context context) {
+        view.setBackground(new RippleDrawable(
                 new ColorStateList(
                         new int[][]
                                 {
@@ -45,7 +46,7 @@ public class Extension {
                                         ContextCompat.getColor(context, rippleColor),
                                 }),
                 backgroundColor == 0 ? null : new ColorDrawable(ContextCompat.getColor(context, backgroundColor)),
-                null);
+                null));
     }
 
     /**
@@ -53,8 +54,8 @@ public class Extension {
      * @param context The context.
      * @return A RippleDrawable.
      */
-    public static RippleDrawable rippleDrawable(Context context) {
-        return rippleDrawable(R.color.FireBrick, R.color.GhostWhite, context);
+    public static void setRippleBackground(View view, Context context) {
+        setRippleBackground(view, R.color.FireBrick, R.color.GhostWhite, context);
     }
 
     public static void updateAlbumArt(Album album, ImageView imageView) {

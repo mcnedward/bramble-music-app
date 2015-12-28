@@ -32,6 +32,7 @@ public class NowPlayingSubControlsView extends RelativeLayout {
         imgAlbumArt = (ImageView) findViewById(R.id.now_playing_bottom_album_art);
         txtSongTitle = (TextView) findViewById(R.id.now_playing_bottom_song);
         btnPlay = (ImageView) findViewById(R.id.now_playing_bottom_play);
+        Extension.setRippleBackground(btnPlay, R.color.FireBrick, 0, context);
     }
 
     public void setBottomControlsInfo(Song song, Album album) {

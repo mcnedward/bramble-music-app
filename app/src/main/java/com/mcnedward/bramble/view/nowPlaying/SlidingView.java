@@ -19,7 +19,7 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
     private View content;
 
     private boolean controlsTouched;
-    private int anchorY = 0;
+    private int bottomAnchor = 0;
 
     public SlidingView(int resourceId, Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -33,12 +33,14 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
     public boolean onTouch(View v, MotionEvent event) {
         Log.d(TAG, "TOUCHED");
         int action = event.getAction();
+        int eventY = (int) event.getY();
+        int anchorY;
         int slidableY = (int) content.getY();
         int slidableHeight = slidable.getHeight();
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                anchorY = (int) event.getY();
+                anchorY = eventY;
                 if (anchorY > slidableY && anchorY < (slidableY + slidableHeight)) {
                     controlsTouched = true;
                     return true;
@@ -47,7 +49,6 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
             case MotionEvent.ACTION_MOVE:
                 if (controlsTouched) {
                     int newY;
-                    int eventY = (int) event.getY();
                     if (eventY > (slidableY + slidableHeight)) {
                         // Moving down
                         newY = eventY - slidableHeight;
@@ -80,7 +81,11 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                 break;
             case MotionEvent.ACTION_UP:
                 if (controlsTouched) {
-                    if (event.getY() < root.getHeight() / 2) {
+                    if (bottomAnchor < eventY) {
+                        animateToTop();
+                        return true;
+                    }
+                    if (eventY < root.getHeight() / 2) {
                         // Stick to top of screen
                         animateToTop();
                     } else {
@@ -118,6 +123,7 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
     public void snapToBottom() {
         switchSlidable(false);
         content.setY(root.getHeight() - slidable.getHeight());
+        bottomAnchor = (int) content.getY();
     }
 
     @Override

@@ -27,7 +27,7 @@ public abstract class MediaListAdapter<T extends Media> extends BaseListAdapter<
         T media = getItem(position);
         final TextView textView = ((TextView) view);
         textView.setText(media.toString());
-        textView.setBackground(Extension.rippleDrawable(context));
+        Extension.setRippleBackground(textView, context);
     }
 
 }

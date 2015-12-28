@@ -36,8 +36,7 @@ public class AlbumPopupItem extends LinearLayout {
         this.context = context;
         inflate(context, R.layout.album_popup_item, this);
 
-        RippleDrawable rippleDrawable = Extension.rippleDrawable(R.color.FireBrick, R.color.White, context);
-        setBackground(rippleDrawable);
+        Extension.setRippleBackground(this, R.color.FireBrick, R.color.White, context);
 
         txtAlbumName = (TextView) findViewById(R.id.album_popup_name);
         setAlbumName(album.getAlbumName());

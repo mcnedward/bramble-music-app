@@ -26,8 +26,7 @@ public class AlbumSongItem extends RelativeLayout {
         setClickable(true);
         setFocusable(true);
 
-        RippleDrawable rippleDrawable = Extension.rippleDrawable(context);
-        setBackground(rippleDrawable);
+        Extension.setRippleBackground(this, context);
 
         final Activity activity = (Activity) context;
         final Song nowPlayingSong = song;

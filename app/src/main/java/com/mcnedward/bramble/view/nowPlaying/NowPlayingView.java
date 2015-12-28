@@ -85,10 +85,9 @@ public class NowPlayingView extends SlidingView {
         txtDuration.setText(song.getDuration());
 
         int rippleColor = R.color.FireBrick;
-        int backgroundColor = 0;
-        btnPrevious.setBackground(Extension.rippleDrawable(rippleColor, backgroundColor, context));
-        btnPlay.setBackground(Extension.rippleDrawable(rippleColor, backgroundColor, context));
-        btnForward.setBackground(Extension.rippleDrawable(rippleColor, backgroundColor, context));
+        Extension.setRippleBackground(btnPrevious, rippleColor, 0, context);
+        Extension.setRippleBackground(btnPlay, rippleColor, 0, context);
+        Extension.setRippleBackground(btnForward, rippleColor, 0, context);
 
 //        startPlayingMedia();
 

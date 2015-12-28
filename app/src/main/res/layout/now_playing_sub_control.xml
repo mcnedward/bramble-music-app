@@ -37,5 +37,6 @@
         android:gravity="center_vertical"
         android:padding="10dp"
         android:scaleType="centerCrop"
+        android:clickable="true"
         android:src="@drawable/btn_play"/>
 </RelativeLayout>
