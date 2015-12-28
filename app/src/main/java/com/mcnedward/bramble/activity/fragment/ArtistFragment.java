@@ -1,12 +1,10 @@
-package com.mcnedward.bramble.view.fragment;
+package com.mcnedward.bramble.activity.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.AdapterView;
 
-import com.mcnedward.bramble.activity.AlbumPopup;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.utils.Extension;

@@ -13,18 +13,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.activity.fragment.NowPlayingFragment;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.view.MainView;
-import com.mcnedward.bramble.view.fragment.AlbumFragment;
-import com.mcnedward.bramble.view.fragment.ArtistFragment;
-import com.mcnedward.bramble.view.fragment.MediaFragment;
-import com.mcnedward.bramble.view.fragment.SongFragment;
+import com.mcnedward.bramble.activity.fragment.AlbumFragment;
+import com.mcnedward.bramble.activity.fragment.ArtistFragment;
+import com.mcnedward.bramble.activity.fragment.MediaFragment;
+import com.mcnedward.bramble.activity.fragment.SongFragment;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 
 import java.util.ArrayList;

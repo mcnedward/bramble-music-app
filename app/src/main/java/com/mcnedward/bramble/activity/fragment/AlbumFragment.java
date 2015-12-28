@@ -1,4 +1,4 @@
-package com.mcnedward.bramble.view.fragment;
+package com.mcnedward.bramble.activity.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;

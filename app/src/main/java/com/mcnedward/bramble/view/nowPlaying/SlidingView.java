@@ -19,6 +19,7 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
     private View content;
 
     private boolean controlsTouched;
+    protected boolean contentFocused;
     private int bottomAnchor = 0;
 
     public SlidingView(int resourceId, Context context, AttributeSet attrs) {
@@ -31,7 +32,6 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        Log.d(TAG, "TOUCHED");
         int action = event.getAction();
         int eventY = (int) event.getY();
         int anchorY;
@@ -118,12 +118,17 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
         // -5 to take shadow into account
         switchSlidable(true);
         content.animate().translationY(0);
+        contentFocused = true;
     }
 
     public void snapToBottom() {
         switchSlidable(false);
         content.setY(root.getHeight() - slidable.getHeight());
         bottomAnchor = (int) content.getY();
+    }
+
+    protected boolean isContentFocused() {
+        return contentFocused;
     }
 
     @Override

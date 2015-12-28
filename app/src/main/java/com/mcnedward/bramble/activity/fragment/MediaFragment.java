@@ -1,9 +1,8 @@
-package com.mcnedward.bramble.view.fragment;
+package com.mcnedward.bramble.activity.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;

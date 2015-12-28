@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -25,9 +27,9 @@ public class MediaService extends Service {
     private static MediaService instance;
     private static MediaPlayer player;
     private static Song song;
+    private static boolean playingMusic;
 
     private MediaThread mediaThread;
-    private boolean playingMusic;
 
     @Override
     public void onCreate() {
@@ -86,19 +88,17 @@ public class MediaService extends Service {
         nowPlayingView = view;
     }
 
-    public static MediaPlayer getMediaPlayer() {
-        return player;
-    }
-
     public static Song getCurrentSong() throws MediaNotFoundException {
         if (song == null)
             throw new MediaNotFoundException("Could not find the current song from " + TAG);
         return song;
     }
 
-    public boolean isPlayingMusic() {
+    public static boolean isPlayingMusic() {
         return playingMusic;
     }
+
+    Handler handler = new Handler(Looper.getMainLooper());
 
     final class MediaThread extends Thread {
 
@@ -116,6 +116,10 @@ public class MediaService extends Service {
                 if (playSong) {
                     startPlayingMusic();
                     playSong = false;
+                }
+                if (player.isPlaying()) {
+                    handler.post(nowPlayingView.updateUIThread(player));
+
                 }
             }
             player.stop();
