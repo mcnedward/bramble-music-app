@@ -27,7 +27,7 @@
         android:padding="15dp"
         android:scrollHorizontally="true"
         android:singleLine="true"
-        android:text="SONG TITLE HERE"/>
+        android:text="@string/media_not_ready"/>
 
     <ImageView
         android:id="@+id/now_playing_bottom_play"

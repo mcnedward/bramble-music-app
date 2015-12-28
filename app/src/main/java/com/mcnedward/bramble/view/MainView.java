@@ -1,19 +1,19 @@
 package com.mcnedward.bramble.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 
 /**
  * Created by edward on 28/12/15.
  */
 public class MainView extends FrameLayout {
-
-    private Context context;
 
     private NowPlayingView nowPlayingView;
 
@@ -28,10 +28,11 @@ public class MainView extends FrameLayout {
     }
 
     private void initialize(Context context) {
-        this.context = context;
         inflate(context, R.layout.activity_main, this);
         nowPlayingView = ((NowPlayingView) findViewById(R.id.now_playing));
         nowPlayingView.setRoot((ViewGroup) findViewById(R.id.now_playing_container));
+
+        MediaService.registerNowPlayingView(nowPlayingView);
     }
 
     @Override

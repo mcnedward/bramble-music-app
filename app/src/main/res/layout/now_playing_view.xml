@@ -56,7 +56,7 @@
                     android:id="@+id/now_playing_passed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/placeholder"/>
+                    android:text="@string/zero_duration"/>
 
                 <SeekBar
                     android:id="@+id/now_playing_seek"
@@ -68,7 +68,7 @@
                     android:id="@+id/now_playing_duration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/placeholder"/>
+                    android:text="@string/zero_duration"/>
             </LinearLayout>
 
             <LinearLayout

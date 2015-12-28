@@ -33,7 +33,7 @@ public class AlbumSongItem extends RelativeLayout {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Extension.startNowPlayingActivity(nowPlayingSong, activity);
+                Extension.startPlayingMusic(nowPlayingSong, activity);
             }
         });
     }

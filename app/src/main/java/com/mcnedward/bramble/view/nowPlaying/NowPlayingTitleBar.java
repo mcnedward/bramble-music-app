@@ -17,17 +17,25 @@ public class NowPlayingTitleBar extends LinearLayout {
 
     public NowPlayingTitleBar(Context context) {
         super(context, null);
+        initialize(context);
     }
 
     public NowPlayingTitleBar(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initialize(context);
+    }
+
+    private void initialize(Context context) {
         inflate(context, R.layout.now_playing_title_bar, this);
         txtNowPlayingTitle = (TextView) findViewById(R.id.now_playing_title);
         txtNowPlayingAlbum = (TextView) findViewById(R.id.now_playing_album);
     }
 
-    public void setTitleText(String songTitle, String albumTitle) {
+    public void setSongTitle(String songTitle) {
         txtNowPlayingTitle.setText(songTitle);
+    }
+
+    public void setAlbumTitle(String albumTitle) {
         txtNowPlayingAlbum.setText(albumTitle);
     }
 

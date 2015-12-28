@@ -1,5 +1,6 @@
 package com.mcnedward.bramble.service;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -8,10 +9,10 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.SeekBar;
 
-import com.mcnedward.bramble.activity.NowPlayingActivity;
+import com.mcnedward.bramble.exception.MediaNotFoundException;
 import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 
 import java.io.IOException;
 
@@ -22,10 +23,10 @@ public class MediaService extends Service {
     private final static String TAG = "MediaService";
 
     private static MediaService instance;
+    private static MediaPlayer player;
+    private static Song song;
 
-    private MediaPlayer player;
     private MediaThread mediaThread;
-
     private boolean playingMusic;
 
     @Override
@@ -43,8 +44,9 @@ public class MediaService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Starting MediaService!");
 
-        Song song = (Song) intent.getSerializableExtra("song");
+        song = (Song) intent.getSerializableExtra("song");
         mediaThread.startMusic(song);
+        nowPlayingView.notifyMediaStarted(song);
 
         return START_STICKY;
     }
@@ -78,14 +80,20 @@ public class MediaService extends Service {
         return instance;
     }
 
-    private static NowPlayingActivity nowPlayingActivity;
+    private static NowPlayingView nowPlayingView;
 
-    public static void registerNowPlayingActivity(NowPlayingActivity activity) {
-        nowPlayingActivity = activity;
+    public static void registerNowPlayingView(NowPlayingView view) {
+        nowPlayingView = view;
     }
 
-    public MediaPlayer getMediaPlayer() {
+    public static MediaPlayer getMediaPlayer() {
         return player;
+    }
+
+    public static Song getCurrentSong() throws MediaNotFoundException {
+        if (song == null)
+            throw new MediaNotFoundException("Could not find the current song from " + TAG);
+        return song;
     }
 
     public boolean isPlayingMusic() {
@@ -109,50 +117,6 @@ public class MediaService extends Service {
                     startPlayingMusic();
                     playSong = false;
                 }
-//                if (nowPlayingActivity != null && !nowPlayingActivity.isPaused()) {
-//                    nowPlayingActivity.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            while (player != null && player.getCurrentPosition() < player.getDuration()) {
-//                                // Sleep for 100 milliseconds
-//                                try {
-//                                    Thread.sleep(100);
-//                                } catch (InterruptedException e) {
-//                                    Log.e(TAG, e.getMessage(), e);
-//                                }
-//                                nowPlayingActivity.getSeekBar().setMax(player.getDuration());
-//                                nowPlayingActivity.getSeekBar().setProgress(player.getCurrentPosition());
-//                                nowPlayingActivity.getSeekBar().setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//                                    @Override
-//                                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                                        if (fromUser == true) {
-//                                            player.seekTo(seekBar.getProgress());
-//                                        } else {
-//                                            // Do nothing
-//                                        }
-//                                    }
-//
-//                                    @Override
-//                                    public void onStartTrackingTouch(SeekBar seekBar) {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void onStopTrackingTouch(SeekBar seekBar) {
-//
-//                                    }
-//                                });
-//                                String currentTime = getTimeString(player.getCurrentPosition());
-//                                String duration = getTimeString(player.getDuration());
-//
-//                                // Find the TextViews from the NowPlayingActivity and update UI
-//                                nowPlayingActivity.getTxtPassed().setText(currentTime);
-//
-//                                nowPlayingActivity.getTxtDuration().setText(String.valueOf(duration));
-//                            }
-//                        }
-//                    });
-//                }
             }
             player.stop();
         }
@@ -195,19 +159,6 @@ public class MediaService extends Service {
         public void stopMusic() {
             running = false;
         }
-    }
-
-    /**
-     * Used to format the time of the current media
-     *
-     * @param millis
-     *            - The time in milliseconds to format
-     * @return - The formatted time
-     */
-    private String getTimeString(long millis) {
-        int minutes = (int) (millis / (1000 * 60));
-        int seconds = (int) ((millis / 1000) % 60);
-        return String.format("%d:%02d", minutes, seconds);
     }
 
 }

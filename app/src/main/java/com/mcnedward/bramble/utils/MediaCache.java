@@ -19,14 +19,15 @@ public final class MediaCache {
     private List<Album> albums;
     private List<Song> songs;
 
-    private AlbumLoadListener listener;
+    private static List<AlbumLoadListener> listeners;
 
-    private boolean loadingArtists, loadingAlbums, loadingSongs;
+    private static boolean loadingArtists, loadingAlbums, loadingSongs;
 
     public MediaCache() {
         artists = new ArrayList<>();
         albums = new ArrayList<>();
         songs = new ArrayList<>();
+        listeners = new ArrayList<>();
     }
 
     public List<Album> getAlbumsForArtist(Artist artist) {
@@ -68,15 +69,16 @@ public final class MediaCache {
         throw new MediaNotFoundException(String.format("Could not find an album for the song '%s' with the album id: %s", song, song.getAlbumId()));
     }
 
-    public void registerAlbumLoadListener(AlbumLoadListener listener) {
-        this.listener = listener;
+    public static void registerAlbumLoadListener(AlbumLoadListener listener) {
+        listeners.add(listener);
         if (!loadingAlbums)
             notifyAlbumLoadListener();
     }
 
-    public void notifyAlbumLoadListener() {
-        if (listener != null)
-            listener.notifyAlbumLoadReady();
+    public static void notifyAlbumLoadListener() {
+        if (!listeners.isEmpty())
+            for (AlbumLoadListener listener : listeners)
+                listener.notifyAlbumLoadReady();
     }
 
     public List<Artist> getArtists() {

@@ -56,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // TODO This should probably be replaced with an SQLite database or something similar
+        mediaCache = new MediaCache();
+
         setContentView(new MainView(this));
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -71,9 +74,6 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
-        // TODO This should probably be replaced with an SQLite database or something similar
-        mediaCache = new MediaCache();
     }
 
     @Override
@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         Log.d(TAG, "BRAMBLE CLOSED");
+        // TODO This stops the media playing, fix it!
         stopService(new Intent(this, MediaService.class));
         super.onDestroy();
     }

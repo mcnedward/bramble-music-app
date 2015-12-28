@@ -38,7 +38,7 @@ public class SongFragment extends MediaFragment<Song> {
     @Override
     protected void setOnItemClick(AdapterView<?> parent, View view, int position, long id) {
         Song song = (Song) listView.getItemAtPosition(position);
-        Extension.startNowPlayingActivity(song, getActivity());
+        Extension.startPlayingMusic(song, getActivity());
     }
 
     @Override

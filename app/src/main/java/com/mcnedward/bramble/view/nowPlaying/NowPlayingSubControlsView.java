@@ -17,11 +17,6 @@ import com.mcnedward.bramble.utils.Extension;
 public class NowPlayingSubControlsView extends RelativeLayout {
     private final static String TAG = "NowPlayingBottomControlsView";
 
-    private Context context;
-
-    private Song song;
-    private Album album;
-
     private ImageView imgAlbumArt;
     private TextView txtSongTitle;
     private ImageView btnPlay;
@@ -35,10 +30,11 @@ public class NowPlayingSubControlsView extends RelativeLayout {
         Extension.setRippleBackground(btnPlay, R.color.FireBrick, 0, context);
     }
 
-    public void setBottomControlsInfo(Song song, Album album) {
-        this.song = song;
-        this.album = album;
+    public void setSongTitle(Song song) {
         txtSongTitle.setText(song.getTitle());
+    }
+
+    public void updateAlbumArt(Album album) {
         Extension.updateAlbumArt(album, imgAlbumArt);
     }
 
