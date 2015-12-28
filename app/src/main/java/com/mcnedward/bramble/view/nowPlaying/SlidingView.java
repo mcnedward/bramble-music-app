@@ -6,8 +6,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 
 /**
@@ -22,12 +20,6 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
 
     private boolean controlsTouched;
     private int anchorY = 0;
-
-    public SlidingView(int resourceId, Context context) {
-        super(context);
-        inflate(context, resourceId, this);
-        setOnTouchListener(this);
-    }
 
     public SlidingView(int resourceId, Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -67,7 +59,7 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                     content.setY(newY);
                     if (eventY >= root.getHeight()) {
                         // Prevent moving below bottom of screen
-                        content.setY(root.getHeight() - slidableHeight);
+                        snapToBottom();
                     }
                     if (eventY < 0) {
                         // Prevent moving above top of screen
@@ -90,16 +82,10 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                 if (controlsTouched) {
                     if (event.getY() < root.getHeight() / 2) {
                         // Stick to top of screen
-                        // -5 to take shadow into account
-                        switchSlidable(true);
-                        content.animate().translationY(0);
+                        animateToTop();
                     } else {
                         // Stick to bottom of screen
-                        switchSlidable(false);
-                        int contentY = (int) (content.getY() + slidableHeight);
-                        int animationDistance = Math.abs(contentY - root.getHeight());
-                        content.animate().translationYBy(animationDistance);
-                        slidable.animate().alpha(1.0f);
+                        animateToBottom();
                     }
                     return true;
                 }
@@ -107,6 +93,36 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                 break;
         }
         return false;
+    }
+
+    public void animateToBottom() {
+        animateToBottom(300);
+    }
+
+    public void animateToBottom(int duration) {
+        switchSlidable(false);
+        if (root != null) {
+            int contentY = (int) (content.getY() + slidable.getHeight());
+            int animationDistance = Math.abs(contentY - root.getHeight());
+            content.animate().translationYBy(animationDistance);
+            slidable.animate().alpha(1.0f).setDuration(duration);
+        }
+    }
+
+    public void animateToTop() {
+        // -5 to take shadow into account
+        switchSlidable(true);
+        content.animate().translationY(0);
+    }
+
+    public void snapToBottom() {
+        switchSlidable(false);
+        content.setY(root.getHeight() - slidable.getHeight());
+    }
+
+    @Override
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     public void setRoot(ViewGroup root) {

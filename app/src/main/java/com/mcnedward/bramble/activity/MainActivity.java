@@ -20,6 +20,7 @@ import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.MediaCache;
+import com.mcnedward.bramble.view.MainView;
 import com.mcnedward.bramble.view.fragment.AlbumFragment;
 import com.mcnedward.bramble.view.fragment.ArtistFragment;
 import com.mcnedward.bramble.view.fragment.MediaFragment;
@@ -48,14 +49,14 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+    private NowPlayingView nowPlayingView;
+
     public static MediaCache mediaCache;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        ((NowPlayingView) findViewById(R.id.now_playing)).setRoot((ViewGroup) findViewById(R.id.now_playing_container));
+        setContentView(new MainView(this));
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -74,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
         // TODO This should probably be replaced with an SQLite database or something similar
         mediaCache = new MediaCache();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

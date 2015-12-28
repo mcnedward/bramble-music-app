@@ -7,7 +7,6 @@ import android.graphics.PorterDuffColorFilter;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -32,8 +31,6 @@ public class NowPlayingView extends SlidingView {
     private Song song;
     private Album album;
 
-    private ViewGroup root;
-
     private NowPlayingTitleBar titleBar;
     private NowPlayingSubControlsView bottomControls;
     private TextView txtSongTitle;
@@ -47,17 +44,6 @@ public class NowPlayingView extends SlidingView {
     private ImageView btnForward;
 
     private boolean loaded = false;
-
-    public NowPlayingView(Song song, Context context) {
-        super(R.layout.now_playing_view, context);
-        this.song = song;
-        this.context = context;
-
-        initialize();
-
-        setSlidable(bottomControls);
-        setContent(findViewById(R.id.now_playing_content));
-    }
 
     public NowPlayingView(Context context, AttributeSet attrs) {
         super(R.layout.now_playing_view, context, attrs);
