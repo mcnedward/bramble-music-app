@@ -72,6 +72,7 @@ public class Extension {
         }
     }
 
+    // TODO What's going on here?
     public static void startAlbumPopup(final Artist artist, final Activity activity) {
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -90,5 +91,18 @@ public class Extension {
         intent.putExtra("song", song);
         activity.startService(intent);
     }
+
+    /**
+     * Used to format the time of the current media
+     *
+     * @param millis - The time in milliseconds to format
+     * @return - The formatted time
+     */
+    public static String getTimeString(long millis) {
+        int minutes = (int) (millis / (1000 * 60));
+        int seconds = (int) ((millis / 1000) % 60);
+        return String.format("%d:%02d", minutes, seconds);
+    }
+
 
 }

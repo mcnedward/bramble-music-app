@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.Extension;
 
 /**
@@ -16,6 +15,8 @@ import com.mcnedward.bramble.utils.Extension;
  */
 public class NowPlayingSubControlsView extends RelativeLayout {
     private final static String TAG = "NowPlayingBottomControlsView";
+
+    public static int SUBCONTROL_HEIGHT = 60;
 
     private ImageView imgAlbumArt;
     private TextView txtSongTitle;
@@ -30,8 +31,8 @@ public class NowPlayingSubControlsView extends RelativeLayout {
         Extension.setRippleBackground(btnPlay, R.color.FireBrick, 0, context);
     }
 
-    public void setSongTitle(Song song) {
-        txtSongTitle.setText(song.getTitle());
+    public void setSongTitle(String songTitle) {
+        txtSongTitle.setText(songTitle);
     }
 
     public void updateAlbumArt(Album album) {

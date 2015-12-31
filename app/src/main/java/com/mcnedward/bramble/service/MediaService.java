@@ -2,6 +2,7 @@ package com.mcnedward.bramble.service;
 
 import android.app.Activity;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -10,10 +11,12 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.mcnedward.bramble.exception.MediaNotFoundException;
 import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 
 import java.io.IOException;
@@ -29,17 +32,22 @@ public class MediaService extends Service {
     private static Song song;
     private static boolean playingMusic;
 
+    private LocalBroadcastManager broadcaster;
+    private Intent mediaIntent;
+
     private MediaThread mediaThread;
 
     @Override
     public void onCreate() {
         Log.d(TAG, "Creating MediaService!");
         instance = this;
+        broadcaster = LocalBroadcastManager.getInstance(this);
+        mediaIntent = new Intent("com.mcnedward.bramble.MediaService");
 
         player = new MediaPlayer();
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaThread = new MediaThread();
-        mediaThread.start();
+//        mediaThread.start();
     }
 
     @Override
@@ -47,7 +55,30 @@ public class MediaService extends Service {
         Log.d(TAG, "Starting MediaService!");
 
         song = (Song) intent.getSerializableExtra("song");
-        mediaThread.startMusic(song);
+//        mediaThread.startMusic(song);
+
+        Log.d(TAG, String.format("Starting to play media for %s", song));
+        final Uri songUri = Uri.parse(song.getData());
+        try {
+            if (player.isPlaying()) {
+                player.stop();
+                player.reset();
+            }
+            player.setDataSource(getApplicationContext(), songUri);
+            player.prepare();
+            player.start();
+
+            playingMusic = true;
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, e.getMessage(), e);
+        } catch (SecurityException e) {
+            Log.e(TAG, e.getMessage(), e);
+        } catch (IllegalStateException e) {
+            Log.e(TAG, e.getMessage(), e);
+        }
+
         nowPlayingView.notifyMediaStarted(song);
 
         return START_STICKY;
@@ -80,6 +111,10 @@ public class MediaService extends Service {
 
     public static MediaService getInstance() {
         return instance;
+    }
+
+    public static MediaPlayer getPlayer() {
+        return player;
     }
 
     private static NowPlayingView nowPlayingView;
@@ -116,13 +151,27 @@ public class MediaService extends Service {
                 if (playSong) {
                     startPlayingMusic();
                     playSong = false;
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            while (player != null && player.getCurrentPosition() < player.getDuration()) {
+                                try {
+                                    Thread.sleep(300);
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                        }
+                                    });
+                                } catch (InterruptedException e) {
+                                    Log.e(TAG, e.getMessage(), e);
+                                }
+                            }
+                        }
+                    };
+                    new Thread(runnable).start();
                 }
-                if (player.isPlaying()) {
-                    handler.post(nowPlayingView.updateUIThread(player));
-
-                }
+                player.stop();
             }
-            player.stop();
         }
 
         private void startPlayingMusic() {
