@@ -29,12 +29,6 @@
                 android:id="@+id/now_playing_title_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-
-            <com.mcnedward.bramble.view.nowPlaying.NowPlayingSubControlsView
-                android:id="@+id/now_playing_sub_controls"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"/>
         </FrameLayout>
 
         <LinearLayout
@@ -93,7 +87,7 @@
                     android:layout_height="50dp"
                     android:layout_weight="0.15"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/btn_play"/>
+                    android:src="@drawable/btn_pause"/>
 
                 <ImageView
                     android:id="@+id/btn_forward"

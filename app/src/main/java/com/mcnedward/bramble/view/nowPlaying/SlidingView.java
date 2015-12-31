@@ -153,7 +153,7 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
 
     public void updateViewMeasures(ViewGroup root) {
         this.root = root;
-        bottomAnchor = root.getHeight() - NowPlayingSubControlsView.SUBCONTROL_HEIGHT;
+        bottomAnchor = root.getHeight() - NowPlayingTitleBar.HEIGHT;
     }
 
     public void setSlidable(View slidable) {

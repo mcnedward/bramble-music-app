@@ -43,7 +43,6 @@ public class MediaService extends Service {
 
         song = (Song) intent.getSerializableExtra("song");
         mediaThread.startMusic(song);
-        nowPlayingView.notifyMediaStarted(song);
 
         return START_STICKY;
     }
@@ -108,7 +107,7 @@ public class MediaService extends Service {
                 if (playSong) {
                     startPlayingMusic();
                     playSong = false;
-
+                    nowPlayingView.notifyMediaStarted();
                 }
             }
             player.stop();

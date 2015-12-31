@@ -7,6 +7,6 @@ import com.mcnedward.bramble.media.Song;
  */
 public interface MediaStartedListener {
 
-    void notifyMediaStarted(Song song);
+    void notifyMediaStarted();
 
 }

@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.RippleDrawable;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.service.MediaService;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by edward on 25/12/15.
@@ -69,6 +71,28 @@ public class Extension {
             File imageFile = new File(album.getAlbumArt());
             Bitmap imageBitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
             imageView.setImageBitmap(imageBitmap);
+        }
+    }
+
+    public static void setPlayButtonListener(List<ImageView> playButtons, MediaPlayer player, Context context) {
+        if (player != null) {
+            if (player.isPlaying()) {
+                player.pause();
+                Extension.switchPlayButton(playButtons, true, context);
+            } else {
+                player.start();
+                Extension.switchPlayButton(playButtons, false, context);
+            }
+        }
+    }
+
+    private static void switchPlayButton(List<ImageView> playButtons, boolean play, Context context) {
+        if (play) {
+            for (ImageView view : playButtons)
+                view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.btn_play));
+        } else {
+            for (ImageView view : playButtons)
+                view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.btn_pause));
         }
     }
 

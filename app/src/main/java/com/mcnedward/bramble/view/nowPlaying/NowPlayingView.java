@@ -23,6 +23,9 @@ import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.listener.AlbumLoadListener;
 import com.mcnedward.bramble.utils.listener.MediaStartedListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by edward on 27/12/15.
  */
@@ -34,7 +37,6 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
     private Song song;
 
     private NowPlayingTitleBar titleBar;
-    private NowPlayingSubControlsView bottomControls;
     private TextView txtSongTitle;
     private TextView txtAlbum;
     private ImageView imgAlbumArt;
@@ -44,8 +46,10 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
     private ImageView btnPrevious;
     private ImageView btnPlay;
     private ImageView btnForward;
+    private List<ImageView> playButtons;
 
-    private boolean loaded = false;
+    private boolean albumLoaded = false;
+    private boolean buttonListenersLoaded = false;
 
     public NowPlayingView(Context context) {
         super(R.layout.now_playing_view, context);
@@ -62,55 +66,85 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
     @Override
     protected void switchSlidable(boolean top) {
         if (top) {
-            titleBar.setVisibility(VISIBLE);
-            bottomControls.setVisibility(INVISIBLE);
+            titleBar.switchPlayIcon(INVISIBLE);
         } else {
-            titleBar.setVisibility(INVISIBLE);
-            bottomControls.setVisibility(VISIBLE);
+            titleBar.switchPlayIcon(VISIBLE);
         }
     }
 
     @Override
-    public void notifyMediaStarted(Song song) {
-        this.song = song;
-        notifyAlbumLoadReady();
-
-        titleBar.setSongTitle(song.getTitle());
-        bottomControls.setSongTitle(song.getTitle());
-
-        loaded = true;
+    public void notifyMediaStarted() {
+        buttonListenersLoaded = false;
+        albumLoaded = false;
         updateUIThread();
     }
 
     public void updateUIThread() {
-        final MediaPlayer player = MediaService.getPlayer();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (player != null
-                        && player.getCurrentPosition() < player.getDuration()) {
-                    // Sleep for 100 milliseconds
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+        try {
+            final MediaPlayer player = MediaService.getPlayer();
+            song = MediaService.getCurrentSong();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (player != null
+                            && player.getCurrentPosition() < player.getDuration()) {
+                        // Sleep for 100 milliseconds
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if (!buttonListenersLoaded) {
+                            setButtonListeners();
+                        }
 
-                    if (!isControlsTouched() || isContentFocused()) {
-                        post(new Runnable() {
-                            @Override
-                            public void run() {
-                                // Get the current time and total duration and display on the UI
-                                String currentTime = Extension.getTimeString(player.getCurrentPosition());
-                                String duration = Extension.getTimeString(player.getDuration());
-                                txtPassed.setText(currentTime);
-                                txtDuration.setText(duration);
-                            }
-                        });
+                        if (!isControlsTouched() || isContentFocused()) {
+                            post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (!albumLoaded) {
+                                        notifyAlbumLoadReady();
+                                        titleBar.updateSongTitle(song.getTitle());
+                                    }
+                                    // Get the current time and total duration and display on the UI
+                                    String currentTime = Extension.getTimeString(player.getCurrentPosition());
+                                    String duration = Extension.getTimeString(player.getDuration());
+                                    txtPassed.setText(currentTime);
+                                    txtDuration.setText(duration);
+                                    // Set the seek bar max position, current position, and change listener
+                                    seekBar.setMax(player.getDuration());
+                                    seekBar.setProgress(player.getCurrentPosition());
+                                    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                                        @Override
+                                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                            if (fromUser == true) {
+                                                player.seekTo(seekBar.getProgress());
+                                            } else {
+                                                // Do nothing
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onStartTrackingTouch(SeekBar seekBar) {
+                                            // TODO Auto-generated method stub
+
+                                        }
+
+                                        @Override
+                                        public void onStopTrackingTouch(SeekBar seekBar) {
+                                            // TODO Auto-generated method stub
+
+                                        }
+                                    });
+                                }
+                            });
+                        }
                     }
                 }
-            }
-        }).start();
+            }).start();
+        } catch (MediaNotFoundException e) {
+            Log.w(TAG, e.getMessage(), e);
+        }
     }
 
     @Override
@@ -122,10 +156,12 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
                 Log.w(TAG, "Albums loaded but no media selected.");
             else {
                 album = MainActivity.mediaCache.getAlbumForSong(song);
-                bottomControls.updateAlbumArt(album);
-                titleBar.setAlbumTitle(album.getAlbumName());
+                titleBar.updateAlbumArt(album);
+                titleBar.updateAlbumTitle(album.getAlbumName());
                 // Load album art
                 Extension.updateAlbumArt(album, imgAlbumArt);
+                // Everything loaded!
+                albumLoaded = true;
             }
         } catch (MediaNotFoundException e) {
             Log.d(TAG, e.getMessage(), e);
@@ -133,6 +169,7 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
     }
 
     private void setButtonListeners() {
+        final MediaPlayer player = MediaService.getPlayer();
         btnPrevious.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,7 +179,7 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
         btnPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Extension.setPlayButtonListener(playButtons, player, context);
             }
         });
         btnForward.setOnClickListener(new OnClickListener() {
@@ -151,17 +188,18 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
 
             }
         });
+        titleBar.setPlayButtonListener(playButtons, player);
     }
 
     private void initialize(Context context) {
         this.context = context;
+        playButtons = new ArrayList<>();
 
         // Register this as listeners
         MediaCache.registerAlbumLoadListener(this);
         MediaService.registerNowPlayingView(this);
 
         titleBar = (NowPlayingTitleBar) findViewById(R.id.now_playing_title_bar);
-        bottomControls = (NowPlayingSubControlsView) findViewById(R.id.now_playing_sub_controls);
 
         txtSongTitle = (TextView) findViewById(R.id.now_playing_title);
         txtAlbum = (TextView) findViewById(R.id.now_playing_album);
@@ -171,12 +209,15 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
         txtDuration = (TextView) findViewById(R.id.now_playing_duration);
         seekBar = (SeekBar) findViewById(R.id.now_playing_seek);
 
+        // Set the buttons
         btnPrevious = (ImageView) findViewById(R.id.btn_previous);
         btnPlay = (ImageView) findViewById(R.id.btn_play);
         btnForward = (ImageView) findViewById(R.id.btn_forward);
-        setButtonListeners();
 
-        setSlidable(bottomControls);
+        playButtons.add(btnPlay);
+        playButtons.add(titleBar.getPlayButton());
+
+        setSlidable(titleBar);
         setContent(findViewById(R.id.now_playing_content));
 
         // Load controls
@@ -187,10 +228,6 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
         Extension.setRippleBackground(btnPrevious, rippleColor, 0, context);
         Extension.setRippleBackground(btnPlay, rippleColor, 0, context);
         Extension.setRippleBackground(btnForward, rippleColor, 0, context);
-    }
-
-    public boolean isLoaded() {
-        return loaded;
     }
 
     public TextView getTxtPassed() {
