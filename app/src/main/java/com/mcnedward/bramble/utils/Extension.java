@@ -86,8 +86,8 @@ public class Extension {
         }
     }
 
-    private static void switchPlayButton(List<ImageView> playButtons, boolean play, Context context) {
-        if (play) {
+    public static void switchPlayButton(List<ImageView> playButtons, boolean pause, Context context) {
+        if (pause) {
             for (ImageView view : playButtons)
                 view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.btn_play));
         } else {

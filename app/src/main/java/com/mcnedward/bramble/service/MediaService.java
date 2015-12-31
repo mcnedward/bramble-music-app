@@ -121,13 +121,10 @@ public class MediaService extends Service {
                     player.stop();
                     player.reset();
                 }
-                player.setDataSource(getApplicationContext(), songUri);
-                player.prepare();
+                player = MediaPlayer.create(getApplicationContext(), songUri);
                 player.start();
 
                 playingMusic = true;
-            } catch (IOException e) {
-                Log.e(TAG, e.getMessage(), e);
             } catch (IllegalArgumentException e) {
                 Log.e(TAG, e.getMessage(), e);
             } catch (SecurityException e) {
