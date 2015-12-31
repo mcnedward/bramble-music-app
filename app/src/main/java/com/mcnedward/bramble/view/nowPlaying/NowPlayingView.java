@@ -1,15 +1,13 @@
 package com.mcnedward.bramble.view.nowPlaying;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.media.MediaPlayer;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -23,12 +21,12 @@ import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.listener.AlbumLoadListener;
-import com.mcnedward.bramble.utils.listener.MediaPlayingListener;
+import com.mcnedward.bramble.utils.listener.MediaStartedListener;
 
 /**
  * Created by edward on 27/12/15.
  */
-public class NowPlayingView extends SlidingView implements AlbumLoadListener {
+public class NowPlayingView extends SlidingView implements AlbumLoadListener, MediaStartedListener {
     private final static String TAG = "NowPlayingView";
 
     private Context context;
@@ -72,12 +70,7 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener {
         }
     }
 
-    private MediaPlayingListener listener;
-
-    public void register(MediaPlayingListener l) {
-        listener = l;
-    }
-
+    @Override
     public void notifyMediaStarted(Song song) {
         this.song = song;
         notifyAlbumLoadReady();
@@ -86,96 +79,38 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener {
         bottomControls.setSongTitle(song.getTitle());
 
         loaded = true;
-
-        listener.notifyMediaPlaying();
-    }
-
-    public void updateTitle(String title) {
-        titleBar.setSongTitle(title);
-    }
-
-    public void simpleUIUpdate(String passed, String current) {
-        txtPassed.setText(passed);
-        txtDuration.setText(current);
+        updateUIThread();
     }
 
     public void updateUIThread() {
-        final Handler handler = new Handler(Looper.getMainLooper());
         final MediaPlayer player = MediaService.getPlayer();
-        ((Activity) context).runOnUiThread(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                while (player != null && player.getCurrentPosition() < player.getDuration()) {
+                while (player != null
+                        && player.getCurrentPosition() < player.getDuration()) {
+                    // Sleep for 100 milliseconds
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
-                        Log.e(TAG, e.getMessage(), e);
+                        e.printStackTrace();
                     }
-                    if (isContentFocused()) {
-//                        txtPassed.setText(getTimeString(player.getCurrentPosition()));
-//                        txtDuration.setText(getTimeString(player.getDuration()));
+
+                    if (!isControlsTouched() || isContentFocused()) {
+                        post(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Get the current time and total duration and display on the UI
+                                String currentTime = Extension.getTimeString(player.getCurrentPosition());
+                                String duration = Extension.getTimeString(player.getDuration());
+                                txtPassed.setText(currentTime);
+                                txtDuration.setText(duration);
+                            }
+                        });
                     }
                 }
             }
-        });
-    }
-
-    public void updateUIThread(final MediaPlayer player) {
-        if (context != null && isContentFocused()) {
-//            fActivity.runOnUiThread(
-//            new Runnable() {
-//                @Override
-//                public void run() {
-//                    try {
-//                    if (player != null && player.getCurrentPosition() < player.getDuration()) {
-//                        if (player.isPlaying() && player.getCurrentPosition() < player.getDuration()) {
-            // Sleep for 100 milliseconds
-//                            try {
-//                                Thread.sleep(100);
-//                            } catch (InterruptedException e) {
-//                                Log.e(TAG, e.getMessage(), e);
-//                            }
-            Log.d(TAG, "CURRENT TIME: " + player.getCurrentPosition());
-//            txtPassed.setText(getTimeString(player.getCurrentPosition()));
-//            txtDuration.setText(getTimeString(player.getDuration()));
-//                            seekBar.setMax(player.getDuration());
-//                            seekBar.setProgress(player.getCurrentPosition());
-//                            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//                                @Override
-//                                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                                    if (fromUser == true) {
-//                                        player.seekTo(seekBar.getProgress());
-//                                    } else {
-//                                        // Do nothing
-//                                    }
-//                                }
-//
-//                                @Override
-//                                public void onStartTrackingTouch(SeekBar seekBar) {
-//
-//                                }
-//
-//                                @Override
-//                                public void onStopTrackingTouch(SeekBar seekBar) {
-//
-//                                }
-//                            });
-//                            String currentTime = getTimeString(player.getCurrentPosition());
-//                            String duration = getTimeString(player.getDuration());
-//
-//                            // Find the TextViews from the NowPlayingActivity and update UI
-//                            txtPassed.setText(currentTime);
-//
-//                            txtDuration.setText(String.valueOf(duration));
-//                        }
-//                    }
-//                    } catch (InterruptedException e) {
-//                        Log.e(TAG, e.getMessage(), e);
-//                    }
-//                }
-//            });
-//            }
-        }
+        }).start();
     }
 
     @Override
@@ -197,10 +132,34 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener {
         }
     }
 
+    private void setButtonListeners() {
+        btnPrevious.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        btnPlay.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        btnForward.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+
     private void initialize(Context context) {
         this.context = context;
 
+        // Register this as listeners
         MediaCache.registerAlbumLoadListener(this);
+        MediaService.registerNowPlayingView(this);
+
         titleBar = (NowPlayingTitleBar) findViewById(R.id.now_playing_title_bar);
         bottomControls = (NowPlayingSubControlsView) findViewById(R.id.now_playing_sub_controls);
 
@@ -215,6 +174,7 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener {
         btnPrevious = (ImageView) findViewById(R.id.btn_previous);
         btnPlay = (ImageView) findViewById(R.id.btn_play);
         btnForward = (ImageView) findViewById(R.id.btn_forward);
+        setButtonListeners();
 
         setSlidable(bottomControls);
         setContent(findViewById(R.id.now_playing_content));

@@ -55,8 +55,6 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                 if (anchorY > slidableY && anchorY < (slidableY + slidableHeight)) {
                     controlsTouched = true;
                     return true;
-                } else {
-                    controlsTouched = false;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -112,7 +110,8 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                 controlsTouched = false;
                 break;
         }
-        return false;
+        // Allow the underlying view to handle touch events when the sliding view is not focused
+        return contentFocused;
     }
 
     public void animateToBottom() {

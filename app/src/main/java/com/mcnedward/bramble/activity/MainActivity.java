@@ -4,9 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,8 +17,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.fragment.AlbumFragment;
@@ -29,9 +25,7 @@ import com.mcnedward.bramble.activity.fragment.MediaFragment;
 import com.mcnedward.bramble.activity.fragment.SongFragment;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.service.MediaService;
-import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.utils.MediaCache;
-import com.mcnedward.bramble.utils.listener.MediaPlayingListener;
 import com.mcnedward.bramble.view.MainView;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 
@@ -39,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements MediaPlayingListener {
+public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
 
     /**
@@ -62,60 +56,14 @@ public class MainActivity extends AppCompatActivity implements MediaPlayingListe
 
     public static MediaCache mediaCache;
 
-    private BroadcastReceiver reciever;
-
-    @Override
-    public void notifyMediaPlaying() {
-        Log.d(TAG, "MEDIA PLAYING");
-        updateUI();
-    }
-
-    private void updateUI() {
-        final MediaPlayer player = MediaService.getPlayer();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (player != null
-                        && player.getCurrentPosition() < player.getDuration()) {
-                    // Sleep for 100 milliseconds
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (!nowPlayingView.isControlsTouched() || nowPlayingView.isContentFocused()) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                // Get the current time and total duration and display on the UI
-                                String currentTime = Extension.getTimeString(player.getCurrentPosition());
-                                String duration = Extension.getTimeString(player.getDuration());
-                                nowPlayingView.simpleUIUpdate(currentTime, duration);
-                            }
-                        });
-                    }
-                }
-            }
-        }).start();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // TODO This should probably be replaced with SQLite database or something similar
         mediaCache = new MediaCache();
-        reciever = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-            }
-        };
 
         mainView = new MainView(this);
         setContentView(mainView);
-        nowPlayingView = mainView.getNowPlayingView();
-
-        nowPlayingView.register(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -133,12 +81,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayingListe
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        LocalBroadcastManager.getInstance(this).registerReceiver(reciever, new IntentFilter("com.mcnedward.bramble.MediaService"));
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
     }
@@ -149,10 +91,6 @@ public class MainActivity extends AppCompatActivity implements MediaPlayingListe
         // TODO This stops the media playing, fix it!
         stopService(new Intent(this, MediaService.class));
         super.onDestroy();
-    }
-
-    private boolean isNowPlayingFocused() {
-        return (nowPlayingView != null && nowPlayingView.isContentFocused());
     }
 
     /**

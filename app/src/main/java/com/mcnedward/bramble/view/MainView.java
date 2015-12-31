@@ -1,12 +1,15 @@
 package com.mcnedward.bramble.view;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.activity.fragment.NowPlayingFragment;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 
@@ -17,8 +20,6 @@ public class MainView extends FrameLayout {
     private final static String TAG = "MainView";
 
     private NowPlayingView nowPlayingView;
-
-    private boolean loaded = false;
 
     public MainView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -32,9 +33,9 @@ public class MainView extends FrameLayout {
 
     private void initialize(Context context) {
         inflate(context, R.layout.activity_main, this);
-        nowPlayingView = ((NowPlayingView) findViewById(R.id.now_playing));
-
-        MediaService.registerNowPlayingView(nowPlayingView);
+        NowPlayingFragment nowPlayingFragment = (NowPlayingFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.now_playing);
+        nowPlayingView = nowPlayingFragment.getNowPlayingView();
+//        nowPlayingView = (NowPlayingView) findViewById(R.id.now_playing);
     }
 
     @Override
