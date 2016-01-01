@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,9 +15,12 @@ import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.MainActivity;
+import com.mcnedward.bramble.activity.fragment.NowPlayingFragment;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.listener.ScrollViewListener;
+import com.mcnedward.bramble.view.nowPlaying.NowPlayingTitleBar;
+import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 
 import java.io.File;
 import java.util.List;
@@ -33,6 +37,8 @@ public class AlbumParallaxView extends LinearLayout {
     private ParallaxScrollView mBgScrollView;
     private ParallaxScrollView mContentScrollView;
 
+    private NowPlayingView nowPlayingView;
+
     private Album album;
 
     public AlbumParallaxView(Album album, Context context) {
@@ -48,6 +54,18 @@ public class AlbumParallaxView extends LinearLayout {
 
         setForegroundContent(context);
         setBackgroundContent(context);
+
+        NowPlayingFragment nowPlayingFragment = (NowPlayingFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.album_now_playing);
+        nowPlayingView = nowPlayingFragment.getNowPlayingView();
+
+        DisplayMetrics dm2 = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm2);
+        int usableHeight = dm2.heightPixels;
+        ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(dm2);
+        int realHeight = dm2.heightPixels;
+        int softButtonHeight = realHeight - usableHeight;
+        int height = (usableHeight - softButtonHeight) - NowPlayingTitleBar.HEIGHT;
+        nowPlayingView.snapToBottom(height);
     }
 
     private void setScrollViews() {
@@ -106,6 +124,12 @@ public class AlbumParallaxView extends LinearLayout {
             Bitmap imageBitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
             imgAlbumArt.setImageBitmap(imageBitmap);
         }
+    }
+
+    @Override
+     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        nowPlayingView.updateViewMeasures((ViewGroup) findViewById(R.id.album_now_playing_container));
     }
 
 }

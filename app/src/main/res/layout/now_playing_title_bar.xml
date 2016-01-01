@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    android:id="@+id/now_playing_bottom_control"
+    android:id="@+id/now_playing_title_bar"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="60dp"
-        android:layout_toLeftOf="@+id/now_playing_bottom_play"
+        android:layout_toLeftOf="@+id/now_playing_title_play"
         android:layout_toRightOf="@id/now_playing_bottom_album_art"
         android:orientation="vertical">
 

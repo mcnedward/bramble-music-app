@@ -238,6 +238,10 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
         Extension.setRippleBackground(btnForward, rippleColor, 0, context);
     }
 
+    public NowPlayingTitleBar getTitleBar() {
+        return titleBar;
+    }
+
     public TextView getTxtPassed() {
         return txtPassed;
     }

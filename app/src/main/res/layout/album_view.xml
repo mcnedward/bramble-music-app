@@ -1,44 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/Silver">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="@color/Silver">
 
-    <com.mcnedward.bramble.view.ParallaxScrollView
-        android:id="@+id/background_sv"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/parallax_background_content"
+        <com.mcnedward.bramble.view.ParallaxScrollView
+            android:id="@+id/background_sv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
-            <ImageView
-                android:id="@+id/bg_album_art"
+            <LinearLayout
+                android:id="@+id/parallax_background_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/no_album_art"/>
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        </LinearLayout>
-    </com.mcnedward.bramble.view.ParallaxScrollView>
+                <ImageView
+                    android:id="@+id/bg_album_art"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/no_album_art"/>
 
-    <com.mcnedward.bramble.view.ParallaxScrollView
-        android:id="@+id/content_sv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+            </LinearLayout>
+        </com.mcnedward.bramble.view.ParallaxScrollView>
 
-        <LinearLayout
-            android:id="@+id/parallax_main_content"
+        <com.mcnedward.bramble.view.ParallaxScrollView
+            android:id="@+id/content_sv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
-    </com.mcnedward.bramble.view.ParallaxScrollView>
+            <LinearLayout
+                android:id="@+id/parallax_main_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            </LinearLayout>
 
-</RelativeLayout>
+        </com.mcnedward.bramble.view.ParallaxScrollView>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/album_now_playing_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <fragment
+            android:id="@+id/album_now_playing"
+            android:name="com.mcnedward.bramble.activity.fragment.NowPlayingFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/now_playing_view"/>
+
+    </LinearLayout>
+</FrameLayout>

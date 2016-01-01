@@ -20,7 +20,8 @@ import java.util.List;
 public class NowPlayingTitleBar extends LinearLayout {
     private final static String TAG = "NowPlayingTitleBar";
 
-    public static int HEIGHT = 60;
+    // Layout height + padding
+    public static int HEIGHT = 75;
 
     private Context context;
 

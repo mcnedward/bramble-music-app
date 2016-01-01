@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.mcnedward.bramble.R;
+
 /**
  * Created by edward on 27/12/15.
  */
@@ -18,6 +20,7 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
     private ViewGroup root;
     private View slidable;
     private View content;
+    private View bottom;
 
     private boolean controlsTouched;
     protected boolean contentFocused = false;
@@ -37,6 +40,7 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
         this.context = context;
         inflate(context, resourceId, this);
         setOnTouchListener(this);
+        bottom = findViewById(R.id.now_playing_bottom_control);
     }
 
     protected abstract void switchSlidable(boolean top);
@@ -130,16 +134,18 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
     }
 
     public void animateToTop() {
-        // -5 to take shadow into account
         switchSlidable(true);
         content.animate().translationY(0);
         contentFocused = true;
     }
 
     public void snapToBottom() {
+        snapToBottom(root.getHeight() - slidable.getHeight());
+    }
+
+    public void snapToBottom(int position) {
         switchSlidable(false);
-        if (root != null)
-            content.setY(root.getHeight() - slidable.getHeight());
+        content.setY(position);
         contentFocused = false;
     }
 

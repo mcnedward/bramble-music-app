@@ -40,6 +40,7 @@ public class AlbumPopup extends Activity implements AlbumLoadListener {
         artist = (Artist) getIntent().getSerializableExtra("artist");
         TextView txtArtistName = (TextView) findViewById(R.id.artistName);
         txtArtistName.setText(artist.getArtistName());
+        txtArtistName.setFocusable(true);
 
         ((TextView) findViewById(R.id.album_popup_progress_text)).setText(getString(R.string.album_popup_loading_text));
 
