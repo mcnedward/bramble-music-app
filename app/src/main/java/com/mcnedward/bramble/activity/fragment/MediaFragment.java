@@ -9,14 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
 import com.mcnedward.bramble.media.Media;
 import com.mcnedward.bramble.media.MediaType;
-import com.mcnedward.bramble.utils.adapter.MediaListAdapter;
+import com.mcnedward.bramble.adapter.list.MediaListAdapter;
 
 import java.util.List;
 
@@ -29,9 +31,11 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
     private MediaType mediaType;
 
     protected ListView listView;
+    protected GridView gridView;
+    protected MediaListAdapter<T> listAdapter;
+    protected MediaGridAdapter<T> gridAdapter;
     protected ProgressBar progressBar;
     private TextView txtProgress;
-    protected MediaListAdapter<T> adapter;
 
     public MediaFragment(MediaType mediaType) {
         this.mediaType = mediaType;
@@ -53,14 +57,26 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
 
     protected abstract MediaListAdapter<T> getMediaListAdapter();
 
+    protected abstract MediaGridAdapter<T> getMediaGridAdapter();
+
     protected abstract int getLoaderId();
+
+    public void toggleMediaView(boolean grid) {
+        if (grid) {
+            listView.setVisibility(View.GONE);
+            gridView.setVisibility(View.VISIBLE);
+        } else {
+            listView.setVisibility(View.VISIBLE);
+            gridView.setVisibility(View.GONE);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View thisView = inflater.inflate(R.layout.media_fragment_view, container, false);
+        View thisView = inflater.inflate(R.layout.fragment_media, container, false);
 
-        listView = (ListView) thisView.findViewById(R.id.media_list);
+        listView = (ListView) thisView.findViewById(R.id.list_media);
         listView.setItemsCanFocus(true);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -68,20 +84,33 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
                 setOnItemClick(parent, view, position, id);
             }
         });
-        adapter = getMediaListAdapter();
-        listView.setAdapter(adapter);
+        listAdapter = getMediaListAdapter();
+        listView.setAdapter(listAdapter);
+
+        gridView = (GridView) thisView.findViewById(R.id.grid_media);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                setOnItemClick(parent, view, position, id);
+            }
+        });
+        gridAdapter = getMediaGridAdapter();
+        gridView.setAdapter(gridAdapter);
 
         progressBar = (ProgressBar) thisView.findViewById(R.id.media_progress_bar);
         txtProgress = (TextView) thisView.findViewById(R.id.media_progress_text);
         switch (mediaType) {
             case ARTIST:
                 txtProgress.setText(getContext().getString(R.string.artist_loading_text));
+                toggleMediaView(false);
                 break;
             case ALBUM:
                 txtProgress.setText(getContext().getString(R.string.album_loading_text));
+                toggleMediaView(true);
                 break;
             case SONG:
                 txtProgress.setText(getContext().getString(R.string.song_loading_text));
+                toggleMediaView(false);
                 break;
         }
 
@@ -98,9 +127,13 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
     @Override
     public void onLoadFinished(Loader<List<T>> loader, List<T> data) {
         Log.d(TAG, String.format("onLoadFinished() called! Loading %s data!", mediaType.type()));
-        adapter.reset();
-        adapter.setGroups(data);
-        adapter.notifyDataSetChanged();
+        listAdapter.reset();
+        listAdapter.setGroups(data);
+        listAdapter.notifyDataSetChanged();
+
+        gridAdapter.reset();
+        gridAdapter.setGroups(data);
+        gridAdapter.notifyDataSetChanged();
 
         if (progressBar != null)
             progressBar.setVisibility(View.GONE);
@@ -110,7 +143,8 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
 
     @Override
     public void onLoaderReset(Loader<List<T>> loader) {
-        adapter.reset();
+        listAdapter.reset();
+        gridAdapter.reset();
         loader.reset();
     }
 }

@@ -20,8 +20,9 @@ import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.utils.MediaCache;
-import com.mcnedward.bramble.utils.listener.AlbumLoadListener;
-import com.mcnedward.bramble.utils.listener.MediaStartedListener;
+import com.mcnedward.bramble.listener.AlbumLoadListener;
+import com.mcnedward.bramble.listener.MediaStartedListener;
+import com.mcnedward.bramble.utils.RippleUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,15 +53,15 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
     private boolean loaded = false;
 
     public NowPlayingView(Context context) {
-        super(R.layout.now_playing_view, context);
-
-        initialize(context);
+        super(R.layout.view_now_playing, context);
+        if (!isInEditMode())
+            initialize(context);
     }
 
     public NowPlayingView(Context context, AttributeSet attrs) {
-        super(R.layout.now_playing_view, context, attrs);
-
-        initialize(context);
+        super(R.layout.view_now_playing, context, attrs);
+        if (!isInEditMode())
+            initialize(context);
     }
 
     @Override
@@ -229,9 +230,9 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
         seekBar.getThumb().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(context, R.color.Red), PorterDuff.Mode.SRC_IN));
 
         int rippleColor = R.color.FireBrick;
-        Extension.setRippleBackground(btnPrevious, rippleColor, 0, context);
-        Extension.setRippleBackground(btnPlay, rippleColor, 0, context);
-        Extension.setRippleBackground(btnForward, rippleColor, 0, context);
+        RippleUtil.setRippleBackground(btnPrevious, rippleColor, 0, context);
+        RippleUtil.setRippleBackground(btnPlay, rippleColor, 0, context);
+        RippleUtil.setRippleBackground(btnForward, rippleColor, 0, context);
     }
 
     public NowPlayingTitleBar getTitleBar() {

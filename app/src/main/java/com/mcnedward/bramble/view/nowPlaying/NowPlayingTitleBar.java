@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.utils.Extension;
+import com.mcnedward.bramble.utils.RippleUtil;
 
 import java.util.List;
 
@@ -42,12 +43,12 @@ public class NowPlayingTitleBar extends LinearLayout {
 
     private void initialize(Context context) {
         this.context = context;
-        inflate(context, R.layout.now_playing_title_bar, this);
+        inflate(context, R.layout.view_now_playing_title_bar, this);
         imgAlbumArt = (ImageView) findViewById(R.id.now_playing_bottom_album_art);
         txtNowPlayingTitle = (TextView) findViewById(R.id.now_playing_title);
         txtNowPlayingAlbum = (TextView) findViewById(R.id.now_playing_album);
         btnPlay = (ImageView) findViewById(R.id.now_playing_title_play);
-        Extension.setRippleBackground(btnPlay, R.color.FireBrick, 0, context);
+        RippleUtil.setRippleBackground(btnPlay, R.color.FireBrick, 0, context);
     }
 
     public void updateAlbumArt(Album album) {

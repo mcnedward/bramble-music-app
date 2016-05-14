@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.RippleDrawable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +16,7 @@ import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.AlbumActivity;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.utils.Extension;
+import com.mcnedward.bramble.utils.RippleUtil;
 
 import java.io.File;
 
@@ -34,9 +33,9 @@ public class AlbumPopupItem extends LinearLayout {
     public AlbumPopupItem(final Album album, Context context) {
         super(context);
         this.context = context;
-        inflate(context, R.layout.album_popup_item, this);
+        inflate(context, R.layout.item_album_popup, this);
 
-        Extension.setRippleBackground(this, R.color.FireBrick, R.color.White, context);
+        RippleUtil.setRippleBackground(this, R.color.FireBrick, R.color.White, context);
 
         txtAlbumName = (TextView) findViewById(R.id.album_popup_name);
         setAlbumName(album.getAlbumName());

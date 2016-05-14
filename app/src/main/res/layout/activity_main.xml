@@ -55,7 +55,7 @@
             android:name="com.mcnedward.bramble.activity.fragment.NowPlayingFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:layout="@layout/now_playing_view"/>
+            tools:layout="@layout/view_now_playing"/>
 
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

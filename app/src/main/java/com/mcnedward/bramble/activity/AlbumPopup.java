@@ -11,11 +11,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.adapter.AlbumPopUpGridAdapter;
+import com.mcnedward.bramble.listener.AlbumLoadListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.utils.MediaCache;
-import com.mcnedward.bramble.utils.adapter.AlbumGridAdapter;
-import com.mcnedward.bramble.utils.listener.AlbumLoadListener;
 
 import java.util.List;
 
@@ -62,7 +62,7 @@ public class AlbumPopup extends Activity implements AlbumLoadListener {
         Log.d(TAG, "Albums ready...");
         GridView gridView = (GridView) findViewById(R.id.albumView);
         List<Album> albums = MainActivity.mediaCache.getAlbumsForArtist(artist);
-        AlbumGridAdapter adapter = new AlbumGridAdapter(albums, this);
+        AlbumPopUpGridAdapter adapter = new AlbumPopUpGridAdapter(albums, this);
         gridView.setAdapter(adapter);
         gridView.setGravity(Gravity.CENTER);
 

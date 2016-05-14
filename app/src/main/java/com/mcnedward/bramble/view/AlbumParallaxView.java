@@ -18,7 +18,7 @@ import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.activity.fragment.NowPlayingFragment;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
-import com.mcnedward.bramble.utils.listener.ScrollViewListener;
+import com.mcnedward.bramble.listener.ScrollViewListener;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingTitleBar;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 
@@ -45,7 +45,7 @@ public class AlbumParallaxView extends LinearLayout {
         super(context);
         this.context = context;
         this.album = album;
-        inflate(context, R.layout.album_view, this);
+        inflate(context, R.layout.view_album, this);
 
         dm = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -90,7 +90,7 @@ public class AlbumParallaxView extends LinearLayout {
         layout.addView(space);
 
         // Set the album and artist name
-        LinearLayout albumTitleView = (LinearLayout) inflate(context, R.layout.album_title_view, null);
+        LinearLayout albumTitleView = (LinearLayout) inflate(context, R.layout.view_album_title, null);
         TextView txtAlbumName = (TextView) albumTitleView.findViewById(R.id.album_title_title);
         txtAlbumName.setText(album.getAlbumName());
         TextView txtArtistName = (TextView) albumTitleView.findViewById(R.id.album_title_artist);

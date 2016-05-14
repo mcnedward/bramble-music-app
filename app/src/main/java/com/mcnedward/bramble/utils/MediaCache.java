@@ -5,7 +5,7 @@ import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.media.Song;
-import com.mcnedward.bramble.utils.listener.AlbumLoadListener;
+import com.mcnedward.bramble.listener.AlbumLoadListener;
 
 import java.util.ArrayList;
 import java.util.List;

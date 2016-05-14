@@ -5,12 +5,14 @@ import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.mcnedward.bramble.adapter.grid.ArtistGridAdapter;
+import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.utils.Extension;
-import com.mcnedward.bramble.utils.adapter.ArtistListAdapter;
-import com.mcnedward.bramble.utils.adapter.MediaListAdapter;
-import com.mcnedward.bramble.utils.loader.ArtistDataLoader;
+import com.mcnedward.bramble.adapter.list.ArtistListAdapter;
+import com.mcnedward.bramble.adapter.list.MediaListAdapter;
+import com.mcnedward.bramble.loader.ArtistDataLoader;
 
 import java.util.List;
 import java.util.Random;
@@ -39,6 +41,11 @@ public class ArtistFragment extends MediaFragment<Artist> {
     @Override
     public MediaListAdapter<Artist> getMediaListAdapter() {
         return new ArtistListAdapter(getActivity());
+    }
+
+    @Override
+    protected MediaGridAdapter<Artist> getMediaGridAdapter() {
+        return new ArtistGridAdapter(getActivity());
     }
 
     @Override

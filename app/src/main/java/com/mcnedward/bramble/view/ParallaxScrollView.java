@@ -1,15 +1,10 @@
 package com.mcnedward.bramble.view;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
-import com.mcnedward.bramble.R;
-import com.mcnedward.bramble.utils.listener.ScrollViewListener;
+import com.mcnedward.bramble.listener.ScrollViewListener;
 
 /**
  * Created by edward on 23/12/15.

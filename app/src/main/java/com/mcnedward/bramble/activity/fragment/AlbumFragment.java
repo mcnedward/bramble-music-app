@@ -8,11 +8,13 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import com.mcnedward.bramble.activity.AlbumActivity;
+import com.mcnedward.bramble.adapter.list.AlbumListAdapter;
+import com.mcnedward.bramble.adapter.list.MediaListAdapter;
+import com.mcnedward.bramble.adapter.grid.AlbumGridAdapter;
+import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
+import com.mcnedward.bramble.loader.AlbumDataLoader;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.MediaType;
-import com.mcnedward.bramble.utils.adapter.AlbumListAdapter;
-import com.mcnedward.bramble.utils.adapter.MediaListAdapter;
-import com.mcnedward.bramble.utils.loader.AlbumDataLoader;
 
 import java.util.List;
 import java.util.Random;
@@ -45,6 +47,11 @@ public class AlbumFragment extends MediaFragment<Album> {
     @Override
     protected MediaListAdapter<Album> getMediaListAdapter() {
         return new AlbumListAdapter(getActivity());
+    }
+
+    @Override
+    protected MediaGridAdapter<Album> getMediaGridAdapter() {
+        return new AlbumGridAdapter(getActivity());
     }
 
     @Override
