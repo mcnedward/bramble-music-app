@@ -6,6 +6,7 @@
              android:background="@color/Silver">
 
     <RelativeLayout
+        android:id="@+id/container_parallax"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

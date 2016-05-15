@@ -15,6 +15,7 @@ public class Album extends Media implements Serializable {
     private int lastYear;
     private String albumArt;
     private List<Integer> songIds;
+    private List<Song> songs;
 
     public Album(int albumId, String albumName, String albumKey, String artist, int numberOfSongs, int firstYear, int lastYear, String albumArt, List<Integer> songIds) {
         super(albumId, albumArt, albumName, albumKey, MediaType.ALBUM);
@@ -81,6 +82,14 @@ public class Album extends Media implements Serializable {
 
     public void setSongIds(List<Integer> songIds) {
         this.songIds = songIds;
+    }
+
+    public List<Song> getSongs() {
+        return songs;
+    }
+
+    public void setSongs(List<Song> songs) {
+        this.songs = songs;
     }
 
     @Override

@@ -6,7 +6,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -66,6 +70,8 @@ public class AlbumParallaxView extends LinearLayout {
         int softButtonHeight = realHeight - usableHeight;
         int height = (usableHeight - softButtonHeight) - NowPlayingTitleBar.HEIGHT;
         nowPlayingView.snapToBottom(height);
+
+        adjustForNowPlayingTitleBar();
     }
 
     private void setScrollViews() {
@@ -130,6 +136,24 @@ public class AlbumParallaxView extends LinearLayout {
      public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         nowPlayingView.updateViewMeasures((ViewGroup) findViewById(R.id.album_now_playing_container));
+    }
+
+    /**
+     * Adjust height of container to account for the NowPlaying bar
+     */
+    private void adjustForNowPlayingTitleBar() {
+        ViewTreeObserver observer = nowPlayingView.getViewTreeObserver();
+        final RelativeLayout container = (RelativeLayout) findViewById(R.id.container_parallax);
+
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                nowPlayingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int padding = nowPlayingView.getTitleBar().getHeight();
+                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, container.getHeight() - padding));
+                container.setLayoutParams(layoutParams);
+            }
+        });
     }
 
 }

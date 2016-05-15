@@ -8,6 +8,8 @@ import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.listener.AlbumLoadListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -18,21 +20,20 @@ public final class MediaCache {
     private List<Artist> artists;
     private List<Album> albums;
     private List<Song> songs;
-
     private static List<AlbumLoadListener> listeners;
-
     private static boolean loadingArtists, loadingAlbums, loadingSongs;
+    private SongComparator songComparator;
 
     public MediaCache() {
         artists = new ArrayList<>();
         albums = new ArrayList<>();
         songs = new ArrayList<>();
         listeners = new ArrayList<>();
+        songComparator = new SongComparator();
     }
 
     public List<Album> getAlbumsForArtist(Artist artist) {
         List<Album> albumList = new ArrayList<>();
-
         for (String artistAlbumKey : artist.getAlbumKeys()) {
             for (Album album : albums) {
                 if (album.getKey().equals(artistAlbumKey)) {
@@ -41,14 +42,12 @@ public final class MediaCache {
                 }
             }
         }
-
         return albumList;
     }
 
     // TODO Add exceptions
     public List<Song> getSongsForAlbum(Album album) {
         List<Song> songList = new ArrayList<>();
-
         for (int albumId : album.getSongIds()) {
             for (Song song : songs) {
                 if (song.getId() == albumId) {
@@ -57,7 +56,7 @@ public final class MediaCache {
                 }
             }
         }
-
+        Collections.sort(songList, songComparator);
         return songList;
     }
 
@@ -129,5 +128,12 @@ public final class MediaCache {
 
     public boolean isLoadingSongs() {
         return loadingSongs;
+    }
+
+    protected class SongComparator implements Comparator<Song> {
+        @Override
+        public int compare(Song lhs, Song rhs) {
+            return lhs.getTrack() - rhs.getTrack();
+        }
     }
 }

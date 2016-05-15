@@ -24,15 +24,17 @@ import java.lang.ref.WeakReference;
 public class BitmapLoadTask extends AsyncTask<Void, Void, Bitmap> {
     private static final String TAG = "BitmapLoadTask";
 
+    public String cacheKey;
     private LruCache<String, Bitmap> cache;
     private Context context;
-    public String bitmapPath;
-    public String cacheKey;
+    private Media media;
+    private String bitmapPath;
     private final WeakReference<MediaCard> mediaCardWeakReference;
 
     public BitmapLoadTask(MediaCard mediaCard, Media media, LruCache<String, Bitmap> cache, Context context) {
         this.cache = cache;
         this.context = context;
+        this.media = media;
         bitmapPath = media.getImagePath();
         cacheKey = media.getCacheKey();
         mediaCardWeakReference = new WeakReference<>(mediaCard);
@@ -58,10 +60,10 @@ public class BitmapLoadTask extends AsyncTask<Void, Void, Bitmap> {
         if (isCancelled()) {
             bitmap = null;
         }
-        if (mediaCardWeakReference != null && bitmap != null) {
+        if (mediaCardWeakReference != null) {
             final MediaCard mediaCard = mediaCardWeakReference.get();
             if (mediaCard != null) {
-                mediaCard.setImage(bitmap);
+                mediaCard.updateAfterBitmapLoadTaskFinished(media, bitmap);
             }
         }
     }
@@ -111,8 +113,7 @@ public class BitmapLoadTask extends AsyncTask<Void, Void, Bitmap> {
         return bitmap;
     }
 
-    private static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;

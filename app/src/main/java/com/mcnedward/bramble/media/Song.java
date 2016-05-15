@@ -1,5 +1,7 @@
 package com.mcnedward.bramble.media;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +35,14 @@ public class Song extends Media implements Serializable {
         this.dateAdded = dateAdded;
         this.mimeType = mimeType;
         this.data = data;
+
+        handleTrack(track);
+    }
+
+    private void handleTrack(int trackNumber) {
+        if (trackNumber > 999) {
+            track = trackNumber % 1000;
+        }
     }
 
     public String getTitle() {

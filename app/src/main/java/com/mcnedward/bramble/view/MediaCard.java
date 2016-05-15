@@ -19,7 +19,7 @@ import com.mcnedward.bramble.utils.RippleUtil;
 public class MediaCard<T extends Media> extends LinearLayout {
     final private static String TAG = "MediaCard";
 
-    private T item;
+    private T mItem;
     private LruCache<String, Bitmap> cache;
     private Context context;
     private TextView txtMediaTitle;
@@ -32,7 +32,7 @@ public class MediaCard<T extends Media> extends LinearLayout {
     }
 
     private void initialize(T item, LruCache<String, Bitmap> cache, Context context) {
-        this.item = item;
+        this.mItem = item;
         this.cache = cache;
         this.context = context;
         inflate(context, R.layout.item_media_grid, this);
@@ -43,12 +43,22 @@ public class MediaCard<T extends Media> extends LinearLayout {
     }
 
     public void update(T item) {
+        mItem = item;
         if (item.getImagePath() == null) {
             imgMediaIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.no_album_art));
+            txtMediaTitle.setText(item.getTitle());
         } else {
             BitmapUtil.startBitmapLoadTask(context, item, this, cache);
-            txtMediaTitle.setText(item.getTitle());
         }
+    }
+
+    public void updateAfterBitmapLoadTaskFinished(T item, Bitmap bitmap) {
+        if (item.getCacheKey().equals(mItem.getCacheKey())) {
+            txtMediaTitle.setText(item.getTitle());
+            setImage(bitmap);
+        }
+
+        mItem = item;
     }
 
     public ImageView getImageView() {
@@ -56,7 +66,10 @@ public class MediaCard<T extends Media> extends LinearLayout {
     }
 
     public void setImage(Bitmap bitmap) {
-        if (bitmap == null) return;
-        imgMediaIcon.setImageBitmap(bitmap);
+        if (bitmap == null) {
+            imgMediaIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.no_album_art));
+        } else {
+            imgMediaIcon.setImageBitmap(bitmap);
+        }
     }
 }

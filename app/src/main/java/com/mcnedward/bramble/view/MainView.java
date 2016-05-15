@@ -2,13 +2,16 @@ package com.mcnedward.bramble.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.mcnedward.bramble.R;
@@ -52,18 +55,19 @@ public class MainView extends FrameLayout {
     }
 
     /**
-     * Apply padding to the lists so that they are not hidden by the NowPlaying bar
+     * Adjust height of container to account for the NowPlaying bar
      */
     private void adjustForNowPlayingTitleBar() {
         ViewTreeObserver observer = nowPlayingView.getViewTreeObserver();
-        final View container = findViewById(R.id.container);
+        final View container = findViewById(R.id.container_main);
 
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 nowPlayingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 int padding = nowPlayingView.getTitleBar().getHeight();
-                container.setPadding(0, 0, 0, padding);
+                CoordinatorLayout.LayoutParams layoutParams = new CoordinatorLayout.LayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, container.getHeight() - padding));
+                container.setLayoutParams(layoutParams);
             }
         });
     }
