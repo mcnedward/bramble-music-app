@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 
 import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.utils.MediaCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +24,6 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
     private MediaType mediaType;
 
     private List<T> mDataList = null;
-
-    private ProgressBar progressBar;
 
     public BaseDataLoader(MediaType mediaType, Context context) {
         super(context);
@@ -49,7 +48,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
 
     @Override
     public List<T> loadInBackground() {
-        MainActivity.mediaCache.setLoading(mediaType, true);
+        MediaCache.setLoading(mediaType, true);
         List<T> mediaList = null;
         Cursor cursor = null;
         try {
@@ -88,7 +87,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
             resetDataList(mDataList);
         }
         addToMediaService(dataList);
-        MainActivity.mediaCache.setLoading(mediaType, false);
+        MediaCache.setLoading(mediaType, false);
     }
 
     /**
@@ -113,7 +112,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
     @Override
     public void onStopLoading() {
         cancelLoad();
-        MainActivity.mediaCache.setLoading(mediaType, false);
+        MediaCache.setLoading(mediaType, false);
     }
 
     /**
@@ -126,13 +125,12 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
         // TODO Change this
         if (dataList != null & dataList.size() > 0)
             resetDataList(dataList);
-        MainActivity.mediaCache.setLoading(mediaType, false);
+        MediaCache.setLoading(mediaType, false);
     }
 
     /**
      * Must be called from the UI thread, triggered by a call to reset(). Here,
-     * we make sure our Cursor is closed, if it still exists and is not already
-     * closed.
+     * we make sure our Cursor is closed, if it still exists and is not already closed.
      */
     @Override
     public void onReset() {

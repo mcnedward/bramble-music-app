@@ -54,16 +54,13 @@ public class MainActivity extends AppCompatActivity {
     private MainView mainView;
     private NowPlayingView nowPlayingView;
 
-    public static MediaCache mediaCache;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO This should probably be replaced with SQLite database or something similar
-        mediaCache = new MediaCache();
 
         mainView = new MainView(this);
         setContentView(mainView);
+        nowPlayingView = mainView.getNowPlayingView();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -81,13 +78,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onPause() {
+        MediaService.pauseNowPlayingView(true);
+        super.onPause();
+    }
+
+    @Override
     public void onResume() {
+        MediaService.pauseNowPlayingView(false);
         super.onResume();
     }
 
     @Override
     public void onDestroy() {
         Log.d(TAG, "BRAMBLE CLOSED");
+        MediaService.unRegisterListeners();
         // TODO This stops the media playing, fix it!
         stopService(new Intent(this, MediaService.class));
         super.onDestroy();

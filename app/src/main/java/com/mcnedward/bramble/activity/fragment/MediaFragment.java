@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
+import com.mcnedward.bramble.loader.BaseDataLoader;
 import com.mcnedward.bramble.media.Media;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.adapter.list.MediaListAdapter;
@@ -32,8 +33,11 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
 
     protected ListView listView;
     protected GridView gridView;
-    protected MediaListAdapter<T> listAdapter;
-    protected MediaGridAdapter<T> gridAdapter;
+
+    protected BaseDataLoader<T> mDataLoader;
+    protected MediaListAdapter<T> mListAdapter;
+    protected MediaGridAdapter<T> mGridAdapter;
+
     protected ProgressBar progressBar;
     private TextView txtProgress;
 
@@ -55,9 +59,11 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
 
     protected abstract void setOnItemClick(AdapterView<?> parent, View view, int position, long id);
 
-    protected abstract MediaListAdapter<T> getMediaListAdapter();
+    protected abstract BaseDataLoader<T> createDataLoader();
 
-    protected abstract MediaGridAdapter<T> getMediaGridAdapter();
+    protected abstract MediaListAdapter<T> createMediaListAdapter();
+
+    protected abstract MediaGridAdapter<T> createMediaGridAdapter();
 
     protected abstract int getLoaderId();
 
@@ -76,29 +82,12 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         super.onCreateView(inflater, container, savedInstanceState);
         View thisView = inflater.inflate(R.layout.fragment_media, container, false);
 
-        listView = (ListView) thisView.findViewById(R.id.list_media);
-        listView.setItemsCanFocus(true);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                setOnItemClick(parent, view, position, id);
-            }
-        });
-        listAdapter = getMediaListAdapter();
-        listView.setAdapter(listAdapter);
-
-        gridView = (GridView) thisView.findViewById(R.id.grid_media);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                setOnItemClick(parent, view, position, id);
-            }
-        });
-        gridAdapter = getMediaGridAdapter();
-        gridView.setAdapter(gridAdapter);
-
         progressBar = (ProgressBar) thisView.findViewById(R.id.media_progress_bar);
         txtProgress = (TextView) thisView.findViewById(R.id.media_progress_text);
+
+        setupList(thisView);
+        setupGrid(thisView);
+
         switch (mediaType) {
             case ARTIST:
                 txtProgress.setText(getContext().getString(R.string.artist_loading_text));
@@ -117,6 +106,43 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         return thisView;
     }
 
+    private void setupList(View view) {
+        listView = (ListView) view.findViewById(R.id.list_media);
+        listView.setItemsCanFocus(true);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                setOnItemClick(parent, view, position, id);
+            }
+        });
+        if (mListAdapter == null)
+            mListAdapter = createMediaListAdapter();
+        listView.setAdapter(mListAdapter);
+
+        if (mListAdapter.isEmpty()) {
+            progressBar.setVisibility(View.VISIBLE);
+            txtProgress.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setupGrid(View view) {
+        gridView = (GridView) view.findViewById(R.id.grid_media);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                setOnItemClick(parent, view, position, id);
+            }
+        });
+        if (mGridAdapter == null)
+            mGridAdapter = createMediaGridAdapter();
+        gridView.setAdapter(mGridAdapter);
+
+        if (mGridAdapter.isEmpty()) {
+            progressBar.setVisibility(View.VISIBLE);
+            txtProgress.setVisibility(View.VISIBLE);
+        }
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -125,16 +151,24 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
     }
 
     @Override
+    public Loader<List<T>> onCreateLoader(int id, Bundle args) {
+        if (mDataLoader == null) {
+            mDataLoader = createDataLoader();
+        }
+        return mDataLoader;
+    }
+
+    @Override
     public void onLoadFinished(Loader<List<T>> loader, List<T> data) {
         Log.d(TAG, String.format("onLoadFinished() called! Loading %s data!", mediaType.type()));
-        listAdapter.reset();
-        listAdapter.setGroups(data);
-        listAdapter.notifyDataSetChanged();
+        mListAdapter.reset();
+        mListAdapter.setGroups(data);
+        mListAdapter.notifyDataSetChanged();
 
         // TODO Only load the adapter that is currently available (so Grid for Album, List for others)
-        gridAdapter.reset();
-        gridAdapter.setGroups(data);
-        gridAdapter.notifyDataSetChanged();
+        mGridAdapter.reset();
+        mGridAdapter.setGroups(data);
+        mGridAdapter.notifyDataSetChanged();
 
         if (progressBar != null)
             progressBar.setVisibility(View.GONE);
@@ -144,8 +178,6 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
 
     @Override
     public void onLoaderReset(Loader<List<T>> loader) {
-        listAdapter.reset();
-        gridAdapter.reset();
         loader.reset();
     }
 

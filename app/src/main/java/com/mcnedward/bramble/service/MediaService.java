@@ -1,6 +1,7 @@
 package com.mcnedward.bramble.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -9,12 +10,14 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.mcnedward.bramble.activity.fragment.NowPlayingFragment;
 import com.mcnedward.bramble.exception.MediaNotFoundException;
+import com.mcnedward.bramble.listener.MediaListener;
 import com.mcnedward.bramble.media.Song;
-import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by edward on 26/12/15.
@@ -22,19 +25,22 @@ import java.io.IOException;
 public class MediaService extends Service {
     private final static String TAG = "MediaService";
 
-    private static MediaPlayer player;
-    private static NowPlayingView nowPlayingView;
+    private static MediaPlayer mPlayer;
     private static Song song;
-    private static boolean playingMusic;
+    private static Set<MediaListener> mListeners;
 
-    private MediaThread mediaThread;
+    private static MediaThread mediaThread;
+    private static NowPlayingThread nowPlayingThread;
 
     @Override
     public void onCreate() {
         Log.d(TAG, "Creating MediaService!");
-        player = new MediaPlayer();
-        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mediaThread = new MediaThread();
+        mPlayer = new MediaPlayer();
+        mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        if (mediaThread == null)
+            mediaThread = new MediaThread();
+        if (nowPlayingThread == null)
+            nowPlayingThread = new NowPlayingThread(mListeners);
     }
 
     @Override
@@ -43,8 +49,58 @@ public class MediaService extends Service {
 
         song = (Song) intent.getSerializableExtra("song");
         mediaThread.startMusic(song);
+        nowPlayingThread.startThread();
 
         return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "Destroying MediaService!");
+        mediaThread.stopThread();
+        mediaThread = null;
+        // TODO Stop NowPlayingThread? I dont think so...?
+    }
+
+    public static void attachMediaListener(MediaListener listener) {
+        if (mListeners == null)
+            mListeners = new HashSet<>();
+        mListeners.add(listener);
+
+        if (nowPlayingThread != null) {
+            nowPlayingThread.attachMediaListener(listener);
+        }
+    }
+
+    public static void removeMediaListener(MediaListener listener) {
+        if (mListeners == null)
+            mListeners = new HashSet<>();
+        if (mListeners.contains(listener))
+            mListeners.remove(listener);
+
+        if (nowPlayingThread != null) {
+            nowPlayingThread.removeMediaListener(listener);
+        }
+    }
+
+    public static void unRegisterListeners() {
+        for (MediaListener listener : mListeners)
+            removeMediaListener(listener);
+    }
+
+    public static void pauseNowPlayingView(boolean pause) {
+        if (nowPlayingThread != null)
+            nowPlayingThread.pauseThread(pause);
+    }
+
+    public static MediaPlayer getPlayer() {
+        return mPlayer;
+    }
+
+    public static Song getCurrentSong() throws MediaNotFoundException {
+        if (song == null)
+            throw new MediaNotFoundException("Could not find the current song from " + TAG);
+        return song;
     }
 
     @Nullable
@@ -54,77 +110,41 @@ public class MediaService extends Service {
         return null;
     }
 
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "Destroying MediaService!");
-        mediaThread.stopMusic();
+    final class MediaThread extends BaseThread {
+        private static final String TAG = "MediaThread";
 
-        boolean retry = false;
-        while (retry) {
-            try {
-                mediaThread.join();
-                retry = false;
-            } catch (InterruptedException e) {
-                Log.e(TAG, e.getMessage(), e);
-            }
-        }
-        mediaThread = null;
-        stopSelf();
-    }
-
-    public static void registerNowPlayingView(NowPlayingView view) {
-        nowPlayingView = view;
-    }
-
-    public static MediaPlayer getPlayer() {
-        return player;
-    }
-
-    public static Song getCurrentSong() throws MediaNotFoundException {
-        if (song == null)
-            throw new MediaNotFoundException("Could not find the current song from " + TAG);
-        return song;
-    }
-
-    public static boolean isPlayingMusic() {
-        return playingMusic;
-    }
-
-    final class MediaThread extends Thread {
-
-        private boolean started, running, playSong;
         private Song song;
 
         public MediaThread() {
-            started = false;
-            running = false;
-            playSong = false;
+            super("Media");
         }
 
         @Override
-        public void run() {
-            while (running) {
-                if (playSong) {
-                    startPlayingMusic();
-                    playSong = false;
-                    nowPlayingView.notifyMediaStarted();
-                }
+        public void doRunAction() {
+        }
+
+        @Override
+        public void doStartAction() {
+            startPlayingMusic();
+            for (MediaListener listener : mListeners) {
+                listener.notifyMediaStarted();
             }
-            player.stop();
+        }
+
+        @Override
+        public void doStopAction() {
         }
 
         private void startPlayingMusic() {
             Log.d(TAG, String.format("Starting to play media for %s", song));
             final Uri songUri = Uri.parse(song.getData());
             try {
-                if (player.isPlaying()) {
-                    player.stop();
-                    player.reset();
+                if (mPlayer.isPlaying()) {
+                    mPlayer.stop();
+                    mPlayer.reset();
                 }
-                player = MediaPlayer.create(getApplicationContext(), songUri);
-                player.start();
-
-                playingMusic = true;
+                mPlayer = MediaPlayer.create(getApplicationContext(), songUri);
+                mPlayer.start();
             } catch (IllegalArgumentException e) {
                 Log.e(TAG, e.getMessage(), e);
             } catch (SecurityException e) {
@@ -134,22 +154,9 @@ public class MediaService extends Service {
             }
         }
 
-        @Override
-        public void start() {
-            running = true;
-            started = true;
-            super.start();
-        }
-
         public void startMusic(Song song) {
-            if (!started)
-                start();
             this.song = song;
-            playSong = true;
-        }
-
-        public void stopMusic() {
-            running = false;
+            startThread();
         }
     }
 

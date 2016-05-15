@@ -1,20 +1,18 @@
 package com.mcnedward.bramble.activity.fragment;
 
-import android.os.Bundle;
-import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.AdapterView;
 
 import com.mcnedward.bramble.adapter.grid.ArtistGridAdapter;
 import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
-import com.mcnedward.bramble.media.Artist;
-import com.mcnedward.bramble.media.MediaType;
-import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.adapter.list.ArtistListAdapter;
 import com.mcnedward.bramble.adapter.list.MediaListAdapter;
 import com.mcnedward.bramble.loader.ArtistDataLoader;
+import com.mcnedward.bramble.loader.BaseDataLoader;
+import com.mcnedward.bramble.media.Artist;
+import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.utils.MusicUtil;
 
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -29,22 +27,22 @@ public class ArtistFragment extends MediaFragment<Artist> {
     }
 
     @Override
-    public Loader<List<Artist>> onCreateLoader(int id, Bundle args) {
+    protected void setOnItemClick(AdapterView<?> parent, View view, int position, long id) {
+        MusicUtil.startAlbumPopup((Artist) listView.getItemAtPosition(position), getActivity());
+    }
+
+    @Override
+    public BaseDataLoader<Artist> createDataLoader() {
         return new ArtistDataLoader(getActivity());
     }
 
     @Override
-    protected void setOnItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Extension.startAlbumPopup((Artist) listView.getItemAtPosition(position), getActivity());
-    }
-
-    @Override
-    public MediaListAdapter<Artist> getMediaListAdapter() {
+    public MediaListAdapter<Artist> createMediaListAdapter() {
         return new ArtistListAdapter(getActivity());
     }
 
     @Override
-    protected MediaGridAdapter<Artist> getMediaGridAdapter() {
+    protected MediaGridAdapter<Artist> createMediaGridAdapter() {
         return new ArtistGridAdapter(getActivity());
     }
 

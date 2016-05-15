@@ -3,16 +3,12 @@ package com.mcnedward.bramble.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.RippleDrawable;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.mcnedward.bramble.R;
@@ -28,16 +24,15 @@ import java.util.List;
 /**
  * Created by edward on 25/12/15.
  */
-public class Extension {
-    private final static String TAG = "Extension";
+public class MusicUtil {
+    private final static String TAG = "MusicUtil";
 
-    public static void updateAlbumArt(Album album, ImageView imageView) {
-        String albumArt = album.getAlbumArt();
-        if (albumArt != null) {
-            // Create the album art bitmap and scale it to fit properly and avoid over using memory
-            File imageFile = new File(album.getAlbumArt());
-            Bitmap imageBitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-            imageView.setImageBitmap(imageBitmap);
+    public static void loadAlbumArt(String albumArtPath, ImageView imageView, Context context) {
+        if (albumArtPath != null && !albumArtPath.equals("")) {
+            File imageFile = new File(albumArtPath);
+            PicassoUtil.getPicasso(context).with(context).load(imageFile).into(imageView);
+        } else {
+            PicassoUtil.getPicasso(context).with(context).load(R.drawable.no_album_art).into(imageView);
         }
     }
 
@@ -45,10 +40,10 @@ public class Extension {
         if (player != null) {
             if (player.isPlaying()) {
                 player.pause();
-                Extension.switchPlayButton(playButtons, true, context);
+                MusicUtil.switchPlayButton(playButtons, true, context);
             } else {
                 player.start();
-                Extension.switchPlayButton(playButtons, false, context);
+                MusicUtil.switchPlayButton(playButtons, false, context);
             }
         }
     }
@@ -56,7 +51,7 @@ public class Extension {
     public static void switchPlayButton(List<ImageView> playButtons, boolean pause, Context context) {
         if (pause) {
             for (ImageView view : playButtons)
-                view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_play));
+                view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_play_large));
         } else {
             for (ImageView view : playButtons)
                 view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_pause));
@@ -94,6 +89,5 @@ public class Extension {
         int seconds = (int) ((millis / 1000) % 60);
         return String.format("%d:%02d", minutes, seconds);
     }
-
 
 }

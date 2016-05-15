@@ -15,14 +15,16 @@ import android.widget.TextView;
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.exception.MediaNotFoundException;
+import com.mcnedward.bramble.listener.AlbumLoadListener;
+import com.mcnedward.bramble.listener.MediaListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.service.MediaService;
-import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.utils.MediaCache;
-import com.mcnedward.bramble.listener.AlbumLoadListener;
-import com.mcnedward.bramble.listener.MediaStartedListener;
+import com.mcnedward.bramble.utils.MusicUtil;
+import com.mcnedward.bramble.utils.PicassoUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +32,11 @@ import java.util.List;
 /**
  * Created by edward on 27/12/15.
  */
-public class NowPlayingView extends SlidingView implements AlbumLoadListener, MediaStartedListener {
+public class NowPlayingView extends SlidingView implements AlbumLoadListener, MediaListener {
     private final static String TAG = "NowPlayingView";
 
     private Context context;
-
-    private Song song;
+    private Picasso picasso;
 
     private NowPlayingTitleBar titleBar;
     private TextView txtSongTitle;
@@ -50,7 +51,7 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
     private List<ImageView> playButtons;
 
     private boolean albumLoaded = false;
-    private boolean loaded = false;
+    private boolean buttonsLoaded = false;
 
     public NowPlayingView(Context context) {
         super(R.layout.view_now_playing, context);
@@ -71,100 +72,85 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
 
     @Override
     public void notifyMediaStarted() {
-        loaded = false;
+        buttonsLoaded = false;
         albumLoaded = false;
-        updateUIThread();
     }
 
-    public void updateUIThread() {
-        try {
-            final MediaPlayer player = MediaService.getPlayer();
-            song = MediaService.getCurrentSong();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (player != null
-                            && player.getCurrentPosition() < player.getDuration()) {
-                        // Sleep for 100 milliseconds
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+    @Override
+    public void update() {
+        if (!albumLoaded)
+            updateTitleBar();
+        if (!buttonsLoaded)
+            updateButtons();
+        updateProgress();
+    }
 
-                        if (!isControlsTouched() || isContentFocused()) {
-                            post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (!albumLoaded) {
-                                        notifyAlbumLoadReady();
-                                        titleBar.updateSongTitle(song.getTitle());
-                                    }
-                                    if (!loaded) {
-                                        setButtonListeners();
-                                        Extension.switchPlayButton(playButtons, false, context);
-                                        loaded = true;
-                                    }
-                                    player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                        @Override
-                                        public void onPrepared(MediaPlayer mp) {
-                                            // Set the duration on the UI
-                                            String duration = Extension.getTimeString(player.getDuration());
-                                            txtDuration.setText(duration);
-                                            seekBar.setMax(player.getDuration());
-                                        }
-                                    });
-                                    // Set the current time on the UI
-                                    String currentTime = Extension.getTimeString(player.getCurrentPosition());
-                                    txtPassed.setText(currentTime);
-                                    // Set the seek bar max position, current position, and change listener
-                                    seekBar.setProgress(player.getCurrentPosition());
-                                    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                                        @Override
-                                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                            if (fromUser == true) {
-                                                player.seekTo(seekBar.getProgress());
-                                            } else {
-                                                // Do nothing
-                                            }
-                                        }
+    @Override
+    public View getView() {
+        return this;
+    }
 
-                                        @Override
-                                        public void onStartTrackingTouch(SeekBar seekBar) {
-                                            // TODO Auto-generated method stub
+    private void updateTitleBar() {
+        notifyAlbumLoadReady();
+        titleBar.updateSongTitle(getSong().getTitle());
+    }
 
-                                        }
+    private void updateButtons() {
+        setButtonListeners();
+        MusicUtil.switchPlayButton(playButtons, false, context);
+        buttonsLoaded = true;
+    }
 
-                                        @Override
-                                        public void onStopTrackingTouch(SeekBar seekBar) {
-                                            // TODO Auto-generated method stub
+    private void updateProgress() {
+        final MediaPlayer player = MediaService.getPlayer();
+        // Set the current time on the UI
+        String currentTime = MusicUtil.getTimeString(player.getCurrentPosition());
+        txtPassed.setText(currentTime);
 
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    }
+        // Set the remaining time on the UI
+        String remainingTime = MusicUtil.getTimeString(Math.abs(player.getDuration() - player.getCurrentPosition()));
+        txtDuration.setText(remainingTime);
+
+        // Set the seek bar max position, current position, and change listener
+        seekBar.setMax(player.getDuration());
+        seekBar.setProgress(player.getCurrentPosition());
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser == true) {
+                    player.seekTo(seekBar.getProgress());
+                } else {
+                    // Do nothing
                 }
-            }).start();
-        } catch (MediaNotFoundException e) {
-            Log.w(TAG, e.getMessage(), e);
-        }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+
+            }
+        });
     }
 
     @Override
     public void notifyAlbumLoadReady() {
-        Log.d(TAG, "Albums ready...");
         Album album;
+        Song song = getSong();
         try {
             if (song == null)
-                Log.w(TAG, "Albums loaded but no media selected.");
+                Log.e(TAG, "Could not load song.");
             else {
-                album = MainActivity.mediaCache.getAlbumForSong(song);
-                titleBar.updateAlbumArt(album);
+                album = MediaCache.getAlbumForSong(song);
                 titleBar.updateAlbumTitle(album.getAlbumName());
                 // Load album art
-                Extension.updateAlbumArt(album, imgAlbumArt);
+                titleBar.updateAlbumArt(album);
+                MusicUtil.loadAlbumArt(album.getAlbumArt(), imgAlbumArt, context);
                 // Albums loaded!
                 albumLoaded = true;
             }
@@ -184,7 +170,7 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
         btnPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Extension.setPlayButtonListener(playButtons, player, context);
+                MusicUtil.setPlayButtonListener(playButtons, player, context);
             }
         });
         btnForward.setOnClickListener(new OnClickListener() {
@@ -196,13 +182,20 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
         titleBar.setPlayButtonListener(playButtons, player);
     }
 
+    private Song getSong() {
+        Song song = null;
+        try {
+            song = MediaService.getCurrentSong();
+        } catch (MediaNotFoundException e) {
+            Log.w(TAG, e.getMessage(), e);
+        }
+        return song;
+    }
+
     private void initialize(Context context) {
         this.context = context;
+        picasso = PicassoUtil.getPicasso(context);
         playButtons = new ArrayList<>();
-
-        // Register this as listeners
-        MediaCache.registerAlbumLoadListener(this);
-        MediaService.registerNowPlayingView(this);
 
         titleBar = (NowPlayingTitleBar) findViewById(R.id.now_playing_title_bar);
 
@@ -226,13 +219,18 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
         setContent(findViewById(R.id.now_playing_content));
 
         // Load controls
-        seekBar.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(context, R.color.Red), PorterDuff.Mode.MULTIPLY));
+        seekBar.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(context, R.color.Red), PorterDuff.Mode
+                .MULTIPLY));
         seekBar.getThumb().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(context, R.color.Red), PorterDuff.Mode.SRC_IN));
 
         int rippleColor = R.color.FireBrick;
         RippleUtil.setRippleBackground(btnPrevious, rippleColor, 0, context);
         RippleUtil.setRippleBackground(btnPlay, rippleColor, 0, context);
         RippleUtil.setRippleBackground(btnForward, rippleColor, 0, context);
+
+        // Register this as listeners
+        MediaCache.registerAlbumLoadListener(this);
+        MediaService.attachMediaListener(this);
     }
 
     public NowPlayingTitleBar getTitleBar() {

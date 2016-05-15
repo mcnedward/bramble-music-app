@@ -23,8 +23,10 @@ import com.mcnedward.bramble.activity.fragment.NowPlayingFragment;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.listener.ScrollViewListener;
+import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingTitleBar;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.List;
@@ -59,18 +61,11 @@ public class AlbumParallaxView extends LinearLayout {
         setForegroundContent(context);
         setBackgroundContent(context);
 
-        NowPlayingFragment nowPlayingFragment = (NowPlayingFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.album_now_playing);
+        NowPlayingFragment nowPlayingFragment = (NowPlayingFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id
+                .album_now_playing);
         nowPlayingView = nowPlayingFragment.getNowPlayingView();
 
-        DisplayMetrics dm2 = new DisplayMetrics();
-        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm2);
-        int usableHeight = dm2.heightPixels;
-        ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(dm2);
-        int realHeight = dm2.heightPixels;
-        int softButtonHeight = realHeight - usableHeight;
-        int height = (usableHeight - softButtonHeight) - NowPlayingTitleBar.HEIGHT;
-        nowPlayingView.snapToBottom(height);
-
+        adjustNowPlayingView();
         adjustForNowPlayingTitleBar();
     }
 
@@ -104,7 +99,7 @@ public class AlbumParallaxView extends LinearLayout {
         layout.addView(albumTitleView);
 
         // Set the list of songs
-        List<Song> songs = MainActivity.mediaCache.getSongsForAlbum(album);
+        List<Song> songs = MediaCache.getSongsForAlbum(album);
         for (Song song : songs) {
             AlbumSongItem songItem = new AlbumSongItem(song, context);
             layout.addView(songItem);
@@ -127,15 +122,25 @@ public class AlbumParallaxView extends LinearLayout {
         if (albumArt != null) {
             // Create the album art bitmap and scale it to fit properly and avoid over using memory
             File imageFile = new File(album.getAlbumArt());
-            Bitmap imageBitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-            imgAlbumArt.setImageBitmap(imageBitmap);
+            Picasso.with(context).load(imageFile).into(imgAlbumArt);
         }
     }
 
     @Override
-     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         nowPlayingView.updateViewMeasures((ViewGroup) findViewById(R.id.album_now_playing_container));
+    }
+
+    public void adjustNowPlayingView() {
+        DisplayMetrics dm2 = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm2);
+        int usableHeight = dm2.heightPixels;
+        ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(dm2);
+        int realHeight = dm2.heightPixels;
+        int softButtonHeight = realHeight - usableHeight;
+        int height = (usableHeight - softButtonHeight) - NowPlayingTitleBar.HEIGHT;
+        nowPlayingView.snapToBottom(height);
     }
 
     /**
@@ -150,7 +155,8 @@ public class AlbumParallaxView extends LinearLayout {
             public void onGlobalLayout() {
                 nowPlayingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 int padding = nowPlayingView.getTitleBar().getHeight();
-                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, container.getHeight() - padding));
+                FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams
+                        .MATCH_PARENT, container.getHeight() - padding));
                 container.setLayoutParams(layoutParams);
             }
         });

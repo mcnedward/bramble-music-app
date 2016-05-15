@@ -7,7 +7,6 @@ import android.widget.TextView;
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.adapter.BaseMediaAdapter;
 import com.mcnedward.bramble.media.Media;
-import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.utils.RippleUtil;
 
 /**

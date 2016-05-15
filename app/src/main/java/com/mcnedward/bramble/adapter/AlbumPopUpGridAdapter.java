@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 
 import com.mcnedward.bramble.media.Album;
+import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.view.AlbumPopupItem;
 
 import java.util.List;
@@ -20,6 +21,11 @@ public class AlbumPopUpGridAdapter extends BaseMediaAdapter<Album> {
 
     public AlbumPopUpGridAdapter(List<Album> albums, Context context) {
         super(albums, context);
+    }
+
+    @Override
+    protected List<Album> getGroups() {
+        return MediaCache.getAlbums();
     }
 
     @Override

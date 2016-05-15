@@ -1,20 +1,18 @@
 package com.mcnedward.bramble.activity.fragment;
 
-import android.os.Bundle;
-import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.AdapterView;
 
 import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
 import com.mcnedward.bramble.adapter.grid.SongGridAdapter;
-import com.mcnedward.bramble.media.MediaType;
-import com.mcnedward.bramble.media.Song;
-import com.mcnedward.bramble.utils.Extension;
 import com.mcnedward.bramble.adapter.list.MediaListAdapter;
 import com.mcnedward.bramble.adapter.list.SongListAdapter;
+import com.mcnedward.bramble.loader.BaseDataLoader;
 import com.mcnedward.bramble.loader.SongDataLoader;
+import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.utils.MusicUtil;
 
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -29,23 +27,23 @@ public class SongFragment extends MediaFragment<Song> {
     }
 
     @Override
-    public Loader<List<Song>> onCreateLoader(int id, Bundle args) {
+    public BaseDataLoader<Song> createDataLoader() {
         return new SongDataLoader(getActivity());
     }
 
     @Override
     protected void setOnItemClick(AdapterView<?> parent, View view, int position, long id) {
         Song song = (Song) listView.getItemAtPosition(position);
-        Extension.startPlayingMusic(song, getActivity());
+        MusicUtil.startPlayingMusic(song, getActivity());
     }
 
     @Override
-    protected MediaListAdapter<Song> getMediaListAdapter() {
+    protected MediaListAdapter<Song> createMediaListAdapter() {
         return new SongListAdapter(getActivity());
     }
 
     @Override
-    protected MediaGridAdapter<Song> getMediaGridAdapter() {
+    protected MediaGridAdapter<Song> createMediaGridAdapter() {
         return new SongGridAdapter(getActivity());
     }
 

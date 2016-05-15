@@ -4,14 +4,13 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.utils.Extension;
+import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
 
 import java.util.List;
@@ -53,7 +52,7 @@ public class NowPlayingTitleBar extends LinearLayout {
     }
 
     public void updateAlbumArt(Album album) {
-        Extension.updateAlbumArt(album, imgAlbumArt);
+        MusicUtil.loadAlbumArt(album.getAlbumArt(), imgAlbumArt, context);
     }
 
     public void updateSongTitle(String songTitle) {
@@ -68,7 +67,7 @@ public class NowPlayingTitleBar extends LinearLayout {
         btnPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Extension.setPlayButtonListener(playButtons, player, context);
+                MusicUtil.setPlayButtonListener(playButtons, player, context);
             }
         });
     }
@@ -76,10 +75,10 @@ public class NowPlayingTitleBar extends LinearLayout {
     public void switchPlayIcon(boolean top) {
         if (top) {
             btnPlay.animate().alpha(0f).setDuration(100);
-            btnPlay.setEnabled(false);
+            btnPlay.setVisibility(GONE);
         } else {
             btnPlay.animate().alpha(1f).setDuration(100);
-            btnPlay.setEnabled(true);
+            btnPlay.setVisibility(VISIBLE);
         }
     }
 

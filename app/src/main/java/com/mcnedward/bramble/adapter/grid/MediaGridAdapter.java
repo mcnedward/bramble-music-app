@@ -27,7 +27,7 @@ public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
 
     public MediaGridAdapter(Context context) {
         this.context = context;
-        groups = new ArrayList<>();
+        groups = getGroups();
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory()) / 1024;
@@ -71,6 +71,8 @@ public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
     public void reset() {
         groups = new ArrayList<>();
     }
+
+    protected abstract List<T> getGroups();
 
     protected abstract void setOnClickListener(T media, View view);
 

@@ -61,7 +61,7 @@ public class AlbumPopup extends Activity implements AlbumLoadListener {
     public void notifyAlbumLoadReady() {
         Log.d(TAG, "Albums ready...");
         GridView gridView = (GridView) findViewById(R.id.albumView);
-        List<Album> albums = MainActivity.mediaCache.getAlbumsForArtist(artist);
+        List<Album> albums = MediaCache.getAlbumsForArtist(artist);
         AlbumPopUpGridAdapter adapter = new AlbumPopUpGridAdapter(albums, this);
         gridView.setAdapter(adapter);
         gridView.setGravity(Gravity.CENTER);

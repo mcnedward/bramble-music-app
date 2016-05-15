@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.Song;
-import com.mcnedward.bramble.utils.Extension;
+import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
 
 /**
@@ -33,7 +33,7 @@ public class AlbumSongItem extends RelativeLayout {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Extension.startPlayingMusic(nowPlayingSong, activity);
+                MusicUtil.startPlayingMusic(nowPlayingSong, activity);
             }
         });
     }

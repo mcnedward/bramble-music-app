@@ -8,6 +8,7 @@ import android.provider.MediaStore;
 import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.utils.MediaCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,7 @@ public class ArtistDataLoader extends BaseDataLoader<Artist> {
 
     @Override
     public void addToMediaService(List<Artist> artistList) {
-        MainActivity.mediaCache.setArtists(artistList);
+        MediaCache.saveArtists(artistList);
     }
 
     private List<String> loadAlbumKeysForArtist(int artistId) {
