@@ -21,7 +21,7 @@ public class Song extends Media implements Serializable {
     private String data;
 
     public Song(int songId, String title, String titleKey, String displayName, int artistId, int albumId, String composer, int track, int duration, int year, int dateAdded, String mimeType, String data) {
-        super(songId, titleKey, MediaType.SONG);
+        super(songId, "", title, titleKey, MediaType.SONG);
         this.title = title;
         this.displayName = displayName;
         this.artistId = artistId;

@@ -17,7 +17,7 @@ public class Album extends Media implements Serializable {
     private List<Integer> songIds;
 
     public Album(int albumId, String albumName, String albumKey, String artist, int numberOfSongs, int firstYear, int lastYear, String albumArt, List<Integer> songIds) {
-        super(albumId, albumKey, MediaType.ALBUM);
+        super(albumId, albumArt, albumName, albumKey, MediaType.ALBUM);
         this.albumName = albumName;
         this.artist = artist;
         this.numberOfSongs = numberOfSongs;

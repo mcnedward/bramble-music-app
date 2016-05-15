@@ -19,14 +19,4 @@ public class AlbumGridAdapter extends MediaGridAdapter<Album> {
 
     }
 
-    @Override
-    protected String getMediaTitleText(Album media) {
-        return media.getAlbumName();
-    }
-
-    @Override
-    protected String getMediaIconPath(Album media) {
-        return media.getAlbumArt();
-    }
-
 }

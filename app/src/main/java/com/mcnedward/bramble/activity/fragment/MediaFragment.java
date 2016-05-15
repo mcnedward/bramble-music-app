@@ -131,6 +131,7 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         listAdapter.setGroups(data);
         listAdapter.notifyDataSetChanged();
 
+        // TODO Only load the adapter that is currently available (so Grid for Album, List for others)
         gridAdapter.reset();
         gridAdapter.setGroups(data);
         gridAdapter.notifyDataSetChanged();
@@ -147,4 +148,5 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         gridAdapter.reset();
         loader.reset();
     }
+
 }

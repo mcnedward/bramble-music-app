@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.View;
 
 import com.mcnedward.bramble.activity.AlbumPopup;
-import com.mcnedward.bramble.adapter.list.MediaListAdapter;
 import com.mcnedward.bramble.media.Artist;
 
 /**
@@ -15,16 +14,6 @@ public class ArtistGridAdapter extends MediaGridAdapter<Artist> {
 
     public ArtistGridAdapter(Context context) {
         super(context);
-    }
-
-    @Override
-    protected String getMediaTitleText(Artist media) {
-        return media.getArtistName();
-    }
-
-    @Override
-    protected String getMediaIconPath(Artist media) {
-        return "";
     }
 
     @Override

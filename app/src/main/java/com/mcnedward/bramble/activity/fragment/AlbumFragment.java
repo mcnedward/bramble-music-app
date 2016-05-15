@@ -8,10 +8,10 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import com.mcnedward.bramble.activity.AlbumActivity;
+import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
 import com.mcnedward.bramble.adapter.list.AlbumListAdapter;
 import com.mcnedward.bramble.adapter.list.MediaListAdapter;
 import com.mcnedward.bramble.adapter.grid.AlbumGridAdapter;
-import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
 import com.mcnedward.bramble.loader.AlbumDataLoader;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.MediaType;

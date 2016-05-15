@@ -5,8 +5,11 @@ import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.fragment.NowPlayingFragment;
@@ -44,6 +47,25 @@ public class MainView extends FrameLayout {
         int softButtonHeight = realHeight - usableHeight;
         int height = (usableHeight - softButtonHeight) - NowPlayingTitleBar.HEIGHT;
         nowPlayingView.snapToBottom(height);
+
+        adjustForNowPlayingTitleBar();
+    }
+
+    /**
+     * Apply padding to the lists so that they are not hidden by the NowPlaying bar
+     */
+    private void adjustForNowPlayingTitleBar() {
+        ViewTreeObserver observer = nowPlayingView.getViewTreeObserver();
+        final View container = findViewById(R.id.container);
+
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                nowPlayingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int padding = nowPlayingView.getTitleBar().getHeight();
+                container.setPadding(0, 0, 0, padding);
+            }
+        });
     }
 
     @Override

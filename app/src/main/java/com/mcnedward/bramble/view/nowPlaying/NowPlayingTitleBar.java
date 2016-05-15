@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -85,4 +86,5 @@ public class NowPlayingTitleBar extends LinearLayout {
     public ImageView getPlayButton() {
         return btnPlay;
     }
+
 }

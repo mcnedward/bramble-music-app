@@ -14,7 +14,7 @@ public class Artist extends Media implements Serializable {
     private List<String> albumKeys;
 
     public Artist(int artistId, String artistName, String artistKey, int numberOfAlbums, List<String> albumKeys) {
-        super(artistId, artistKey, MediaType.ARTIST);
+        super(artistId, "", artistName, artistKey, MediaType.ARTIST);
         this.artistName = artistName;
         this.numberOfAlbums = numberOfAlbums;
         this.albumKeys = albumKeys;
