@@ -3,32 +3,27 @@ package com.mcnedward.bramble.activity;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
-import com.mcnedward.bramble.adapter.AlbumPopUpGridAdapter;
-import com.mcnedward.bramble.listener.AlbumLoadListener;
+import com.mcnedward.bramble.adapter.grid.AlbumGridAdapter;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
-import com.mcnedward.bramble.utils.MediaCache;
+import com.mcnedward.bramble.repository.AlbumRepository;
 
 import java.util.List;
 
 /**
  * Created by edward on 22/12/15.
  */
-public class AlbumPopup extends Activity implements AlbumLoadListener {
+public class AlbumPopup extends Activity {
     private final static String TAG = "AlbumPopup";
 
-    private Artist artist;
-
-    private ProgressBar progressBar;
-    private TextView txtProgress;
+    private AlbumRepository mAlbumRepository;
+    private Artist mArtist;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,14 +32,22 @@ public class AlbumPopup extends Activity implements AlbumLoadListener {
 
         initializeWindow();
 
-        artist = (Artist) getIntent().getSerializableExtra("artist");
+        mAlbumRepository = new AlbumRepository(this);
+        mArtist = (Artist) getIntent().getSerializableExtra("artist");
         TextView txtArtistName = (TextView) findViewById(R.id.artistName);
-        txtArtistName.setText(artist.getArtistName());
+        txtArtistName.setText(mArtist.getArtistName());
         txtArtistName.setFocusable(true);
 
-        ((TextView) findViewById(R.id.album_popup_progress_text)).setText(getString(R.string.album_popup_loading_text));
+        loadAlbums();
+    }
 
-        MediaCache.registerAlbumLoadListener(this);
+    private void loadAlbums() {
+        List<Album> albums = mAlbumRepository.getAlbumsForArtist(mArtist.getId());
+        AlbumGridAdapter adapter = new AlbumGridAdapter(albums, this);
+
+        GridView gridView = (GridView) findViewById(R.id.albumView);
+        gridView.setAdapter(adapter);
+        gridView.setGravity(Gravity.CENTER);
     }
 
     private void initializeWindow() {
@@ -55,19 +58,6 @@ public class AlbumPopup extends Activity implements AlbumLoadListener {
         int height = (int) (dm.heightPixels * 0.6);
 
         getWindow().setLayout(width, height);
-    }
-
-    @Override
-    public void notifyAlbumLoadReady() {
-        Log.d(TAG, "Albums ready...");
-        GridView gridView = (GridView) findViewById(R.id.albumView);
-        List<Album> albums = MediaCache.getAlbumsForArtist(artist);
-        AlbumPopUpGridAdapter adapter = new AlbumPopUpGridAdapter(albums, this);
-        gridView.setAdapter(adapter);
-        gridView.setGravity(Gravity.CENTER);
-
-        findViewById(R.id.album_popup_progress_bar).setVisibility(View.GONE);
-        findViewById(R.id.album_popup_progress_text).setVisibility(View.GONE);
     }
 
 }

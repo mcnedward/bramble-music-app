@@ -7,6 +7,7 @@ import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.utils.MediaCache;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,11 +17,6 @@ public class AlbumListAdapter extends MediaListAdapter<Album> {
 
     public AlbumListAdapter(Context context) {
         super(context);
-    }
-
-    @Override
-    protected List<Album> getGroups() {
-        return MediaCache.getAlbums();
     }
 
     @Override

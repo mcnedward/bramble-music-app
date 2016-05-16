@@ -2,12 +2,8 @@ package com.mcnedward.bramble.view;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -18,12 +14,11 @@ import android.widget.Space;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
-import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.activity.fragment.NowPlayingFragment;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.listener.ScrollViewListener;
-import com.mcnedward.bramble.utils.MediaCache;
+import com.mcnedward.bramble.repository.SongRepository;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingTitleBar;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 import com.squareup.picasso.Picasso;
@@ -37,20 +32,21 @@ import java.util.List;
 public class AlbumParallaxView extends LinearLayout {
     final private static String TAG = "AlbumParallaxView";
 
-    private Context context;
-    private DisplayMetrics dm;
+    private Context mContext;
+    private SongRepository mSongRepository;
+    private Album mAlbum;
 
     private ParallaxScrollView mBgScrollView;
     private ParallaxScrollView mContentScrollView;
+    private NowPlayingView mNowPlayingView;
 
-    private NowPlayingView nowPlayingView;
-
-    private Album album;
+    private DisplayMetrics dm;
 
     public AlbumParallaxView(Album album, Context context) {
         super(context);
-        this.context = context;
-        this.album = album;
+        mContext = context;
+        mSongRepository = new SongRepository(mContext);
+        mAlbum = album;
         inflate(context, R.layout.view_album, this);
 
         dm = new DisplayMetrics();
@@ -63,7 +59,7 @@ public class AlbumParallaxView extends LinearLayout {
 
         NowPlayingFragment nowPlayingFragment = (NowPlayingFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id
                 .album_now_playing);
-        nowPlayingView = nowPlayingFragment.getNowPlayingView();
+        mNowPlayingView = nowPlayingFragment.getNowPlayingView();
 
         adjustNowPlayingView();
         adjustForNowPlayingTitleBar();
@@ -93,13 +89,13 @@ public class AlbumParallaxView extends LinearLayout {
         // Set the album and artist name
         LinearLayout albumTitleView = (LinearLayout) inflate(context, R.layout.view_album_title, null);
         TextView txtAlbumName = (TextView) albumTitleView.findViewById(R.id.album_title_title);
-        txtAlbumName.setText(album.getAlbumName());
+        txtAlbumName.setText(mAlbum.getAlbumName());
         TextView txtArtistName = (TextView) albumTitleView.findViewById(R.id.album_title_artist);
-        txtArtistName.setText(album.getArtist());
+        txtArtistName.setText(mAlbum.getArtist());
         layout.addView(albumTitleView);
 
         // Set the list of songs
-        List<Song> songs = MediaCache.getSongsForAlbum(album);
+        List<Song> songs = mSongRepository.getSongsForAlbum(mAlbum.getId());
         for (Song song : songs) {
             AlbumSongItem songItem = new AlbumSongItem(song, context);
             layout.addView(songItem);
@@ -118,10 +114,10 @@ public class AlbumParallaxView extends LinearLayout {
         layout.addView(space);
 
         imgAlbumArt.setLayoutParams(new LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, imageHeight));
-        String albumArt = album.getAlbumArt();
+        String albumArt = mAlbum.getAlbumArt();
         if (albumArt != null) {
             // Create the album art bitmap and scale it to fit properly and avoid over using memory
-            File imageFile = new File(album.getAlbumArt());
+            File imageFile = new File(mAlbum.getAlbumArt());
             Picasso.with(context).load(imageFile).into(imgAlbumArt);
         }
     }
@@ -129,37 +125,41 @@ public class AlbumParallaxView extends LinearLayout {
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        nowPlayingView.updateViewMeasures((ViewGroup) findViewById(R.id.album_now_playing_container));
+        mNowPlayingView.updateViewMeasures((ViewGroup) findViewById(R.id.album_now_playing_container));
     }
 
     public void adjustNowPlayingView() {
         DisplayMetrics dm2 = new DisplayMetrics();
-        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm2);
+        ((Activity) mContext).getWindowManager().getDefaultDisplay().getMetrics(dm2);
         int usableHeight = dm2.heightPixels;
-        ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(dm2);
+        ((Activity) mContext).getWindowManager().getDefaultDisplay().getRealMetrics(dm2);
         int realHeight = dm2.heightPixels;
         int softButtonHeight = realHeight - usableHeight;
         int height = (usableHeight - softButtonHeight) - NowPlayingTitleBar.HEIGHT;
-        nowPlayingView.snapToBottom(height);
+        mNowPlayingView.snapToBottom(height);
     }
 
     /**
      * Adjust height of container to account for the NowPlaying bar
      */
     private void adjustForNowPlayingTitleBar() {
-        ViewTreeObserver observer = nowPlayingView.getViewTreeObserver();
+        ViewTreeObserver observer = mNowPlayingView.getViewTreeObserver();
         final RelativeLayout container = (RelativeLayout) findViewById(R.id.container_parallax);
 
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                nowPlayingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int padding = nowPlayingView.getTitleBar().getHeight();
+                mNowPlayingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int padding = mNowPlayingView.getTitleBar().getHeight();
                 FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams
                         .MATCH_PARENT, container.getHeight() - padding));
                 container.setLayoutParams(layoutParams);
             }
         });
+    }
+
+    public NowPlayingView getNowPlayingView() {
+        return mNowPlayingView;
     }
 
 }

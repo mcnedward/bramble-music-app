@@ -14,6 +14,8 @@ import com.mcnedward.bramble.loader.AlbumDataLoader;
 import com.mcnedward.bramble.loader.BaseDataLoader;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.repository.AlbumRepository;
+import com.mcnedward.bramble.repository.IRepository;
 
 import java.util.Random;
 
@@ -29,8 +31,8 @@ public class AlbumFragment extends MediaFragment<Album> {
     }
 
     @Override
-    public BaseDataLoader<Album> createDataLoader() {
-        return new AlbumDataLoader(getActivity());
+    public IRepository<Album> createRepository() {
+        return new AlbumRepository(getActivity());
     }
 
     @Override

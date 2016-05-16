@@ -20,6 +20,7 @@ import com.mcnedward.bramble.loader.BaseDataLoader;
 import com.mcnedward.bramble.media.Media;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.adapter.list.MediaListAdapter;
+import com.mcnedward.bramble.repository.IRepository;
 
 import java.util.List;
 
@@ -59,7 +60,7 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
 
     protected abstract void setOnItemClick(AdapterView<?> parent, View view, int position, long id);
 
-    protected abstract BaseDataLoader<T> createDataLoader();
+    protected abstract IRepository<T> createRepository();
 
     protected abstract MediaListAdapter<T> createMediaListAdapter();
 
@@ -153,7 +154,7 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
     @Override
     public Loader<List<T>> onCreateLoader(int id, Bundle args) {
         if (mDataLoader == null) {
-            mDataLoader = createDataLoader();
+            mDataLoader = new BaseDataLoader<>(createRepository(), getContext());
         }
         return mDataLoader;
     }

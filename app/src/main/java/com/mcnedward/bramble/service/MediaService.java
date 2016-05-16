@@ -46,11 +46,11 @@ public class MediaService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Starting MediaService!");
-
-        song = (Song) intent.getSerializableExtra("song");
-        mediaThread.startMusic(song);
-        nowPlayingThread.startThread();
-
+        if (intent != null) {
+            song = (Song) intent.getSerializableExtra("song");
+            mediaThread.startMusic(song);
+            nowPlayingThread.startThread();
+        }
         return START_STICKY;
     }
 

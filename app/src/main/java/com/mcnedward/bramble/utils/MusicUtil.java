@@ -51,7 +51,7 @@ public class MusicUtil {
     public static void switchPlayButton(List<ImageView> playButtons, boolean pause, Context context) {
         if (pause) {
             for (ImageView view : playButtons)
-                view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_play_large));
+                view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_play));
         } else {
             for (ImageView view : playButtons)
                 view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_pause));

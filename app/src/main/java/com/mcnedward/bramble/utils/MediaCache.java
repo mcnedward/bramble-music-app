@@ -22,7 +22,6 @@ public final class MediaCache {
 
     private static Map<String, Object> mediaCache = new HashMap<>();
     private static List<AlbumLoadListener> listeners = new ArrayList<>();
-    private static SongComparator songComparator = new SongComparator();
     private static boolean loadingArtists, loadingAlbums, loadingSongs;
 
     public static void saveArtists(List<Artist> artists) {
@@ -35,79 +34,6 @@ public final class MediaCache {
 
     public static void saveSongs(List<Song> songs) {
         mediaCache.put("songs", songs);
-    }
-
-    public static List<Artist> getArtists() {
-
-        List<Artist> artists = (List<Artist>) mediaCache.get("artists");
-        if (artists == null) {
-            artists = new ArrayList<>();
-            saveArtists(artists);
-        }
-        return artists;
-    }
-
-    public static List<Album> getAlbums() {
-        List<Album> albums = (List<Album>) mediaCache.get("albums");
-        if (albums == null) {
-            albums = new ArrayList<>();
-            saveAlbums(albums);
-        }
-        return albums;
-    }
-
-    public static List<Song> getSongs() {
-        List<Song> songs = (List<Song>) mediaCache.get("songs");
-        if (songs == null) {
-            songs = new ArrayList<>();
-            saveSongs(songs);
-        }
-        return songs;
-    }
-
-    public static List<Album> getAlbumsForArtist(Artist artist) {
-        List<Album> albumList = new ArrayList<>();
-        List<Album> albums = getAlbums();
-        if (albums == null) return albumList;
-
-        for (String artistAlbumKey : artist.getAlbumKeys()) {
-            for (Album album : albums) {
-                if (album.getKey().equals(artistAlbumKey)) {
-                    albumList.add(album);
-                    break;
-                }
-            }
-        }
-        return albumList;
-    }
-
-    // TODO Add exceptions
-    public static List<Song> getSongsForAlbum(Album album) {
-        List<Song> songList = new ArrayList<>();
-        List<Song> songs = getSongs();
-        if (songs == null) return songList;
-
-        for (int albumId : album.getSongIds()) {
-            for (Song song : songs) {
-                if (song.getId() == albumId) {
-                    songList.add(song);
-                    break;
-                }
-            }
-        }
-        Collections.sort(songList, songComparator);
-        return songList;
-    }
-
-    public static Album getAlbumForSong(Song song) throws MediaNotFoundException {
-        List<Album> albums = getAlbums();
-        if (albums != null) {
-            for (Album album : albums) {
-                if (album.getId() == song.getAlbumId())
-                    return album;
-            }
-        }
-        throw new MediaNotFoundException(String.format("Could not find an album for the song '%s' with the album id: %s", song, song.getAlbumId()));
     }
 
     public static void registerAlbumLoadListener(AlbumLoadListener listener) {
@@ -136,10 +62,4 @@ public final class MediaCache {
         }
     }
 
-    protected static class SongComparator implements Comparator<Song> {
-        @Override
-        public int compare(Song lhs, Song rhs) {
-            return lhs.getTrack() - rhs.getTrack();
-        }
-    }
 }

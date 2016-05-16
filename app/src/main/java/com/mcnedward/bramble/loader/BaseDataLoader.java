@@ -5,10 +5,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
-import android.widget.ProgressBar;
 
-import com.mcnedward.bramble.activity.MainActivity;
+import com.mcnedward.bramble.media.Media;
 import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.repository.IRepository;
 import com.mcnedward.bramble.utils.MediaCache;
 
 import java.util.ArrayList;
@@ -17,53 +17,24 @@ import java.util.List;
 /**
  * Created by edward on 23/12/15.
  */
-public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
+public class BaseDataLoader<T extends Media> extends AsyncTaskLoader<List<T>> {
     private final static String TAG = "BaseDataLoader";
 
-    protected Context context;
-    private MediaType mediaType;
+    private IRepository<T> mRepository;
+    private MediaType mMediaType;
 
     private List<T> mDataList = null;
 
-    public BaseDataLoader(MediaType mediaType, Context context) {
+    public BaseDataLoader(IRepository repository, Context context) {
         super(context);
-        this.mediaType = mediaType;
-        this.context = context;
+        mRepository = repository;
+        mMediaType = mRepository.getMediaType();
     }
-
-    protected abstract Uri getMediaUri();
-
-    protected abstract String[] getMediaColumns();
-
-    protected abstract String getMediaSelection();
-
-    protected abstract String[] getMediaSelectionArgs();
-
-    protected abstract String getMediaSrtOrder();
-
-    protected abstract List<T> handleMediaCursor(Cursor cursor);
-
-    // TODO I really don't like this...
-    protected abstract void addToMediaService(List<T> mediaList);
 
     @Override
     public List<T> loadInBackground() {
-        MediaCache.setLoading(mediaType, true);
-        List<T> mediaList = null;
-        Cursor cursor = null;
-        try {
-            cursor = context.getContentResolver().query(getMediaUri(), getMediaColumns(), getMediaSelection(), getMediaSelectionArgs(), getMediaSrtOrder());
-            while (cursor.moveToNext()) {
-                mediaList = handleMediaCursor(cursor);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage(), e);
-        } finally {
-            if (cursor != null && !cursor.isClosed())
-                cursor.close();
-            Log.d(TAG, String.format("Done with %s media!", mediaType.type()));
-        }
-        return mediaList;
+        MediaCache.setLoading(mMediaType, true);
+        return mRepository.getAll();
     }
 
     /**
@@ -73,7 +44,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
      */
     @Override
     public void deliverResult(List<T> dataList) {
-        Log.d(TAG, String.format("Delivering %s results!", mediaType.type()));
+        Log.d(TAG, String.format("Delivering %s results!", mMediaType.type()));
         if (isReset()) {
             resetDataList(dataList);
             return;
@@ -86,8 +57,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
         if (oldDataList != null && oldDataList != dataList && oldDataList.size() > 0) {
             resetDataList(mDataList);
         }
-        addToMediaService(dataList);
-        MediaCache.setLoading(mediaType, false);
+        MediaCache.setLoading(mMediaType, false);
     }
 
     /**
@@ -112,7 +82,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
     @Override
     public void onStopLoading() {
         cancelLoad();
-        MediaCache.setLoading(mediaType, false);
+        MediaCache.setLoading(mMediaType, false);
     }
 
     /**
@@ -125,7 +95,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
         // TODO Change this
         if (dataList != null & dataList.size() > 0)
             resetDataList(dataList);
-        MediaCache.setLoading(mediaType, false);
+        MediaCache.setLoading(mMediaType, false);
     }
 
     /**
@@ -135,7 +105,7 @@ public abstract class BaseDataLoader<T> extends AsyncTaskLoader<List<T>> {
     @Override
     public void onReset() {
         super.onReset();
-        Log.d(TAG, String.format("onReset called for %s loader...", mediaType.type()));
+        Log.d(TAG, String.format("onReset called for %s loader...", mMediaType.type()));
         // Ensure the loader is stopped
         onStopLoading();
         if (mDataList != null && mDataList.size() > 0) {

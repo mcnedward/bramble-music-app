@@ -43,6 +43,8 @@ public class Song extends Media implements Serializable {
         if (trackNumber > 999) {
             track = trackNumber % 1000;
         }
+        if (track == 0)
+            track = 1;
     }
 
     public String getTitle() {

@@ -20,14 +20,14 @@ import java.util.List;
  */
 public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
 
-    protected List<T> groups;
-    protected Context context;
+    protected List<T> mGroups;
+    protected Context mContext;
     protected LayoutInflater inflater;
     private LruCache<String, Bitmap> mLruCache;
 
-    public MediaGridAdapter(Context context) {
-        this.context = context;
-        groups = getGroups();
+    public MediaGridAdapter(List<T> groups, Context context) {
+        mGroups = groups;
+        mContext = context;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory()) / 1024;
@@ -41,6 +41,11 @@ public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
         };
     }
 
+    public MediaGridAdapter(Context context) {
+        this(new ArrayList<T>(), context);
+
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
@@ -48,7 +53,7 @@ public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
         MediaCard mediaCard;
         T item = getItem(position);
         if (convertView == null) {
-            mediaCard = new MediaCard(item, mLruCache, context);
+            mediaCard = new MediaCard(item, mLruCache, mContext);
             convertView = mediaCard;
 
             holder = new ViewHolder(mediaCard);
@@ -59,31 +64,29 @@ public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
         }
 
         mediaCard.update(item);
-        RippleUtil.setRippleBackground(mediaCard, context);
+        RippleUtil.setRippleBackground(mediaCard, mContext);
         setOnClickListener(item, mediaCard);
         return convertView;
     }
 
     public void setGroups(List<T> groups) {
-        this.groups = groups;
+        this.mGroups = groups;
     }
 
     public void reset() {
-        groups = new ArrayList<>();
+        mGroups = new ArrayList<>();
     }
-
-    protected abstract List<T> getGroups();
 
     protected abstract void setOnClickListener(T media, View view);
 
     @Override
     public int getCount() {
-        return groups.size();
+        return mGroups.size();
     }
 
     @Override
     public T getItem(int position) {
-        return groups.get(position);
+        return mGroups.get(position);
     }
 
     @Override

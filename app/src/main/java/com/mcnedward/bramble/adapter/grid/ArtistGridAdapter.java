@@ -21,15 +21,10 @@ public class ArtistGridAdapter extends MediaGridAdapter<Artist> {
     }
 
     @Override
-    protected List<Artist> getGroups() {
-        return MediaCache.getArtists();
-    }
-
-    @Override
     protected void setOnClickListener(Artist artist, View view) {
-        Intent intent = new Intent(context, AlbumPopup.class);
+        Intent intent = new Intent(mContext, AlbumPopup.class);
         intent.putExtra("artist", artist);
-        context.startActivity(intent);
+        mContext.startActivity(intent);
     }
 
 }

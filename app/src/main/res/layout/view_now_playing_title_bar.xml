@@ -53,12 +53,12 @@
 
     <ImageView
         android:id="@+id/now_playing_title_play"
-        android:layout_width="wrap_content"
+        android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_alignParentRight="true"
         android:clickable="true"
         android:gravity="center_vertical"
         android:padding="10dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/icon_pause"/>
+        android:scaleType="centerInside"
+        android:src="@drawable/icon_play"/>
 </RelativeLayout>

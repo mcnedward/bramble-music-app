@@ -17,9 +17,8 @@ public class AlbumGridAdapter extends MediaGridAdapter<Album> {
         super(context);
     }
 
-    @Override
-    protected List<Album> getGroups() {
-        return MediaCache.getAlbums();
+    public AlbumGridAdapter(List<Album> albums, Context context) {
+        super(albums, context);
     }
 
     @Override

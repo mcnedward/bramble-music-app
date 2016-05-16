@@ -19,11 +19,6 @@ public class SongGridAdapter extends MediaGridAdapter<Song> {
     }
 
     @Override
-    protected List<Song> getGroups() {
-        return MediaCache.getSongs();
-    }
-
-    @Override
     protected void setOnClickListener(Song song, View view) {
     }
 

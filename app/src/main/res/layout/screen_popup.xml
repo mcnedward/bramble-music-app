@@ -32,25 +32,4 @@
             android:stretchMode="columnWidth"/>
     </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <ProgressBar
-            android:id="@+id/album_popup_progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"/>
-
-        <TextView
-            android:id="@+id/album_popup_progress_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/album_popup_progress_bar"
-            android:gravity="center"
-            android:textSize="14dp"
-            android:text="@string/placeholder"/>
-    </RelativeLayout>
-
 </FrameLayout>

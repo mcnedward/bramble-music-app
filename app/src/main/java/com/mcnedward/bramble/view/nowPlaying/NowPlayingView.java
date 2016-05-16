@@ -13,14 +13,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
-import com.mcnedward.bramble.activity.MainActivity;
 import com.mcnedward.bramble.exception.MediaNotFoundException;
-import com.mcnedward.bramble.listener.AlbumLoadListener;
 import com.mcnedward.bramble.listener.MediaListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.repository.AlbumRepository;
 import com.mcnedward.bramble.service.MediaService;
-import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.PicassoUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
@@ -32,26 +30,13 @@ import java.util.List;
 /**
  * Created by edward on 27/12/15.
  */
-public class NowPlayingView extends SlidingView implements AlbumLoadListener, MediaListener {
+public class NowPlayingView extends SlidingView implements MediaListener {
     private final static String TAG = "NowPlayingView";
 
     private Context context;
+    private AlbumRepository mAlbumRepository;
     private Picasso picasso;
-
-    private NowPlayingTitleBar titleBar;
-    private TextView txtSongTitle;
-    private TextView txtAlbum;
-    private ImageView imgAlbumArt;
-    private TextView txtPassed;
-    private SeekBar seekBar;
-    private TextView txtDuration;
-    private ImageView btnPrevious;
-    private ImageView btnPlay;
-    private ImageView btnForward;
-    private List<ImageView> playButtons;
-
-    private boolean albumLoaded = false;
-    private boolean buttonsLoaded = false;
+    private Song song;
 
     public NowPlayingView(Context context) {
         super(R.layout.view_now_playing, context);
@@ -72,36 +57,12 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
 
     @Override
     public void notifyMediaStarted() {
-        buttonsLoaded = false;
-        albumLoaded = false;
+        loadAlbum();
+        updateButtons();
     }
 
     @Override
     public void update() {
-        if (!albumLoaded)
-            updateTitleBar();
-        if (!buttonsLoaded)
-            updateButtons();
-        updateProgress();
-    }
-
-    @Override
-    public View getView() {
-        return this;
-    }
-
-    private void updateTitleBar() {
-        notifyAlbumLoadReady();
-        titleBar.updateSongTitle(getSong().getTitle());
-    }
-
-    private void updateButtons() {
-        setButtonListeners();
-        MusicUtil.switchPlayButton(playButtons, false, context);
-        buttonsLoaded = true;
-    }
-
-    private void updateProgress() {
         final MediaPlayer player = MediaService.getPlayer();
         // Set the current time on the UI
         String currentTime = MusicUtil.getTimeString(player.getCurrentPosition());
@@ -139,24 +100,27 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
     }
 
     @Override
-    public void notifyAlbumLoadReady() {
-        Album album;
+    public View getView() {
+        return this;
+    }
+
+    private void loadAlbum() {
         Song song = getSong();
-        try {
-            if (song == null)
-                Log.e(TAG, "Could not load song.");
-            else {
-                album = MediaCache.getAlbumForSong(song);
-                titleBar.updateAlbumTitle(album.getAlbumName());
-                // Load album art
-                titleBar.updateAlbumArt(album);
-                MusicUtil.loadAlbumArt(album.getAlbumArt(), imgAlbumArt, context);
-                // Albums loaded!
-                albumLoaded = true;
-            }
-        } catch (MediaNotFoundException e) {
-            Log.d(TAG, e.getMessage(), e);
+        if (song == null)
+            Log.e(TAG, "Could not load song.");
+        else {
+            Album album = mAlbumRepository.get(song.getAlbumId());
+            titleBar.updateAlbumTitle(album.getAlbumName());
+            // Load album art
+            titleBar.updateAlbumArt(album);
+            MusicUtil.loadAlbumArt(album.getAlbumArt(), imgAlbumArt, context);
         }
+        titleBar.updateSongTitle(getSong().getTitle());
+    }
+
+    private void updateButtons() {
+        setButtonListeners();
+        MusicUtil.switchPlayButton(playButtons, false, context);
     }
 
     private void setButtonListeners() {
@@ -194,7 +158,28 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
 
     private void initialize(Context context) {
         this.context = context;
+        mAlbumRepository = new AlbumRepository(context);
         picasso = PicassoUtil.getPicasso(context);
+
+        setupViews();
+
+        // Register this as listeners
+        MediaService.attachMediaListener(this);
+    }
+
+    private NowPlayingTitleBar titleBar;
+    private TextView txtSongTitle;
+    private TextView txtAlbum;
+    private ImageView imgAlbumArt;
+    private TextView txtPassed;
+    private SeekBar seekBar;
+    private TextView txtDuration;
+    private ImageView btnPrevious;
+    private ImageView btnPlay;
+    private ImageView btnForward;
+    private List<ImageView> playButtons;
+
+    private void setupViews() {
         playButtons = new ArrayList<>();
 
         titleBar = (NowPlayingTitleBar) findViewById(R.id.now_playing_title_bar);
@@ -227,10 +212,6 @@ public class NowPlayingView extends SlidingView implements AlbumLoadListener, Me
         RippleUtil.setRippleBackground(btnPrevious, rippleColor, 0, context);
         RippleUtil.setRippleBackground(btnPlay, rippleColor, 0, context);
         RippleUtil.setRippleBackground(btnForward, rippleColor, 0, context);
-
-        // Register this as listeners
-        MediaCache.registerAlbumLoadListener(this);
-        MediaService.attachMediaListener(this);
     }
 
     public NowPlayingTitleBar getTitleBar() {

@@ -11,6 +11,8 @@ import com.mcnedward.bramble.loader.BaseDataLoader;
 import com.mcnedward.bramble.loader.SongDataLoader;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.repository.IRepository;
+import com.mcnedward.bramble.repository.SongRepository;
 import com.mcnedward.bramble.utils.MusicUtil;
 
 import java.util.Random;
@@ -27,8 +29,8 @@ public class SongFragment extends MediaFragment<Song> {
     }
 
     @Override
-    public BaseDataLoader<Song> createDataLoader() {
-        return new SongDataLoader(getActivity());
+    public IRepository<Song> createRepository() {
+        return new SongRepository(getActivity());
     }
 
     @Override

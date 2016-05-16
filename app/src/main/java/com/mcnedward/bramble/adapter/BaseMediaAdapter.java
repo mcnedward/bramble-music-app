@@ -19,7 +19,7 @@ public abstract class BaseMediaAdapter<T> extends BaseAdapter {
     protected LayoutInflater inflater;
 
     public BaseMediaAdapter(Context context) {
-        this.groups = getGroups();
+        this.groups = new ArrayList<>();
         this.context = context;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -37,8 +37,6 @@ public abstract class BaseMediaAdapter<T> extends BaseAdapter {
     public void reset() {
         groups = new ArrayList<>();
     }
-
-    protected abstract List<T> getGroups();
 
     protected abstract View getCustomView(int position);
 
