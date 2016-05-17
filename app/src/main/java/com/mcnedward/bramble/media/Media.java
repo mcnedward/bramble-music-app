@@ -1,5 +1,7 @@
 package com.mcnedward.bramble.media;
 
+import android.content.SharedPreferences;
+
 import java.io.Serializable;
 import java.util.Random;
 
@@ -23,6 +25,18 @@ public abstract class Media implements Serializable {
         this.mediaType = mediaType;
         cacheKey = generateCacheKey();
     }
+
+    public void save(SharedPreferences.Editor editor) {
+        editor.putInt("id", id);
+        editor.putString("imagePath", imagePath);
+        editor.putString("title", title);
+        editor.putString("key", key);
+        editor.putString("mediaType", mediaType.type());
+        saveMedia(editor);
+        editor.commit();
+    }
+
+    protected abstract void saveMedia(SharedPreferences.Editor editor);
 
     /**
      * Source: http://stackoverflow.com/questions/20536566/creating-a-random-string-with-a-z-and-0-9-in-java

@@ -67,7 +67,7 @@ public class NowPlayingTitleBar extends LinearLayout {
         btnPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicUtil.setPlayButtonListener(playButtons, player, context);
+                MusicUtil.doPlayButtonAction(playButtons, player, context);
             }
         });
     }

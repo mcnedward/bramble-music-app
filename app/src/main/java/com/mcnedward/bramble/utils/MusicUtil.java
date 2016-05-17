@@ -36,8 +36,14 @@ public class MusicUtil {
         }
     }
 
-    public static void setPlayButtonListener(List<ImageView> playButtons, MediaPlayer player, Context context) {
-        if (player != null) {
+    public static void doPlayButtonAction(List<ImageView> playButtons, MediaPlayer player, Context context) {
+        if (player == null) {
+            Song song = MediaCache.getSong(context);
+            if (song != null) {
+                MusicUtil.startPlayingMusic(song, (Activity) context);
+                MusicUtil.switchPlayButton(playButtons, false, context);
+            }
+        } else {
             if (player.isPlaying()) {
                 player.pause();
                 MusicUtil.switchPlayButton(playButtons, true, context);

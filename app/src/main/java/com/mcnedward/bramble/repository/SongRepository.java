@@ -71,9 +71,7 @@ public class SongRepository extends BaseRepository<Song> {
                         .getColumnIndexOrThrow(MediaStore.Audio.Media.IS_MUSIC)));
 
         if (isMusic == 1)
-            return new Song(titleId, title, titleKey,
-                    displayName, artistId, albumId, composer, track,
-                    duration, year, dateAdded, mimeType, data);
+            return new Song(titleId, title, titleKey, displayName, artistId, albumId, composer, track, duration, year, dateAdded, mimeType, data);
         return null;
     }
 
@@ -89,7 +87,7 @@ public class SongRepository extends BaseRepository<Song> {
 
     @Override
     public String[] getColumns() {
-        return new String[] {
+        return new String[]{
                 MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.TITLE_KEY,

@@ -61,7 +61,6 @@ public class AlbumParallaxView extends LinearLayout {
                 .album_now_playing);
         mNowPlayingView = nowPlayingFragment.getNowPlayingView();
 
-        adjustNowPlayingView();
         adjustForNowPlayingTitleBar();
     }
 
@@ -128,17 +127,6 @@ public class AlbumParallaxView extends LinearLayout {
         mNowPlayingView.updateViewMeasures((ViewGroup) findViewById(R.id.album_now_playing_container));
     }
 
-    public void adjustNowPlayingView() {
-        DisplayMetrics dm2 = new DisplayMetrics();
-        ((Activity) mContext).getWindowManager().getDefaultDisplay().getMetrics(dm2);
-        int usableHeight = dm2.heightPixels;
-        ((Activity) mContext).getWindowManager().getDefaultDisplay().getRealMetrics(dm2);
-        int realHeight = dm2.heightPixels;
-        int softButtonHeight = realHeight - usableHeight;
-        int height = (usableHeight - softButtonHeight) - NowPlayingTitleBar.HEIGHT;
-        mNowPlayingView.snapToBottom(height);
-    }
-
     /**
      * Adjust height of container to account for the NowPlaying bar
      */
@@ -154,6 +142,7 @@ public class AlbumParallaxView extends LinearLayout {
                 FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams
                         .MATCH_PARENT, container.getHeight() - padding));
                 container.setLayoutParams(layoutParams);
+                mNowPlayingView.snapToBottom();
             }
         });
     }

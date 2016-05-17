@@ -1,5 +1,8 @@
 package com.mcnedward.bramble.utils;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.mcnedward.bramble.exception.MediaNotFoundException;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
@@ -20,9 +23,41 @@ import java.util.Map;
  */
 public final class MediaCache {
 
+    private static final String PREFERENCE_KEY = "preference_key";
+
     private static Map<String, Object> mediaCache = new HashMap<>();
     private static List<AlbumLoadListener> listeners = new ArrayList<>();
     private static boolean loadingArtists, loadingAlbums, loadingSongs;
+
+    public static void saveArtist(Artist artist, Context context) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE).edit();
+        artist.save(editor);
+    }
+
+    public static void saveAlbum(Album album, Context context) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE).edit();
+        album.save(editor);
+    }
+
+    public static void saveSong(Song song, Context context) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE).edit();
+        song.save(editor);
+    }
+
+    public static Artist getArtist(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
+        return Artist.get(sharedPreferences);
+    }
+
+    public static Album getAlbum(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
+        return Album.get(sharedPreferences);
+    }
+
+    public static Song getSong(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
+        return Song.get(sharedPreferences);
+    }
 
     public static void saveArtists(List<Artist> artists) {
         mediaCache.put("artists", artists);

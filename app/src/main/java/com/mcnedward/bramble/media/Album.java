@@ -1,5 +1,7 @@
 package com.mcnedward.bramble.media;
 
+import android.content.SharedPreferences;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -24,6 +26,44 @@ public class Album extends Media implements Serializable {
         this.firstYear = firstYear;
         this.lastYear = lastYear;
         this.albumArt = albumArt;
+    }
+
+    public Album(int id, String imagePath, String title, String key, MediaType mediaType, String albumName, String artist, int numberOfSongs, int
+            firstYear, int lastYear, String albumArt) {
+        super(id, imagePath, title, key, mediaType);
+        this.albumName = albumName;
+        this.artist = artist;
+        this.numberOfSongs = numberOfSongs;
+        this.firstYear = firstYear;
+        this.lastYear = lastYear;
+        this.albumArt = albumArt;
+    }
+
+    @Override
+    public void saveMedia(SharedPreferences.Editor editor) {
+        editor.putString("albumName", albumName);
+        editor.putString("artist", artist);
+        editor.putInt("numberOfSongs", numberOfSongs);
+        editor.putInt("firstYear", firstYear);
+        editor.putInt("lastYear", lastYear);
+        editor.putString("albumArt", albumArt);
+    }
+
+    public static Album get(SharedPreferences sharedPreferences) {
+        int id = sharedPreferences.getInt("id", 0);
+        if (id == 0) return null;
+
+        String imagePath = sharedPreferences.getString("imagePath", "");
+        String key = sharedPreferences.getString("key", "");
+        String title = sharedPreferences.getString("title", "");
+        String albumName = sharedPreferences.getString("albumName", "");
+        String artist = sharedPreferences.getString("artist", "");
+        int numberOfSongs = sharedPreferences.getInt("numberOfSongs", 0);
+        int firstYear = sharedPreferences.getInt("firstYear", 0);
+        int lastYear = sharedPreferences.getInt("lastYear", 0);
+        String albumArt = sharedPreferences.getString("albumArt", "");
+
+        return new Album(id, imagePath, title, key, MediaType.ALBUM, albumName, artist, numberOfSongs, firstYear, lastYear, albumArt);
     }
 
     public String getAlbumName() {

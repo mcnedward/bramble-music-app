@@ -25,7 +25,7 @@ import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 public class MainView extends FrameLayout {
     private final static String TAG = "MainView";
 
-    private NowPlayingView nowPlayingView;
+    private NowPlayingView mNowPlayingView;
 
     public MainView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -40,16 +40,7 @@ public class MainView extends FrameLayout {
     private void initialize(Context context) {
         inflate(context, R.layout.activity_main, this);
         NowPlayingFragment nowPlayingFragment = (NowPlayingFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.now_playing);
-        nowPlayingView = nowPlayingFragment.getNowPlayingView();
-
-        DisplayMetrics dm = new DisplayMetrics();
-        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int usableHeight = dm.heightPixels;
-        ((Activity) context).getWindowManager().getDefaultDisplay().getRealMetrics(dm);
-        int realHeight = dm.heightPixels;
-        int softButtonHeight = realHeight - usableHeight;
-        int height = (usableHeight - softButtonHeight) - NowPlayingTitleBar.HEIGHT;
-        nowPlayingView.snapToBottom(height);
+        mNowPlayingView = nowPlayingFragment.getNowPlayingView();
 
         adjustForNowPlayingTitleBar();
     }
@@ -58,16 +49,17 @@ public class MainView extends FrameLayout {
      * Adjust height of container to account for the NowPlaying bar
      */
     private void adjustForNowPlayingTitleBar() {
-        ViewTreeObserver observer = nowPlayingView.getViewTreeObserver();
+        ViewTreeObserver observer = mNowPlayingView.getViewTreeObserver();
         final View container = findViewById(R.id.container_main);
 
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                nowPlayingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int padding = nowPlayingView.getTitleBar().getHeight();
+                mNowPlayingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int padding = mNowPlayingView.getTitleBar().getHeight();
                 CoordinatorLayout.LayoutParams layoutParams = new CoordinatorLayout.LayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, container.getHeight() - padding));
                 container.setLayoutParams(layoutParams);
+                mNowPlayingView.snapToBottom();
             }
         });
     }
@@ -75,11 +67,11 @@ public class MainView extends FrameLayout {
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        nowPlayingView.updateViewMeasures((ViewGroup) findViewById(R.id.now_playing_container));
+        mNowPlayingView.updateViewMeasures((ViewGroup) findViewById(R.id.now_playing_container));
     }
 
     public NowPlayingView getNowPlayingView() {
-        return nowPlayingView;
+        return mNowPlayingView;
     }
 
 }

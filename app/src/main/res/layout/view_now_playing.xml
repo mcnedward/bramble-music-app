@@ -90,7 +90,7 @@
                     android:layout_weight="0.15"
                     android:scaleType="fitCenter"
                     android:clickable="true"
-                    android:src="@drawable/icon_pause"/>
+                    android:src="@drawable/icon_play"/>
 
                 <ImageView
                     android:id="@+id/btn_forward"

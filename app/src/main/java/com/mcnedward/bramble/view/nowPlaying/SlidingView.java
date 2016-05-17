@@ -186,6 +186,10 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
         this.slidable = slidable;
     }
 
+    public int getSlidableHeight() {
+        return slidable.getHeight();
+    }
+
     public void setContent(View content) {
         this.content = content;
     }

@@ -1,5 +1,6 @@
 package com.mcnedward.bramble.view.nowPlaying;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -19,6 +20,7 @@ import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.repository.AlbumRepository;
 import com.mcnedward.bramble.service.MediaService;
+import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.PicassoUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
@@ -33,7 +35,7 @@ import java.util.List;
 public class NowPlayingView extends SlidingView implements MediaListener {
     private final static String TAG = "NowPlayingView";
 
-    private Context context;
+    private Context mContext;
     private AlbumRepository mAlbumRepository;
     private Picasso picasso;
     private Song song;
@@ -57,8 +59,10 @@ public class NowPlayingView extends SlidingView implements MediaListener {
 
     @Override
     public void notifyMediaStarted() {
+        song = MediaCache.getSong(mContext);
         loadAlbum();
-        updateButtons();
+        setButtonListeners();
+        MusicUtil.switchPlayButton(playButtons, false, mContext);
     }
 
     @Override
@@ -105,22 +109,16 @@ public class NowPlayingView extends SlidingView implements MediaListener {
     }
 
     private void loadAlbum() {
-        Song song = getSong();
-        if (song == null)
+        if (song == null) {
             Log.e(TAG, "Could not load song.");
-        else {
+        } else {
             Album album = mAlbumRepository.get(song.getAlbumId());
             titleBar.updateAlbumTitle(album.getAlbumName());
             // Load album art
             titleBar.updateAlbumArt(album);
-            MusicUtil.loadAlbumArt(album.getAlbumArt(), imgAlbumArt, context);
+            MusicUtil.loadAlbumArt(album.getAlbumArt(), imgAlbumArt, mContext);
+            titleBar.updateSongTitle(song.getTitle());
         }
-        titleBar.updateSongTitle(getSong().getTitle());
-    }
-
-    private void updateButtons() {
-        setButtonListeners();
-        MusicUtil.switchPlayButton(playButtons, false, context);
     }
 
     private void setButtonListeners() {
@@ -134,7 +132,7 @@ public class NowPlayingView extends SlidingView implements MediaListener {
         btnPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicUtil.setPlayButtonListener(playButtons, player, context);
+                MusicUtil.doPlayButtonAction(playButtons, player, mContext);
             }
         });
         btnForward.setOnClickListener(new OnClickListener() {
@@ -146,18 +144,8 @@ public class NowPlayingView extends SlidingView implements MediaListener {
         titleBar.setPlayButtonListener(playButtons, player);
     }
 
-    private Song getSong() {
-        Song song = null;
-        try {
-            song = MediaService.getCurrentSong();
-        } catch (MediaNotFoundException e) {
-            Log.w(TAG, e.getMessage(), e);
-        }
-        return song;
-    }
-
     private void initialize(Context context) {
-        this.context = context;
+        mContext = context;
         mAlbumRepository = new AlbumRepository(context);
         picasso = PicassoUtil.getPicasso(context);
 
@@ -165,6 +153,13 @@ public class NowPlayingView extends SlidingView implements MediaListener {
 
         // Register this as listeners
         MediaService.attachMediaListener(this);
+
+        Song song = MediaCache.getSong(mContext);
+        if (song != null) {
+            this.song = song;
+            loadAlbum();
+            setButtonListeners();
+        }
     }
 
     private NowPlayingTitleBar titleBar;
@@ -204,14 +199,14 @@ public class NowPlayingView extends SlidingView implements MediaListener {
         setContent(findViewById(R.id.now_playing_content));
 
         // Load controls
-        seekBar.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(context, R.color.Red), PorterDuff.Mode
+        seekBar.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(mContext, R.color.Red), PorterDuff.Mode
                 .MULTIPLY));
-        seekBar.getThumb().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(context, R.color.Red), PorterDuff.Mode.SRC_IN));
+        seekBar.getThumb().setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(mContext, R.color.Red), PorterDuff.Mode.SRC_IN));
 
         int rippleColor = R.color.FireBrick;
-        RippleUtil.setRippleBackground(btnPrevious, rippleColor, 0, context);
-        RippleUtil.setRippleBackground(btnPlay, rippleColor, 0, context);
-        RippleUtil.setRippleBackground(btnForward, rippleColor, 0, context);
+        RippleUtil.setRippleBackground(btnPrevious, rippleColor, 0, mContext);
+        RippleUtil.setRippleBackground(btnPlay, rippleColor, 0, mContext);
+        RippleUtil.setRippleBackground(btnForward, rippleColor, 0, mContext);
     }
 
     public NowPlayingTitleBar getTitleBar() {

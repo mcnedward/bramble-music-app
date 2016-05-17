@@ -88,13 +88,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onPause() {
-        MediaService.pauseNowPlayingView(true);
         super.onPause();
     }
 
     @Override
     public void onResume() {
-        MediaService.pauseNowPlayingView(false);
+        MediaService.notifyMediaListeners();
         super.onResume();
     }
 

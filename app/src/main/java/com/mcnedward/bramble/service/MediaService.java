@@ -9,10 +9,12 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 
 import com.mcnedward.bramble.exception.MediaNotFoundException;
 import com.mcnedward.bramble.listener.MediaListener;
 import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.utils.MediaCache;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,7 +42,7 @@ public class MediaService extends Service {
         if (mediaThread == null)
             mediaThread = new MediaThread();
         if (nowPlayingThread == null)
-            nowPlayingThread = new NowPlayingThread(mListeners);
+            nowPlayingThread = new NowPlayingThread();
     }
 
     @Override
@@ -48,6 +50,7 @@ public class MediaService extends Service {
         Log.d(TAG, "Starting MediaService!");
         if (intent != null) {
             song = (Song) intent.getSerializableExtra("song");
+            MediaCache.saveSong(song, getApplicationContext());
             mediaThread.startMusic(song);
             nowPlayingThread.startThread();
         }
@@ -57,8 +60,6 @@ public class MediaService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "Destroying MediaService!");
-        mediaThread.stopThread();
-        mediaThread = null;
         // TODO Stop NowPlayingThread? I dont think so...?
     }
 
@@ -66,10 +67,8 @@ public class MediaService extends Service {
         if (mListeners == null)
             mListeners = new HashSet<>();
         mListeners.add(listener);
-
-        if (nowPlayingThread != null) {
-            nowPlayingThread.attachMediaListener(listener);
-        }
+        if (song != null)
+            listener.notifyMediaStarted();
     }
 
     public static void removeMediaListener(MediaListener listener) {
@@ -77,15 +76,17 @@ public class MediaService extends Service {
             mListeners = new HashSet<>();
         if (mListeners.contains(listener))
             mListeners.remove(listener);
-
-        if (nowPlayingThread != null) {
-            nowPlayingThread.removeMediaListener(listener);
-        }
     }
 
     public static void unRegisterListeners() {
         for (MediaListener listener : mListeners)
             removeMediaListener(listener);
+    }
+
+    public static void notifyMediaListeners() {
+        if (song == null) return;
+        for (MediaListener listener : mListeners)
+            listener.notifyMediaStarted();
     }
 
     public static void pauseNowPlayingView(boolean pause) {
@@ -95,12 +96,6 @@ public class MediaService extends Service {
 
     public static MediaPlayer getPlayer() {
         return mPlayer;
-    }
-
-    public static Song getCurrentSong() throws MediaNotFoundException {
-        if (song == null)
-            throw new MediaNotFoundException("Could not find the current song from " + TAG);
-        return song;
     }
 
     @Nullable
@@ -121,6 +116,7 @@ public class MediaService extends Service {
 
         @Override
         public void doRunAction() {
+            Log.d(TAG, "RUNNING");
         }
 
         @Override
@@ -157,6 +153,37 @@ public class MediaService extends Service {
         public void startMusic(Song song) {
             this.song = song;
             startThread();
+        }
+    }
+
+    final class NowPlayingThread extends BaseThread implements IThread {
+
+        public NowPlayingThread() {
+            super("NowPlaying");
+        }
+
+        @Override
+        public void doRunAction() {
+            for (final MediaListener listener : mListeners) {
+                View view = listener.getView();
+                if (view == null) return;
+                view.getHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.update();
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void doStartAction() {
+
+        }
+
+        @Override
+        public void doStopAction() {
+
         }
     }
 

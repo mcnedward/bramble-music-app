@@ -44,4 +44,13 @@ public class AlbumActivity extends FragmentActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed()  {
+        if (mNowPlayingView.isContentFocused()) {
+            mNowPlayingView.animateToBottom();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
 }
