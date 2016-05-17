@@ -19,10 +19,14 @@
         android:singleLine="true"
         android:text="@string/placeholder"/>
 
-    <ImageView
+    <com.mcnedward.bramble.view.mediaItem.GifView
         android:id="@+id/media_now_playing_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:scaleType="fitXY"
+        android:layout_centerVertical="true"
+        android:background="@drawable/now_playing_anim"
+        android:visibility="gone"
+        android:layout_alignParentRight="true"/>
 
 </RelativeLayout>

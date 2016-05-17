@@ -5,6 +5,8 @@ import android.view.View;
 
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.MusicUtil;
+import com.mcnedward.bramble.view.mediaItem.MediaItem;
+import com.mcnedward.bramble.view.mediaItem.SongMediaItem;
 
 import java.util.List;
 
@@ -22,8 +24,14 @@ public class SongListAdapter extends MediaListAdapter<Song> {
     }
 
     @Override
+    protected MediaItem<Song> getCustomView(Song song) {
+        return new SongMediaItem(song, mContext);
+    }
+
+    @Override
     protected void doOnClickAction(Song song, View view) {
         MusicUtil.startPlayingMusic(song, mContext);
+        ((SongMediaItem) view).update(song);
     }
 
 }

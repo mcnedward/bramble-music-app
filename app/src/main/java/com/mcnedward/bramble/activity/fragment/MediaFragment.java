@@ -8,14 +8,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
-import com.mcnedward.bramble.adapter.BaseMediaAdapter;
+import com.mcnedward.bramble.adapter.list.BaseMediaAdapter;
 import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
 import com.mcnedward.bramble.loader.BaseDataLoader;
 import com.mcnedward.bramble.media.Media;

@@ -1,0 +1,7 @@
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/now_playing_gif_1" android:duration="200" />
+    <item android:drawable="@drawable/now_playing_gif_2" android:duration="200" />
+    <item android:drawable="@drawable/now_playing_gif_3" android:duration="200" />
+    <item android:drawable="@drawable/now_playing_gif_4" android:duration="200" />
+    <item android:drawable="@drawable/now_playing_gif_5" android:duration="200" />
+</animation-list>

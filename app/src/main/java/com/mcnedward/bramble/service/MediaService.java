@@ -1,7 +1,6 @@
 package com.mcnedward.bramble.service;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -11,15 +10,13 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
-import com.mcnedward.bramble.exception.MediaNotFoundException;
+import com.mcnedward.bramble.listener.SongPlayingListener;
 import com.mcnedward.bramble.listener.MediaListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.MediaCache;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -32,6 +29,7 @@ public class MediaService extends Service {
     private static Song song;
     private static Album album;
     private static Set<MediaListener> mListeners;
+    private static Set<SongPlayingListener> mSongPlayingListeners;
 
     private static MediaThread mediaThread;
     private static NowPlayingThread nowPlayingThread;
@@ -94,6 +92,26 @@ public class MediaService extends Service {
             listener.notifyMediaStarted();
     }
 
+    public static void attachSongPlayingListener(SongPlayingListener listener) {
+        if (mSongPlayingListeners == null)
+            mSongPlayingListeners = new HashSet<>();
+        mSongPlayingListeners.add(listener);
+    }
+
+    public static void removeMediaListener(SongPlayingListener listener) {
+        if (mSongPlayingListeners == null)
+            mSongPlayingListeners = new HashSet<>();
+        if (mSongPlayingListeners.contains(listener))
+            mSongPlayingListeners.remove(listener);
+    }
+
+    public static void notifySongPlayingListeners() {
+        if (mSongPlayingListeners == null || mPlayer == null) return;
+        for (SongPlayingListener listener : mSongPlayingListeners) {
+            listener.notifySongChange(song, mPlayer.isPlaying());
+        }
+    }
+
     public static void pauseNowPlayingView(boolean pause) {
         if (nowPlayingThread != null)
             nowPlayingThread.pauseThread(pause);
@@ -132,6 +150,7 @@ public class MediaService extends Service {
             for (MediaListener listener : mListeners) {
                 listener.notifyMediaStarted();
             }
+            notifySongPlayingListeners();
         }
 
         @Override
