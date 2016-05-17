@@ -1,6 +1,5 @@
 package com.mcnedward.bramble.view.nowPlaying;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -14,7 +13,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
-import com.mcnedward.bramble.exception.MediaNotFoundException;
 import com.mcnedward.bramble.listener.MediaListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
@@ -37,8 +35,6 @@ public class NowPlayingView extends SlidingView implements MediaListener {
 
     private Context mContext;
     private AlbumRepository mAlbumRepository;
-    private Picasso picasso;
-    private Song song;
 
     public NowPlayingView(Context context) {
         super(R.layout.view_now_playing, context);
@@ -59,14 +55,13 @@ public class NowPlayingView extends SlidingView implements MediaListener {
 
     @Override
     public void notifyMediaStarted() {
-        song = MediaCache.getSong(mContext);
         loadAlbum();
         setButtonListeners();
         MusicUtil.switchPlayButton(playButtons, false, mContext);
     }
 
     @Override
-    public void update() {
+    public void update(Song song, Album album) {
         final MediaPlayer player = MediaService.getPlayer();
         // Set the current time on the UI
         String currentTime = MusicUtil.getTimeString(player.getCurrentPosition());
@@ -109,10 +104,12 @@ public class NowPlayingView extends SlidingView implements MediaListener {
     }
 
     private void loadAlbum() {
+        Song song = MediaCache.getSong(mContext);
         if (song == null) {
-            Log.e(TAG, "Could not load song.");
+            Log.w(TAG, "No song is setup for play.");
         } else {
             Album album = mAlbumRepository.get(song.getAlbumId());
+            if (album == null) return;
             titleBar.updateAlbumTitle(album.getAlbumName());
             // Load album art
             titleBar.updateAlbumArt(album);
@@ -122,49 +119,40 @@ public class NowPlayingView extends SlidingView implements MediaListener {
     }
 
     private void setButtonListeners() {
-        final MediaPlayer player = MediaService.getPlayer();
         btnPrevious.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                MusicUtil.doPreviousButtonAction(mContext);
             }
         });
         btnPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicUtil.doPlayButtonAction(playButtons, player, mContext);
+                MusicUtil.doPlayButtonAction(playButtons, mContext);
             }
         });
         btnForward.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                MusicUtil.doForwardButtonAction(mContext);
             }
         });
-        titleBar.setPlayButtonListener(playButtons, player);
+        titleBar.setPlayButtonListener(playButtons);
     }
 
     private void initialize(Context context) {
         mContext = context;
         mAlbumRepository = new AlbumRepository(context);
-        picasso = PicassoUtil.getPicasso(context);
 
         setupViews();
-
         // Register this as listeners
         MediaService.attachMediaListener(this);
 
-        Song song = MediaCache.getSong(mContext);
-        if (song != null) {
-            this.song = song;
-            loadAlbum();
-            setButtonListeners();
-        }
+        loadAlbum();
+        setButtonListeners();
     }
 
     private NowPlayingTitleBar titleBar;
-    private TextView txtSongTitle;
-    private TextView txtAlbum;
     private ImageView imgAlbumArt;
     private TextView txtPassed;
     private SeekBar seekBar;
@@ -178,9 +166,6 @@ public class NowPlayingView extends SlidingView implements MediaListener {
         playButtons = new ArrayList<>();
 
         titleBar = (NowPlayingTitleBar) findViewById(R.id.now_playing_title_bar);
-
-        txtSongTitle = (TextView) findViewById(R.id.now_playing_title);
-        txtAlbum = (TextView) findViewById(R.id.now_playing_album);
         imgAlbumArt = (ImageView) findViewById(R.id.now_playing_album_art);
 
         txtPassed = (TextView) findViewById(R.id.now_playing_passed);
@@ -211,30 +196,6 @@ public class NowPlayingView extends SlidingView implements MediaListener {
 
     public NowPlayingTitleBar getTitleBar() {
         return titleBar;
-    }
-
-    public TextView getTxtPassed() {
-        return txtPassed;
-    }
-
-    public SeekBar getSeekBar() {
-        return seekBar;
-    }
-
-    public TextView getTxtDuration() {
-        return txtDuration;
-    }
-
-    public ImageView getBtnPrevious() {
-        return btnPrevious;
-    }
-
-    public ImageView getBtnPlay() {
-        return btnPlay;
-    }
-
-    public ImageView getBtnForward() {
-        return btnForward;
     }
 
 }

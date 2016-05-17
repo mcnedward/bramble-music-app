@@ -63,11 +63,11 @@ public class NowPlayingTitleBar extends LinearLayout {
         txtNowPlayingAlbum.setText(albumTitle);
     }
 
-    public void setPlayButtonListener(final List<ImageView> playButtons, final MediaPlayer player) {
+    public void setPlayButtonListener(final List<ImageView> playButtons) {
         btnPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicUtil.doPlayButtonAction(playButtons, player, context);
+                MusicUtil.doPlayButtonAction(playButtons, context);
             }
         });
     }

@@ -51,7 +51,7 @@ public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
         ViewHolder holder;
 
         MediaCard mediaCard;
-        T item = getItem(position);
+        final T item = getItem(position);
         if (convertView == null) {
             mediaCard = new MediaCard(item, mLruCache, mContext);
             convertView = mediaCard;
@@ -65,7 +65,12 @@ public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
 
         mediaCard.update(item);
         RippleUtil.setRippleBackground(mediaCard, mContext);
-        setOnClickListener(item, mediaCard);
+        mediaCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doOnClickAction(item, v);
+            }
+        });
         return convertView;
     }
 
@@ -77,7 +82,7 @@ public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
         mGroups = new ArrayList<>();
     }
 
-    protected abstract void setOnClickListener(T media, View view);
+    protected abstract void doOnClickAction(T media, View view);
 
     @Override
     public int getCount() {

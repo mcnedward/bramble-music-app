@@ -3,12 +3,10 @@ package com.mcnedward.bramble.adapter.list;
 import android.content.Context;
 import android.view.View;
 
+import com.mcnedward.bramble.adapter.BaseMediaAdapter;
 import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.media.Artist;
-import com.mcnedward.bramble.utils.MediaCache;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.mcnedward.bramble.utils.MusicUtil;
+import com.mcnedward.bramble.view.MediaItem;
 
 /**
  * Created by edward on 24/12/15.
@@ -20,7 +18,8 @@ public class AlbumListAdapter extends MediaListAdapter<Album> {
     }
 
     @Override
-    protected void setOnClickListener(Album album, View view) {
+    protected void doOnClickAction(Album album, View view) {
+        MusicUtil.openAlbum(album, mContext);
     }
 
 }

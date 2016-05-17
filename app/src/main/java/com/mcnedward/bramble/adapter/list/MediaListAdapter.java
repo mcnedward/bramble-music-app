@@ -8,6 +8,9 @@ import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.adapter.BaseMediaAdapter;
 import com.mcnedward.bramble.media.Media;
 import com.mcnedward.bramble.utils.RippleUtil;
+import com.mcnedward.bramble.view.MediaItem;
+
+import java.util.List;
 
 /**
  * Created by edward on 22/12/15.
@@ -18,17 +21,19 @@ public abstract class MediaListAdapter<T extends Media> extends BaseMediaAdapter
         super(context);
     }
 
-    @Override
-    protected View getCustomView(int position) {
-        return inflater.inflate(R.layout.item_simple_text, null);
+    public MediaListAdapter(List<T> groups, Context context) {
+        super(groups, context);
     }
 
     @Override
-    protected void setViewContent(int position, View view) {
-        T media = getItem(position);
-        final TextView textView = ((TextView) view);
-        textView.setText(media.toString());
-        RippleUtil.setRippleBackground(textView, context);
+    protected View getCustomView(T media) {
+        return new MediaItem(media, mContext);
+    }
+
+    @Override
+    protected void setViewContent(T media, View view) {
+        MediaItem mediaView = ((MediaItem) view);
+        mediaView.update(media);
     }
 
 }

@@ -55,7 +55,7 @@ public class AlbumPopup extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
         int width = (int) (dm.widthPixels * 0.75);
-        int height = (int) (dm.heightPixels * 0.6);
+        int height = (int) (dm.heightPixels * 0.65);
 
         getWindow().setLayout(width, height);
     }

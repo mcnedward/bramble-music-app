@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.mcnedward.bramble.exception.MediaNotFoundException;
 import com.mcnedward.bramble.listener.MediaListener;
+import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.MediaCache;
 
@@ -29,6 +30,7 @@ public class MediaService extends Service {
 
     private static MediaPlayer mPlayer;
     private static Song song;
+    private static Album album;
     private static Set<MediaListener> mListeners;
 
     private static MediaThread mediaThread;
@@ -50,8 +52,11 @@ public class MediaService extends Service {
         Log.d(TAG, "Starting MediaService!");
         if (intent != null) {
             song = (Song) intent.getSerializableExtra("song");
+            album = (Album) intent.getSerializableExtra("album");
+
             MediaCache.saveSong(song, getApplicationContext());
-            mediaThread.startMusic(song);
+            MediaCache.saveAlbum(album, getApplicationContext());
+            mediaThread.startThread();
             nowPlayingThread.startThread();
         }
         return START_STICKY;
@@ -98,6 +103,10 @@ public class MediaService extends Service {
         return mPlayer;
     }
 
+    public static boolean isPlaying() {
+        return mPlayer != null && mPlayer.isPlaying();
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -108,15 +117,13 @@ public class MediaService extends Service {
     final class MediaThread extends BaseThread {
         private static final String TAG = "MediaThread";
 
-        private Song song;
-
         public MediaThread() {
             super("Media");
         }
 
         @Override
         public void doRunAction() {
-            Log.d(TAG, "RUNNING");
+
         }
 
         @Override
@@ -149,11 +156,6 @@ public class MediaService extends Service {
                 Log.e(TAG, e.getMessage(), e);
             }
         }
-
-        public void startMusic(Song song) {
-            this.song = song;
-            startThread();
-        }
     }
 
     final class NowPlayingThread extends BaseThread implements IThread {
@@ -166,11 +168,11 @@ public class MediaService extends Service {
         public void doRunAction() {
             for (final MediaListener listener : mListeners) {
                 View view = listener.getView();
-                if (view == null) return;
+                if (view == null || view.getHandler() == null) return;
                 view.getHandler().post(new Runnable() {
                     @Override
                     public void run() {
-                        listener.update();
+                        listener.update(song, album);
                     }
                 });
             }

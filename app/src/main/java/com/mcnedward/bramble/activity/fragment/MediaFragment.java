@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.adapter.BaseMediaAdapter;
 import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
 import com.mcnedward.bramble.loader.BaseDataLoader;
 import com.mcnedward.bramble.media.Media;
@@ -36,7 +37,7 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
     protected GridView gridView;
 
     protected BaseDataLoader<T> mDataLoader;
-    protected MediaListAdapter<T> mListAdapter;
+    protected BaseMediaAdapter<T> mListAdapter;
     protected MediaGridAdapter<T> mGridAdapter;
 
     protected ProgressBar progressBar;
@@ -57,8 +58,6 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         }
         return null;
     }
-
-    protected abstract void setOnItemClick(AdapterView<?> parent, View view, int position, long id);
 
     protected abstract IRepository<T> createRepository();
 
@@ -110,12 +109,6 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
     private void setupList(View view) {
         listView = (ListView) view.findViewById(R.id.list_media);
         listView.setItemsCanFocus(true);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                setOnItemClick(parent, view, position, id);
-            }
-        });
         if (mListAdapter == null)
             mListAdapter = createMediaListAdapter();
         listView.setAdapter(mListAdapter);
@@ -128,12 +121,6 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
 
     private void setupGrid(View view) {
         gridView = (GridView) view.findViewById(R.id.grid_media);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                setOnItemClick(parent, view, position, id);
-            }
-        });
         if (mGridAdapter == null)
             mGridAdapter = createMediaGridAdapter();
         gridView.setAdapter(mGridAdapter);

@@ -12,10 +12,12 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.activity.AlbumActivity;
 import com.mcnedward.bramble.activity.AlbumPopup;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.repository.SongRepository;
 import com.mcnedward.bramble.service.MediaService;
 
 import java.io.File;
@@ -27,6 +29,8 @@ import java.util.List;
 public class MusicUtil {
     private final static String TAG = "MusicUtil";
 
+    private static SongRepository mSongRepository;
+
     public static void loadAlbumArt(String albumArtPath, ImageView imageView, Context context) {
         if (albumArtPath != null && !albumArtPath.equals("")) {
             File imageFile = new File(albumArtPath);
@@ -36,11 +40,43 @@ public class MusicUtil {
         }
     }
 
-    public static void doPlayButtonAction(List<ImageView> playButtons, MediaPlayer player, Context context) {
+    public static void doPreviousButtonAction(Context context) {
+        Song song = MediaCache.getSong(context);
+        Album album = MediaCache.getAlbum(context);
+        if (song == null || album == null) return;
+        List<Integer> albumIds = album.getSongIds();
+        if (albumIds.isEmpty()) return;
+
+        SongRepository songRepository = getSongRepository(context);
+        Song nextSong = null;
+        for (int i = 0; i < albumIds.size(); i++) {
+            int id = albumIds.get(i);
+            if (song.getId() == id) {
+                // Get the previous song, or the last one if the current song is the first
+                if (i == 0) {
+                    nextSong = songRepository.get(albumIds.get(albumIds.size() - 1));
+                } else {
+                    nextSong = songRepository.get(i - 1);
+                }
+            }
+        }
+        startPlayingMusic(nextSong, album, context);
+    }
+
+    public static void doForwardButtonAction(Context context) {
+        Song song = MediaCache.getSong(context);
+        Album album = MediaCache.getAlbum(context);
+        if (song == null || album == null) return;
+
+
+    }
+
+    public static void doPlayButtonAction(List<ImageView> playButtons, Context context) {
+        MediaPlayer player = MediaService.getPlayer();
         if (player == null) {
             Song song = MediaCache.getSong(context);
             if (song != null) {
-                MusicUtil.startPlayingMusic(song, (Activity) context);
+                MusicUtil.startPlayingMusic(song, context);
                 MusicUtil.switchPlayButton(playButtons, false, context);
             }
         } else {
@@ -64,24 +100,30 @@ public class MusicUtil {
         }
     }
 
-    // TODO What's going on here?
-    public static void startAlbumPopup(final Artist artist, final Activity activity) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(activity, AlbumPopup.class);
-                intent.putExtra("artist", artist);
-                activity.startActivity(intent);
-            }
-        }, 500);
+    public static void startAlbumPopup(Artist artist, Context context) {
+        Intent intent = new Intent(context, AlbumPopup.class);
+        intent.putExtra("artist", artist);
+        context.startActivity(intent);
     }
 
-    public static void startPlayingMusic(final Song song, final Activity activity) {
+    public static void openAlbum(Album album, Context context) {
+        Intent intent = new Intent(context, AlbumActivity.class);
+        intent.putExtra("album", album);
+        context.startActivity(intent);
+    }
+
+    public static void startPlayingMusic(Song song, Context context) {
         // Start playing music!
-        Log.d(TAG, String.format("Starting to play '%s' from %s!", song, TAG));
-        Intent intent = new Intent(activity, MediaService.class);
+        Intent intent = new Intent(context, MediaService.class);
         intent.putExtra("song", song);
-        activity.startService(intent);
+        context.startService(intent);
+    }
+
+    public static void startPlayingMusic(Song song, Album album, Context context) {
+        Intent intent = new Intent(context, MediaService.class);
+        intent.putExtra("song", song);
+        intent.putExtra("album", album);
+        context.startService(intent);
     }
 
     /**
@@ -94,6 +136,13 @@ public class MusicUtil {
         int minutes = (int) (millis / (1000 * 60));
         int seconds = (int) ((millis / 1000) % 60);
         return String.format("%d:%02d", minutes, seconds);
+    }
+
+    public static SongRepository getSongRepository(Context context) {
+        if (mSongRepository == null) {
+            mSongRepository = new SongRepository(context);
+        }
+        return mSongRepository;
     }
 
 }

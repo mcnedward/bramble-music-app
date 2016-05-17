@@ -7,6 +7,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
@@ -17,7 +18,7 @@ import com.mcnedward.bramble.utils.RippleUtil;
 public class AlbumSongItem extends RelativeLayout {
     private final static String TAG = "AlbumSongItem";
 
-    public AlbumSongItem(Song song, Context context) {
+    public AlbumSongItem(Album album, Song song, Context context) {
         super(context);
         inflate(context, R.layout.item_album_song, this);
         ((TextView) findViewById(R.id.song_title)).setText(song.getTitle());
@@ -30,10 +31,11 @@ public class AlbumSongItem extends RelativeLayout {
 
         final Activity activity = (Activity) context;
         final Song nowPlayingSong = song;
+        final Album nowPlayingAlbum = album;
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicUtil.startPlayingMusic(nowPlayingSong, activity);
+                MusicUtil.startPlayingMusic(nowPlayingSong, nowPlayingAlbum, activity);
             }
         });
     }

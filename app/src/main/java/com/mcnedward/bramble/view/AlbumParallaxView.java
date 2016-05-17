@@ -9,12 +9,14 @@ import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.fragment.NowPlayingFragment;
+import com.mcnedward.bramble.adapter.list.SongListAdapter;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.listener.ScrollViewListener;
@@ -95,8 +97,9 @@ public class AlbumParallaxView extends LinearLayout {
 
         // Set the list of songs
         List<Song> songs = mSongRepository.getSongsForAlbum(mAlbum.getId());
+        mAlbum.setAlbumSongIds(songs);
         for (Song song : songs) {
-            AlbumSongItem songItem = new AlbumSongItem(song, context);
+            AlbumSongItem songItem = new AlbumSongItem(mAlbum, song, context);
             layout.addView(songItem);
         }
     }

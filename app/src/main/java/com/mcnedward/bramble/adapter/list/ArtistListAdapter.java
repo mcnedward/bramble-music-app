@@ -1,11 +1,12 @@
 package com.mcnedward.bramble.adapter.list;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.View;
 
-import com.mcnedward.bramble.activity.AlbumPopup;
+import com.mcnedward.bramble.adapter.BaseMediaAdapter;
 import com.mcnedward.bramble.media.Artist;
+import com.mcnedward.bramble.utils.MusicUtil;
+import com.mcnedward.bramble.view.MediaItem;
 
 /**
  * Created by edward on 24/12/15.
@@ -17,10 +18,8 @@ public class ArtistListAdapter extends MediaListAdapter<Artist> {
     }
 
     @Override
-    protected void setOnClickListener(Artist artist, View view) {
-        Intent intent = new Intent(context, AlbumPopup.class);
-        intent.putExtra("artist", artist);
-        context.startActivity(intent);
+    protected void doOnClickAction(Artist artist, View view) {
+        MusicUtil.startAlbumPopup(artist, mContext);
     }
 
 }

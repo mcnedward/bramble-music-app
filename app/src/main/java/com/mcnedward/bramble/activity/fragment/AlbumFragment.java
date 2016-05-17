@@ -36,15 +36,6 @@ public class AlbumFragment extends MediaFragment<Album> {
     }
 
     @Override
-    protected void setOnItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Album album = (Album) listView.getItemAtPosition(position);
-        Log.d(TAG, "Starting AlbumActivity for " + album + "!");
-        Intent intent = new Intent(getActivity(), AlbumActivity.class);
-        intent.putExtra("album", album);
-        getActivity().startActivity(intent);
-    }
-
-    @Override
     protected MediaListAdapter<Album> createMediaListAdapter() {
         return new AlbumListAdapter(getActivity());
     }

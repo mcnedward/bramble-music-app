@@ -29,11 +29,6 @@ public class ArtistFragment extends MediaFragment<Artist> {
     }
 
     @Override
-    protected void setOnItemClick(AdapterView<?> parent, View view, int position, long id) {
-        MusicUtil.startAlbumPopup((Artist) listView.getItemAtPosition(position), getActivity());
-    }
-
-    @Override
     public IRepository<Artist> createRepository() {
         return new ArtistRepository(getActivity());
     }

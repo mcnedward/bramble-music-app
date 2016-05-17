@@ -27,11 +27,12 @@ public abstract class Media implements Serializable {
     }
 
     public void save(SharedPreferences.Editor editor) {
-        editor.putInt("id", id);
-        editor.putString("imagePath", imagePath);
-        editor.putString("title", title);
-        editor.putString("key", key);
-        editor.putString("mediaType", mediaType.type());
+        String theMediaType = mediaType.type();
+        editor.putInt(theMediaType + "_id", id);
+        editor.putString(theMediaType + "_imagePath", imagePath);
+        editor.putString(theMediaType + "_title", title);
+        editor.putString(theMediaType + "_key", key);
+        editor.putString(theMediaType + "_mediaType", theMediaType);
         saveMedia(editor);
         editor.commit();
     }

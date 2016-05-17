@@ -19,7 +19,7 @@ public class SongGridAdapter extends MediaGridAdapter<Song> {
     }
 
     @Override
-    protected void setOnClickListener(Song song, View view) {
+    protected void doOnClickAction(Song song, View view) {
     }
 
 }

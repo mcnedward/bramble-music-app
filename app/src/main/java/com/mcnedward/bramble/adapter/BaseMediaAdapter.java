@@ -15,18 +15,18 @@ import java.util.List;
 public abstract class BaseMediaAdapter<T> extends BaseAdapter {
 
     protected List<T> groups;
-    protected Context context;
+    protected Context mContext;
     protected LayoutInflater inflater;
 
     public BaseMediaAdapter(Context context) {
         this.groups = new ArrayList<>();
-        this.context = context;
+        mContext = context;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     public BaseMediaAdapter(List<T> groups, Context context) {
         this.groups = groups;
-        this.context = context;
+        mContext = context;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -38,18 +38,25 @@ public abstract class BaseMediaAdapter<T> extends BaseAdapter {
         groups = new ArrayList<>();
     }
 
-    protected abstract View getCustomView(int position);
+    protected abstract View getCustomView(T media);
 
-    protected abstract void setViewContent(int position, View view);
+    protected abstract void setViewContent(T media, View view);
 
-    protected abstract void setOnClickListener(T media, View view);
+    protected abstract void doOnClickAction(T media, View view);
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        T item = getItem(position);
         if (convertView == null) {
-            convertView = getCustomView(position);
+            convertView = getCustomView(item);
         }
-        setViewContent(position, convertView);
+        setViewContent(item, convertView);
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doOnClickAction(getItem(position), v);
+            }
+        });
         return convertView;
     }
 

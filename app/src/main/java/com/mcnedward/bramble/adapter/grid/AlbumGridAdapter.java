@@ -1,10 +1,14 @@
 package com.mcnedward.bramble.adapter.grid;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 
+import com.mcnedward.bramble.activity.AlbumActivity;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.utils.MediaCache;
+import com.mcnedward.bramble.utils.MusicUtil;
 
 import java.util.List;
 
@@ -22,8 +26,8 @@ public class AlbumGridAdapter extends MediaGridAdapter<Album> {
     }
 
     @Override
-    protected void setOnClickListener(Album media, View view) {
-
+    protected void doOnClickAction(Album album, View view) {
+        MusicUtil.openAlbum(album, mContext);
     }
 
 }

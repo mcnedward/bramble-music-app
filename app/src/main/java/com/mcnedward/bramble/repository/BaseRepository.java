@@ -56,6 +56,7 @@ public abstract class BaseRepository<T extends Media> implements IRepository<T> 
         return query(null);
     }
 
+    // TODO ERROR HANDLING
     @Override
     public T get(int id) {
         String selection = String.format("%s = ?", getColumns()[0]);

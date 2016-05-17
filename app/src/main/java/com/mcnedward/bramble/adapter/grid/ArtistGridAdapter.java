@@ -8,6 +8,7 @@ import com.mcnedward.bramble.activity.AlbumPopup;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.utils.MediaCache;
+import com.mcnedward.bramble.utils.MusicUtil;
 
 import java.util.List;
 
@@ -21,10 +22,8 @@ public class ArtistGridAdapter extends MediaGridAdapter<Artist> {
     }
 
     @Override
-    protected void setOnClickListener(Artist artist, View view) {
-        Intent intent = new Intent(mContext, AlbumPopup.class);
-        intent.putExtra("artist", artist);
-        mContext.startActivity(intent);
+    protected void doOnClickAction(Artist artist, View view) {
+        MusicUtil.startAlbumPopup(artist, mContext);
     }
 
 }

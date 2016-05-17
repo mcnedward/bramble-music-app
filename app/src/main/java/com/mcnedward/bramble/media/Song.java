@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class Song extends Media implements Serializable {
 
-    private String title;
     private String displayName;
     private int artistId;
     private int albumId;
@@ -24,26 +23,12 @@ public class Song extends Media implements Serializable {
     private String data;
 
     public Song(int songId, String title, String titleKey, String displayName, int artistId, int albumId, String composer, int track, int duration, int year, int dateAdded, String mimeType, String data) {
-        super(songId, "", title, titleKey, MediaType.SONG);
-        this.title = title;
-        this.displayName = displayName;
-        this.artistId = artistId;
-        this.albumId = albumId;
-        this.composer = composer;
-        this.track = track;
-        this.duration = duration;
-        this.year = year;
-        this.dateAdded = dateAdded;
-        this.mimeType = mimeType;
-        this.data = data;
-
-        handleTrack(track);
+        this(songId, "", title, titleKey, MediaType.SONG, displayName, artistId, albumId, composer, track, duration, year, dateAdded, mimeType, data);
     }
 
     public Song(int id, String imagePath, String title, String key, MediaType mediaType, String displayName, int artistId, int
             albumId, String composer, int track, int duration, int year, int dateAdded, String mimeType, String data) {
         super(id, imagePath, title, key, mediaType);
-        this.title = title;
         this.displayName = displayName;
         this.artistId = artistId;
         this.albumId = albumId;
@@ -54,6 +39,7 @@ public class Song extends Media implements Serializable {
         this.dateAdded = dateAdded;
         this.mimeType = mimeType;
         this.data = data;
+        handleTrack(track);
     }
 
     private void handleTrack(int trackNumber) {
@@ -66,46 +52,39 @@ public class Song extends Media implements Serializable {
 
     @Override
     public void saveMedia(SharedPreferences.Editor editor) {
-        editor.putString("title", title);
-        editor.putString("displayName", displayName);
-        editor.putInt("artistId", artistId);
-        editor.putInt("albumId", albumId);
-        editor.putString("composer", composer);
-        editor.putInt("track", track);
-        editor.putInt("duration", year);
-        editor.putInt("year", year);
-        editor.putInt("dateAdded", dateAdded);
-        editor.putString("mimeType", mimeType);
-        editor.putString("data", data);
+        String theMediaType = MediaType.SONG.type();
+        editor.putString(theMediaType + "_displayName", displayName);
+        editor.putInt(theMediaType + "_artistId", artistId);
+        editor.putInt(theMediaType + "_albumId", albumId);
+        editor.putString(theMediaType + "_composer", composer);
+        editor.putInt(theMediaType + "_track", track);
+        editor.putInt(theMediaType + "_duration", duration);
+        editor.putInt(theMediaType + "_year", year);
+        editor.putInt(theMediaType + "_dateAdded", dateAdded);
+        editor.putString(theMediaType + "_mimeType", mimeType);
+        editor.putString(theMediaType + "_data", data);
     }
 
     public static Song get(SharedPreferences sharedPreferences) {
-        int id = sharedPreferences.getInt("id", 0);
+        String theMediaType = MediaType.SONG.type();
+        int id = sharedPreferences.getInt(theMediaType + "_id", 0);
         if (id == 0) return null;
 
-        String imagePath = sharedPreferences.getString("imagePath", "");
-        String key = sharedPreferences.getString("key", "");
-        String title = sharedPreferences.getString("title", "");
-        String displayName = sharedPreferences.getString("displayName", "");
-        int artistId = sharedPreferences.getInt("artistId", 0);
-        int albumId = sharedPreferences.getInt("albumId", 0);
-        String composer = sharedPreferences.getString("composer", "");
-        int track = sharedPreferences.getInt("artistId", 0);
-        int duration = sharedPreferences.getInt("albumId", 0);
-        int year = sharedPreferences.getInt("year", 0);
-        int dateAdded = sharedPreferences.getInt("dateAdded", 0);
-        String mimeType = sharedPreferences.getString("mimeType", "");
-        String data = sharedPreferences.getString("data", "");
+        String imagePath = sharedPreferences.getString(theMediaType + "_imagePath", "");
+        String title = sharedPreferences.getString(theMediaType + "_title", "");
+        String key = sharedPreferences.getString(theMediaType + "_key", "");
+        String displayName = sharedPreferences.getString(theMediaType + "_displayName", "");
+        int artistId = sharedPreferences.getInt(theMediaType + "_artistId", 0);
+        int albumId = sharedPreferences.getInt(theMediaType + "_albumId", 0);
+        String composer = sharedPreferences.getString(theMediaType + "_composer", "");
+        int track = sharedPreferences.getInt(theMediaType + "_track", 0);
+        int duration = sharedPreferences.getInt(theMediaType + "_duration", 0);
+        int year = sharedPreferences.getInt(theMediaType + "_year", 0);
+        int dateAdded = sharedPreferences.getInt(theMediaType + "_dateAdded", 0);
+        String mimeType = sharedPreferences.getString(theMediaType + "_mimeType", "");
+        String data = sharedPreferences.getString(theMediaType + "_data", "");
 
         return new Song(id, imagePath, title, key, MediaType.SONG, displayName, artistId, albumId, composer, track, duration, year, dateAdded, mimeType, data);
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getDisplayName() {
