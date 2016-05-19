@@ -20,9 +20,7 @@ import com.mcnedward.bramble.repository.AlbumRepository;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.MusicUtil;
-import com.mcnedward.bramble.utils.PicassoUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +48,7 @@ public class NowPlayingView extends SlidingView implements MediaListener {
 
     @Override
     protected void switchSlidable(boolean top) {
-        titleBar.switchPlayIcon(top);
+        titleBar.update(top);
     }
 
     @Override

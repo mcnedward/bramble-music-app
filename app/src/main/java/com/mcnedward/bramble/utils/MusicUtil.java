@@ -17,10 +17,12 @@ import com.mcnedward.bramble.activity.AlbumPopup;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.repository.AlbumRepository;
 import com.mcnedward.bramble.repository.SongRepository;
 import com.mcnedward.bramble.service.MediaService;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +32,7 @@ public class MusicUtil {
     private final static String TAG = "MusicUtil";
 
     private static SongRepository mSongRepository;
+    private static AlbumRepository mAlbumRepository;
 
     public static void loadAlbumArt(String albumArtPath, ImageView imageView, Context context) {
         if (albumArtPath != null && !albumArtPath.equals("")) {
@@ -44,21 +47,30 @@ public class MusicUtil {
         Song song = MediaCache.getSong(context);
         Album album = MediaCache.getAlbum(context);
         if (song == null || album == null) return;
-        List<Integer> albumIds = album.getSongIds();
-        if (albumIds.isEmpty()) return;
+
+        // First check if the current song should just be restarted
+        // If the player is null, then all songs have stopped, or the app is freshly opened, so the song should not be restarted, but should go to the previous
+        MediaPlayer player = MediaService.getPlayer();
+        if (player != null) {
+            int currentPosition = getTimeInSeconds(player.getCurrentPosition());
+            if (currentPosition > 2) {
+                startPlayingMusic(song, album, context);
+                return;
+            }
+        }
 
         SongRepository songRepository = getSongRepository(context);
-        Song nextSong = null;
-        for (int i = 0; i < albumIds.size(); i++) {
-            int id = albumIds.get(i);
-            if (song.getId() == id) {
-                // Get the previous song, or the last one if the current song is the first
-                if (i == 0) {
-                    nextSong = songRepository.get(albumIds.get(albumIds.size() - 1));
-                } else {
-                    nextSong = songRepository.get(i - 1);
-                }
-            }
+        List<Song> songs = songRepository.getSongsForAlbum(album.getId());
+        if (songs.isEmpty()) return;
+
+        int currentIndex = getSongIndex(songs, song);
+        if (currentIndex == -1) return;
+        Song nextSong;
+        // Get the previous song, or the last one if the current song is the first
+        if (currentIndex == 0) {
+            nextSong = songs.get(songs.size() - 1);
+        } else {
+            nextSong = songs.get(currentIndex - 1);
         }
         startPlayingMusic(nextSong, album, context);
     }
@@ -67,8 +79,31 @@ public class MusicUtil {
         Song song = MediaCache.getSong(context);
         Album album = MediaCache.getAlbum(context);
         if (song == null || album == null) return;
+        SongRepository songRepository = getSongRepository(context);
+        List<Song> songs = songRepository.getSongsForAlbum(album.getId());
+        if (songs.isEmpty()) return;
 
+        int currentIndex = getSongIndex(songs, song);
+        if (currentIndex == -1) return;
+        Song nextSong;
+        if (currentIndex == songs.size() - 1) {
+            nextSong = songs.get(0);
+        } else {
+            nextSong = songs.get(currentIndex + 1);
+        }
+        startPlayingMusic(nextSong, album, context);
+    }
 
+    private static int getSongIndex(List<Song> songs, Song song) {
+        int currentIndex = -1;
+        for (int i = 0; i < songs.size(); i++) {
+            Song albumSong = songs.get(i);
+            if (albumSong.getId() == song.getId()) {
+                currentIndex = i;
+                break;
+            }
+        }
+        return currentIndex;
     }
 
     public static void doPlayButtonAction(List<ImageView> playButtons, Context context) {
@@ -135,8 +170,12 @@ public class MusicUtil {
      */
     public static String getTimeString(long millis) {
         int minutes = (int) (millis / (1000 * 60));
-        int seconds = (int) ((millis / 1000) % 60);
+        int seconds = getTimeInSeconds(millis);
         return String.format("%d:%02d", minutes, seconds);
+    }
+
+    public static int getTimeInSeconds(long millis) {
+        return (int) ((millis / 1000) % 60);
     }
 
     public static SongRepository getSongRepository(Context context) {
@@ -144,6 +183,13 @@ public class MusicUtil {
             mSongRepository = new SongRepository(context);
         }
         return mSongRepository;
+    }
+
+    public static AlbumRepository getAlbumRepository(Context context) {
+        if (mAlbumRepository == null) {
+            mAlbumRepository = new AlbumRepository(context);
+        }
+        return mAlbumRepository;
     }
 
 }

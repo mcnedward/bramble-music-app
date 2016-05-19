@@ -16,46 +16,50 @@ import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.MediaCache;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Created by edward on 26/12/15.
+ *
+ * A Service to play media. Contains two threads: one for starting and stopping the music, and another for handling the UI updates.
+ * Uses listeners to notify views that updates should be made based on the currently playing music.
  */
 public class MediaService extends Service {
     private final static String TAG = "MediaService";
 
     private static MediaPlayer mPlayer;
-    private static Song song;
-    private static Album album;
+    private static Song mSong;
+    private static Album mAlbum;
     private static Set<MediaListener> mListeners;
     private static Set<SongPlayingListener> mSongPlayingListeners;
 
-    private static MediaThread mediaThread;
-    private static NowPlayingThread nowPlayingThread;
+    private static MediaThread mMediaThread;
+    private static NowPlayingThread mNowPlayingThread;
 
     @Override
     public void onCreate() {
         Log.d(TAG, "Creating MediaService!");
         mPlayer = new MediaPlayer();
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        if (mediaThread == null)
-            mediaThread = new MediaThread();
-        if (nowPlayingThread == null)
-            nowPlayingThread = new NowPlayingThread();
+        if (mMediaThread == null)
+            mMediaThread = new MediaThread();
+        if (mNowPlayingThread == null)
+            mNowPlayingThread = new NowPlayingThread();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Starting MediaService!");
         if (intent != null) {
-            song = (Song) intent.getSerializableExtra("song");
-            album = (Album) intent.getSerializableExtra("album");
+            mSong = (Song) intent.getSerializableExtra("song");
+            mAlbum = (Album) intent.getSerializableExtra("album");
 
-            MediaCache.saveSong(song, getApplicationContext());
-            MediaCache.saveAlbum(album, getApplicationContext());
-            mediaThread.startThread();
-            nowPlayingThread.startThread();
+            MediaCache.saveSong(mSong, getApplicationContext());
+            MediaCache.saveAlbum(mAlbum, getApplicationContext());
+            mMediaThread.startThread();
+            mNowPlayingThread.startThread();
         }
         return START_STICKY;
     }
@@ -63,14 +67,15 @@ public class MediaService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "Destroying MediaService!");
-        // TODO Stop NowPlayingThread? I dont think so...?
+        mNowPlayingThread.stopThread();
+        mMediaThread.stopThread();
     }
 
     public static void attachMediaListener(MediaListener listener) {
         if (mListeners == null)
             mListeners = new HashSet<>();
         mListeners.add(listener);
-        if (song != null)
+        if (mSong != null)
             listener.notifyMediaStarted();
     }
 
@@ -87,7 +92,7 @@ public class MediaService extends Service {
     }
 
     public static void notifyMediaListeners() {
-        if (song == null) return;
+        if (mSong == null) return;
         for (MediaListener listener : mListeners)
             listener.notifyMediaStarted();
     }
@@ -96,8 +101,8 @@ public class MediaService extends Service {
         if (mSongPlayingListeners == null)
             mSongPlayingListeners = new HashSet<>();
         mSongPlayingListeners.add(listener);
-        if (song != null && mPlayer != null)
-            listener.notifySongChange(song, mPlayer.isPlaying());
+        if (mSong != null && mPlayer != null)
+            listener.notifySongChange(mSong, mPlayer.isPlaying());
     }
 
     public static void removeMediaListener(SongPlayingListener listener) {
@@ -110,13 +115,13 @@ public class MediaService extends Service {
     public static void notifySongPlayingListeners() {
         if (mSongPlayingListeners == null || mPlayer == null) return;
         for (SongPlayingListener listener : mSongPlayingListeners) {
-            listener.notifySongChange(song, mPlayer.isPlaying());
+            listener.notifySongChange(mSong, mPlayer.isPlaying());
         }
     }
 
     public static void pauseNowPlayingView(boolean pause) {
-        if (nowPlayingThread != null)
-            nowPlayingThread.pauseThread(pause);
+        if (mNowPlayingThread != null)
+            mNowPlayingThread.pauseThread(pause);
     }
 
     public static MediaPlayer getPlayer() {
@@ -149,26 +154,28 @@ public class MediaService extends Service {
         @Override
         public void doStartAction() {
             startPlayingMusic();
-            for (MediaListener listener : mListeners) {
-                listener.notifyMediaStarted();
-            }
-            notifySongPlayingListeners();
         }
 
         @Override
         public void doStopAction() {
+            mPlayer.stop();
+            mPlayer.release();
         }
 
         private void startPlayingMusic() {
-            Log.d(TAG, String.format("Starting to play media for %s", song));
-            final Uri songUri = Uri.parse(song.getData());
+            Log.d(TAG, String.format("Starting to play media for %s", mSong));
+            final Uri songUri = Uri.parse(mSong.getData());
             try {
                 if (mPlayer.isPlaying()) {
+                    MediaPlayer nextPlayer = MediaPlayer.create(getApplicationContext(), songUri);
+                    nextPlayer.setOnPreparedListener(mOnPreparedListener);
+                    mPlayer.setNextMediaPlayer(nextPlayer);
                     mPlayer.stop();
                     mPlayer.reset();
+                } else {
+                    mPlayer = MediaPlayer.create(getApplicationContext(), songUri);
+                    mPlayer.setOnPreparedListener(mOnPreparedListener);
                 }
-                mPlayer = MediaPlayer.create(getApplicationContext(), songUri);
-                mPlayer.start();
             } catch (IllegalArgumentException e) {
                 Log.e(TAG, e.getMessage(), e);
             } catch (SecurityException e) {
@@ -177,6 +184,22 @@ public class MediaService extends Service {
                 Log.e(TAG, e.getMessage(), e);
             }
         }
+
+        private final MediaPlayer.OnPreparedListener mOnPreparedListener = new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                if (mPlayer != mp) {
+                    mPlayer.reset();
+                    mPlayer.release();
+                    mPlayer = mp;
+                }
+                mPlayer.start();
+                for (MediaListener listener : mListeners) {
+                    listener.notifyMediaStarted();
+                }
+                notifySongPlayingListeners();
+            }
+        };
     }
 
     final class NowPlayingThread extends BaseThread implements IThread {
@@ -193,7 +216,7 @@ public class MediaService extends Service {
                 view.getHandler().post(new Runnable() {
                     @Override
                     public void run() {
-                        listener.update(song, album);
+                        listener.update(mSong, mAlbum);
                     }
                 });
             }

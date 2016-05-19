@@ -72,14 +72,23 @@ public class NowPlayingTitleBar extends LinearLayout {
         });
     }
 
-    public void switchPlayIcon(boolean top) {
+    public void update(boolean top) {
         if (top) {
-            btnPlay.animate().alpha(0f).setDuration(100);
-            btnPlay.setVisibility(GONE);
+            updatePlayButton(0f, GONE);
+            updateOpacity(0.75f);
         } else {
-            btnPlay.animate().alpha(1f).setDuration(100);
-            btnPlay.setVisibility(VISIBLE);
+            updatePlayButton(1f, VISIBLE);
+            updateOpacity(1f);
         }
+    }
+
+    private void updatePlayButton(float alpha, int visibility) {
+        btnPlay.animate().alpha(alpha).setDuration(100);
+        btnPlay.setVisibility(visibility);
+    }
+
+    private void updateOpacity(float alpha) {
+        animate().alpha(alpha).setDuration(100);
     }
 
     public ImageView getPlayButton() {

@@ -23,10 +23,10 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
     private View slidable;
     private View content;
     private View bottom;
+    private boolean mLockToBottom;
 
     private boolean controlsTouched;
     protected boolean contentFocused = false;
-    private int bottomAnchor = 0;
 
     public SlidingView(int resourceId, Context context) {
         super(context);
@@ -83,6 +83,7 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                     if (root != null && eventY >= root.getHeight()) {
                         // Prevent moving below bottom of screen
                         snapToBottom();
+                        mLockToBottom = true;
                     }
                     if (eventY < 0) {
                         // Prevent moving above top of screen
@@ -101,8 +102,11 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                 break;
             case MotionEvent.ACTION_UP:
                 if (controlsTouched) {
-                    // Handle a single tap
-                    if (Math.abs(anchorY - eventY) > touchSlop) {
+                    if (mLockToBottom) {
+                        // Moving from top to bottom, but finger went off screen
+                        mLockToBottom = false;
+                    } else if (eventY > touchSlop) {
+                        // Handle a single tap
                         if (contentFocused) {
                             animateToBottom();
                         } else {
@@ -179,7 +183,6 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
 
     public void updateViewMeasures(ViewGroup root) {
         this.root = root;
-        bottomAnchor = root.getHeight() - NowPlayingTitleBar.HEIGHT;
     }
 
     public void setSlidable(View slidable) {
