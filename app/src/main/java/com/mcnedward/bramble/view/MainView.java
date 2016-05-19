@@ -1,22 +1,17 @@
 package com.mcnedward.bramble.view;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.fragment.NowPlayingFragment;
-import com.mcnedward.bramble.view.nowPlaying.NowPlayingTitleBar;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 
 /**

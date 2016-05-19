@@ -2,13 +2,12 @@ package com.mcnedward.bramble.view.mediaItem;
 
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.mcnedward.bramble.R;
-import com.mcnedward.bramble.listener.SongPlayingListener;
+import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.media.Song;
 
 /**
@@ -16,7 +15,7 @@ import com.mcnedward.bramble.media.Song;
  *
  * A class for playing the NowPlaying music dancing gif.
  */
-public class GifView extends ImageView implements SongPlayingListener {
+public class GifView extends ImageView implements MediaChangeListener {
 
     private Context mContext;
     private Song mSong;
@@ -82,7 +81,7 @@ public class GifView extends ImageView implements SongPlayingListener {
     }
 
     @Override
-    public void notifySongChange(Song currentSong, boolean isPlaying) {
+    public void notifyMediaChange(Song currentSong, boolean isPlaying) {
         mCurrentSong = currentSong;
         mIsPlaying = isPlaying;
         switchMediaIcon();

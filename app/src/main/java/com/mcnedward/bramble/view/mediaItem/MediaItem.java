@@ -35,7 +35,7 @@ public class MediaItem<T extends Media> extends RelativeLayout {
         RippleUtil.setRippleBackground(this, context);
         update(media);
 
-        MediaService.attachSongPlayingListener(mGifView);
+        MediaService.attachMediaChangeListener(mGifView);
     }
 
     public void update(T media) {

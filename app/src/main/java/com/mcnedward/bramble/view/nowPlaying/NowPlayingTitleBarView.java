@@ -1,7 +1,6 @@
 package com.mcnedward.bramble.view.nowPlaying;
 
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,7 +8,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.media.Album;
+import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
 
@@ -18,58 +20,57 @@ import java.util.List;
 /**
  * Created by edward on 27/12/15.
  */
-public class NowPlayingTitleBar extends LinearLayout {
+public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeListener {
     private final static String TAG = "NowPlayingTitleBar";
 
     // Layout height + padding
     public static int HEIGHT = 75;
 
-    private Context context;
+    private Context mContext;
 
-    private ImageView imgAlbumArt;
-    private TextView txtNowPlayingTitle;
-    private TextView txtNowPlayingAlbum;
-    private ImageView btnPlay;
+    private ImageView mImgAlbumArt;
+    private TextView mTxtNowPlayingTitle;
+    private TextView mTxtNowPlayingAlbum;
+    private ImageView mBtnPlay;
 
-    public NowPlayingTitleBar(Context context) {
+    public NowPlayingTitleBarView(Context context) {
         super(context, null);
         initialize(context);
     }
 
-    public NowPlayingTitleBar(Context context, AttributeSet attrs) {
+    public NowPlayingTitleBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initialize(context);
     }
 
     private void initialize(Context context) {
-        this.context = context;
+        this.mContext = context;
         inflate(context, R.layout.view_now_playing_title_bar, this);
-        imgAlbumArt = (ImageView) findViewById(R.id.now_playing_bottom_album_art);
-        txtNowPlayingTitle = (TextView) findViewById(R.id.now_playing_title);
-        txtNowPlayingAlbum = (TextView) findViewById(R.id.now_playing_album);
-        btnPlay = (ImageView) findViewById(R.id.now_playing_title_play);
-        RippleUtil.setRippleBackground(btnPlay, R.color.FireBrick, 0, context);
+        mImgAlbumArt = (ImageView) findViewById(R.id.now_playing_bottom_album_art);
+        mTxtNowPlayingTitle = (TextView) findViewById(R.id.now_playing_title);
+        mTxtNowPlayingAlbum = (TextView) findViewById(R.id.now_playing_album);
+        mBtnPlay = (ImageView) findViewById(R.id.now_playing_title_play);
+        RippleUtil.setRippleBackground(mBtnPlay, R.color.FireBrick, 0, context);
+
+        MediaService.attachMediaChangeListener(this);
+        mBtnPlay.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MusicUtil.doPlayButtonAction(mBtnPlay, mContext);
+            }
+        });
     }
 
     public void updateAlbumArt(Album album) {
-        MusicUtil.loadAlbumArt(album.getAlbumArt(), imgAlbumArt, context);
+        MusicUtil.loadAlbumArt(album.getAlbumArt(), mImgAlbumArt, mContext);
     }
 
     public void updateSongTitle(String songTitle) {
-        txtNowPlayingTitle.setText(songTitle);
+        mTxtNowPlayingTitle.setText(songTitle);
     }
 
     public void updateAlbumTitle(String albumTitle) {
-        txtNowPlayingAlbum.setText(albumTitle);
-    }
-
-    public void setPlayButtonListener(final List<ImageView> playButtons) {
-        btnPlay.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MusicUtil.doPlayButtonAction(playButtons, context);
-            }
-        });
+        mTxtNowPlayingAlbum.setText(albumTitle);
     }
 
     public void update(boolean top) {
@@ -83,16 +84,16 @@ public class NowPlayingTitleBar extends LinearLayout {
     }
 
     private void updatePlayButton(float alpha, int visibility) {
-        btnPlay.animate().alpha(alpha).setDuration(100);
-        btnPlay.setVisibility(visibility);
+        mBtnPlay.animate().alpha(alpha).setDuration(100);
+        mBtnPlay.setVisibility(visibility);
     }
 
     private void updateOpacity(float alpha) {
         animate().alpha(alpha).setDuration(100);
     }
 
-    public ImageView getPlayButton() {
-        return btnPlay;
+    @Override
+    public void notifyMediaChange(Song currentSong, boolean playing) {
+        MusicUtil.switchPlayButton(mBtnPlay, playing, mContext);
     }
-
 }

@@ -2,7 +2,6 @@ package com.mcnedward.bramble.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.IBinder;
@@ -10,8 +9,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
-import com.mcnedward.bramble.listener.MediaListener;
-import com.mcnedward.bramble.listener.SongPlayingListener;
+import com.mcnedward.bramble.listener.MediaChangeListener;
+import com.mcnedward.bramble.listener.MediaPlayingListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.MediaCache;
@@ -21,7 +20,7 @@ import java.util.Set;
 
 /**
  * Created by edward on 26/12/15.
- *
+ * <p/>
  * A Service to play media. Contains two threads: one for starting and stopping the music, and another for handling the UI updates.
  * Uses listeners to notify views that updates should be made based on the currently playing music.
  */
@@ -31,8 +30,8 @@ public class MediaService extends Service {
     private static MediaPlayer mPlayer;
     private static Song mSong;
     private static Album mAlbum;
-    private static Set<MediaListener> mMediaListeners;
-    private static Set<SongPlayingListener> mSongPlayingListeners;
+    private static Set<MediaChangeListener> mMediaChangeListeners;
+    private static Set<MediaPlayingListener> mMediaPlayingListeners;
 
     private static MediaThread mMediaThread;
     private static NowPlayingThread mNowPlayingThread;
@@ -69,55 +68,46 @@ public class MediaService extends Service {
         mMediaThread.stopThread();
     }
 
-    public static void attachMediaListener(MediaListener listener) {
-        if (mMediaListeners == null)
-            mMediaListeners = new HashSet<>();
-        mMediaListeners.add(listener);
-        if (mSong != null)
-            listener.notifyUpdateMediaStatus(isPlaying());
-    }
-
-    public static void removeMediaListener(MediaListener listener) {
-        if (mMediaListeners == null)
-            mMediaListeners = new HashSet<>();
-        if (mMediaListeners.contains(listener))
-            mMediaListeners.remove(listener);
-    }
-
     public static void unRegisterListeners() {
-        mMediaListeners = new HashSet<>();
-        mSongPlayingListeners = new HashSet<>();
+        mMediaChangeListeners = new HashSet<>();
+        mMediaPlayingListeners = new HashSet<>();
     }
 
-    public static void notifyMediaListeners() {
-        if (mSong == null) return;
-        for (MediaListener listener : mMediaListeners)
-            listener.notifyUpdateMediaStatus(isPlaying());
-    }
-
-    public static void attachSongPlayingListener(SongPlayingListener listener) {
-        if (mSongPlayingListeners == null)
-            mSongPlayingListeners = new HashSet<>();
-        mSongPlayingListeners.add(listener);
+    public static void attachMediaChangeListener(MediaChangeListener listener) {
+        if (mMediaChangeListeners == null)
+            mMediaChangeListeners = new HashSet<>();
+        mMediaChangeListeners.add(listener);
         if (mSong != null)
-            listener.notifySongChange(mSong, isPlaying());
+            listener.notifyMediaChange(mSong, isPlaying());
     }
 
-    public static void removeMediaListener(SongPlayingListener listener) {
-        if (mSongPlayingListeners == null)
-            mSongPlayingListeners = new HashSet<>();
-        if (mSongPlayingListeners.contains(listener))
-            mSongPlayingListeners.remove(listener);
+    public static void removeMediaChangeListener(MediaChangeListener listener) {
+        if (mMediaChangeListeners == null)
+            mMediaChangeListeners = new HashSet<>();
+        if (mMediaChangeListeners.contains(listener))
+            mMediaChangeListeners.remove(listener);
     }
 
-    public static void notifySongPlayingListeners() {
-        if (mSongPlayingListeners == null || mPlayer == null) return;
-        for (SongPlayingListener listener : mSongPlayingListeners) {
-            listener.notifySongChange(mSong, isPlaying());
-        }
+    public static void notifyMediaChangeListeners() {
+        if (mSong == null) return;
+        for (MediaChangeListener listener : mMediaChangeListeners)
+            listener.notifyMediaChange(mSong, isPlaying());
     }
 
-    public static void pauseNowPlayingView(boolean pause) {
+    public static void attachMediaPlayingListener(MediaPlayingListener listener) {
+        if (mMediaPlayingListeners == null)
+            mMediaPlayingListeners = new HashSet<>();
+        mMediaPlayingListeners.add(listener);
+    }
+
+    public static void removeMediaPlayingListener(MediaPlayingListener listener) {
+        if (mMediaPlayingListeners == null)
+            mMediaPlayingListeners = new HashSet<>();
+        if (mMediaPlayingListeners.contains(listener))
+            mMediaPlayingListeners.remove(listener);
+    }
+
+    public static void pauseNowPlayingThread(boolean pause) {
         if (mNowPlayingThread != null)
             mNowPlayingThread.pauseThread(pause);
     }
@@ -201,8 +191,7 @@ public class MediaService extends Service {
                     mPlayer = mp;
                 }
                 mPlayer.start();
-                notifyMediaListeners();
-                notifySongPlayingListeners();
+                notifyMediaChangeListeners();
             }
         };
 
@@ -223,7 +212,7 @@ public class MediaService extends Service {
 
         @Override
         public void doRunAction() {
-            for (final MediaListener listener : mMediaListeners) {
+            for (final MediaPlayingListener listener : mMediaPlayingListeners) {
                 View view = listener.getView();
                 if (view == null || view.getHandler() == null) return;
                 view.getHandler().post(new Runnable() {

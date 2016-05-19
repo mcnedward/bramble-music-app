@@ -1,9 +1,7 @@
 package com.mcnedward.bramble.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.service.MediaService;
@@ -40,7 +38,8 @@ public class AlbumActivity extends FragmentActivity {
 
     @Override
     public void onDestroy() {
-        MediaService.removeMediaListener(mNowPlayingView);
+        MediaService.removeMediaChangeListener(mNowPlayingView);
+        MediaService.removeMediaPlayingListener(mNowPlayingView.getBottomControl());
         super.onDestroy();
     }
 

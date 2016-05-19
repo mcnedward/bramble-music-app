@@ -1,16 +1,12 @@
 package com.mcnedward.bramble.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -25,7 +21,6 @@ import com.mcnedward.bramble.activity.fragment.MediaFragment;
 import com.mcnedward.bramble.activity.fragment.SongFragment;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.service.MediaService;
-import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.view.MainView;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 
@@ -93,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onResume() {
-        MediaService.notifyMediaListeners();
+        MediaService.notifyMediaChangeListeners();
         super.onResume();
     }
 

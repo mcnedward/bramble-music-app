@@ -106,7 +106,7 @@ public class MusicUtil {
         return currentIndex;
     }
 
-    public static void doPlayButtonAction(List<ImageView> playButtons, Context context) {
+    public static void doPlayButtonAction(ImageView playButton, Context context) {
         MediaPlayer player = MediaService.getPlayer();
         if (player == null) {
             Song song = MediaCache.getSong(context);
@@ -116,22 +116,20 @@ public class MusicUtil {
         } else {
             if (player.isPlaying()) {
                 player.pause();
-                MusicUtil.switchPlayButton(playButtons, false, context);
+                MusicUtil.switchPlayButton(playButton, false, context);
             } else {
                 player.start();
-                MusicUtil.switchPlayButton(playButtons, true, context);
+                MusicUtil.switchPlayButton(playButton, true, context);
             }
-            MediaService.notifySongPlayingListeners();
+            MediaService.notifyMediaChangeListeners();
         }
     }
 
-    public static void switchPlayButton(List<ImageView> playButtons, boolean isPlaying, Context context) {
+    public static void switchPlayButton(ImageView playButton, boolean isPlaying, Context context) {
         if (isPlaying) {
-            for (ImageView view : playButtons)
-                view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_pause));
+            playButton.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_pause));
         } else {
-            for (ImageView view : playButtons)
-                view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_play));
+            playButton.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_play));
         }
     }
 

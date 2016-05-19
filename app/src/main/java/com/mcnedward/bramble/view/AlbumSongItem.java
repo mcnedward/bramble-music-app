@@ -7,7 +7,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
-import com.mcnedward.bramble.listener.SongPlayingListener;
+import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.MusicUtil;
@@ -17,7 +17,7 @@ import com.mcnedward.bramble.view.mediaItem.GifView;
 /**
  * Created by edward on 26/12/15.
  */
-public class AlbumSongItem extends RelativeLayout implements SongPlayingListener {
+public class AlbumSongItem extends RelativeLayout implements MediaChangeListener {
     private final static String TAG = "AlbumSongItem";
 
     private Song mSong;
@@ -50,8 +50,8 @@ public class AlbumSongItem extends RelativeLayout implements SongPlayingListener
     }
 
     @Override
-    public void notifySongChange(Song currentSong, boolean isPlaying) {
-        mGifView.notifySongChange(currentSong, isPlaying);
+    public void notifyMediaChange(Song currentSong, boolean isPlaying) {
+        mGifView.notifyMediaChange(currentSong, isPlaying);
         if (mSong.getId() == currentSong.getId())
             mTxtTrack.setVisibility(INVISIBLE);
         else
