@@ -5,6 +5,7 @@ import android.view.View;
 
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.utils.MusicUtil;
+import com.mcnedward.bramble.view.mediaItem.MediaItem;
 
 /**
  * Created by edward on 24/12/15.
@@ -16,7 +17,7 @@ public class ArtistListAdapter extends MediaListAdapter<Artist> {
     }
 
     @Override
-    protected void doOnClickAction(Artist artist, View view) {
+    protected void doOnClickAction(Artist artist, MediaItem view) {
         MusicUtil.startAlbumPopup(artist, mContext);
     }
 

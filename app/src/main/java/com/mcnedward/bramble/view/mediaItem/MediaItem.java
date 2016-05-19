@@ -6,6 +6,9 @@ import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.media.Media;
+import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.RippleUtil;
 
 /**
@@ -31,9 +34,14 @@ public class MediaItem<T extends Media> extends RelativeLayout {
         // TODO This can probably be done in the adapter
         RippleUtil.setRippleBackground(this, context);
         update(media);
+
+        MediaService.attachSongPlayingListener(mGifView);
     }
 
     public void update(T media) {
         mTxtTitle.setText(media.getTitle());
+        mMedia = media;
+        if (media.getMediaType() == MediaType.SONG)
+            mGifView.update((Song) media);
     }
 }

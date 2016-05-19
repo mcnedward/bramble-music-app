@@ -2,40 +2,48 @@ package com.mcnedward.bramble.view.mediaItem;
 
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.listener.SongPlayingListener;
+import com.mcnedward.bramble.media.Song;
 
 /**
  * Created by Edward on 5/17/2016.
+ *
+ * A class for playing the NowPlaying music dancing gif.
  */
-public class GifView extends ImageView {
+public class GifView extends ImageView implements SongPlayingListener {
 
+    private Context mContext;
+    private Song mSong;
+    private static Song mCurrentSong;
+    private static boolean mIsPlaying;
     private AnimationDrawable mAnimation;
 
     public GifView(Context context) {
         super(context);
-        initialize(context);
+        if (!isInEditMode())
+            initialize(context);
     }
 
     public GifView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initialize(context);
+        if (!isInEditMode())
+            initialize(context);
     }
 
     public GifView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initialize(context);
-    }
-
-    public GifView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        initialize(context);
+        if (!isInEditMode())
+            initialize(context);
     }
 
     private void initialize(Context context) {
+        mContext = context;
         setBackgroundResource(R.drawable.now_playing_anim);
         mAnimation = (AnimationDrawable) getBackground();
         post(new Runnable() {
@@ -53,17 +61,73 @@ public class GifView extends ImageView {
         });
     }
 
+    /**
+     * Set the current playing song. This is needed to ensure that the current song is set before the start() and stop() methods are called, since
+     * it may take some time to start the MediaPlayer in the service (which is what calls the notifySongChange()).
+     *
+     * @param song The current song.
+     */
+    public void setCurrentSong(Song song) {
+        mCurrentSong = song;
+    }
+
+    /**
+     * Updates the song. Since this view is being used in an adapter, it needs to update the song and check the icon state on every view recycle.
+     *
+     * @param song The song.
+     */
+    public void update(Song song) {
+        mSong = song;
+        switchMediaIcon();
+    }
+
+    @Override
+    public void notifySongChange(Song currentSong, boolean isPlaying) {
+        mCurrentSong = currentSong;
+        mIsPlaying = isPlaying;
+        switchMediaIcon();
+    }
+
+    /**
+     * Switches the state of the MediaIcon. Starts or pauses if this GifView's song is the current song, and stops the animation if it is not.
+     */
+    public void switchMediaIcon() {
+        if (mSong != null && mCurrentSong != null) {
+            if (mSong.getId() == mCurrentSong.getId()) {
+                play(mIsPlaying);
+            } else {
+                stop();
+            }
+        }
+    }
+
+    /**
+     * Plays or pauses the icon.
+     * @param play If true, the icon will be played. Paused otherwise.
+     */
     public void play(final boolean play) {
+        setVisibility(VISIBLE);
         post(new Runnable() {
             @Override
             public void run() {
                 if (play) {
-                    setVisibility(VISIBLE);
                     mAnimation.start();
                 } else {
-                    setVisibility(GONE);
                     mAnimation.stop();
                 }
+            }
+        });
+    }
+
+    /**
+     * Stops the icon animation and hides the view.
+     */
+    public void stop() {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                mAnimation.stop();
+                setVisibility(GONE);
             }
         });
     }

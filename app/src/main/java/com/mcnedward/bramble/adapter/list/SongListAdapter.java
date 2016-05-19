@@ -1,7 +1,6 @@
 package com.mcnedward.bramble.adapter.list;
 
 import android.content.Context;
-import android.view.View;
 
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.MusicUtil;
@@ -29,9 +28,10 @@ public class SongListAdapter extends MediaListAdapter<Song> {
     }
 
     @Override
-    protected void doOnClickAction(Song song, View view) {
+    protected void doOnClickAction(Song song, MediaItem view) {
         MusicUtil.startPlayingMusic(song, mContext);
-        ((SongMediaItem) view).update(song);
+        ((SongMediaItem) view).setGifViewCurrentSong(song);
+        view.update(song);
     }
 
 }

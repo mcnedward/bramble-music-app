@@ -7,36 +7,54 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.listener.SongPlayingListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
+import com.mcnedward.bramble.view.mediaItem.GifView;
 
 /**
  * Created by edward on 26/12/15.
  */
-public class AlbumSongItem extends RelativeLayout {
+public class AlbumSongItem extends RelativeLayout implements SongPlayingListener {
     private final static String TAG = "AlbumSongItem";
+
+    private Song mSong;
+    private TextView mTxtTrack;
+    private GifView mGifView;
 
     public AlbumSongItem(Album album, Song song, Context context) {
         super(context);
         inflate(context, R.layout.item_album_song, this);
         ((TextView) findViewById(R.id.song_title)).setText(song.getTitle());
-        ((TextView) findViewById(R.id.song_track)).setText(String.valueOf(song.getTrack()));
+        mTxtTrack = (TextView) findViewById(R.id.song_track);
+        mTxtTrack.setText(String.valueOf(song.getTrack()));
         ((TextView) findViewById(R.id.song_duration)).setText(song.getDuration());
+        mGifView = (GifView) findViewById(R.id.song_gif_view);
+        mGifView.update(song);
         setClickable(true);
         setFocusable(true);
 
         RippleUtil.setRippleBackground(this, context);
 
         final Activity activity = (Activity) context;
-        final Song nowPlayingSong = song;
+        mSong = song;
         final Album nowPlayingAlbum = album;
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicUtil.startPlayingMusic(nowPlayingSong, nowPlayingAlbum, activity);
+                MusicUtil.startPlayingMusic(mSong, nowPlayingAlbum, activity);
             }
         });
+    }
+
+    @Override
+    public void notifySongChange(Song currentSong, boolean isPlaying) {
+        mGifView.notifySongChange(currentSong, isPlaying);
+        if (mSong.getId() == currentSong.getId())
+            mTxtTrack.setVisibility(INVISIBLE);
+        else
+            mTxtTrack.setVisibility(VISIBLE);
     }
 }

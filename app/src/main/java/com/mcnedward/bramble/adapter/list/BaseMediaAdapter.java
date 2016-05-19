@@ -47,13 +47,13 @@ public abstract class BaseMediaAdapter<T extends Media> extends BaseAdapter {
 
     protected abstract MediaItem getCustomView(T media);
 
-    protected abstract void doOnClickAction(T media, View view);
+    protected abstract void doOnClickAction(T media, MediaItem view);
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
 
-        MediaItem mediaView;
+        final MediaItem mediaView;
         T item = getItem(position);
         if (convertView == null) {
             mediaView = getCustomView(item);
@@ -61,11 +61,6 @@ public abstract class BaseMediaAdapter<T extends Media> extends BaseAdapter {
 
             holder = new ViewHolder(mediaView);
             convertView.setTag(holder);
-
-            // TODO This should probably be changed...
-            if (mediaView instanceof SongMediaItem) {
-                MediaService.attachSongPlayingListener((SongMediaItem) mediaView);
-            }
         } else {
             holder = (ViewHolder) convertView.getTag();
             mediaView = holder.mediaView;
@@ -75,7 +70,7 @@ public abstract class BaseMediaAdapter<T extends Media> extends BaseAdapter {
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                doOnClickAction(getItem(position), v);
+                doOnClickAction(getItem(position), mediaView);
             }
         });
         return convertView;

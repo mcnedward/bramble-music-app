@@ -21,6 +21,7 @@ import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.listener.ScrollViewListener;
 import com.mcnedward.bramble.repository.SongRepository;
+import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingTitleBar;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
 import com.squareup.picasso.Picasso;
@@ -101,6 +102,7 @@ public class AlbumParallaxView extends LinearLayout {
         for (Song song : songs) {
             AlbumSongItem songItem = new AlbumSongItem(mAlbum, song, context);
             layout.addView(songItem);
+            MediaService.attachSongPlayingListener(songItem);
         }
     }
 

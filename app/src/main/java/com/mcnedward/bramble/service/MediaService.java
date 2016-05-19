@@ -96,6 +96,8 @@ public class MediaService extends Service {
         if (mSongPlayingListeners == null)
             mSongPlayingListeners = new HashSet<>();
         mSongPlayingListeners.add(listener);
+        if (song != null && mPlayer != null)
+            listener.notifySongChange(song, mPlayer.isPlaying());
     }
 
     public static void removeMediaListener(SongPlayingListener listener) {

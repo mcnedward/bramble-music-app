@@ -10,9 +10,17 @@
         android:id="@+id/song_track"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:padding="15dp"
         android:text="1"/>
+
+    <com.mcnedward.bramble.view.mediaItem.GifView
+        android:id="@+id/song_gif_view"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginLeft="5dp"
+        android:layout_alignParentLeft="true"
+        android:scaleType="fitXY"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/song_title"
@@ -20,11 +28,11 @@
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@+id/song_duration"
         android:layout_toRightOf="@id/song_track"
-        android:singleLine="true"
         android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"
-        android:scrollHorizontally="true"
         android:padding="15dp"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
         android:text="SONG TITLE HERE"/>
 
     <TextView

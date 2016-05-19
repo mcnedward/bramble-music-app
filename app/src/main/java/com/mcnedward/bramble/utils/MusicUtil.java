@@ -87,6 +87,7 @@ public class MusicUtil {
                 player.start();
                 MusicUtil.switchPlayButton(playButtons, false, context);
             }
+            MediaService.notifySongPlayingListeners();
         }
     }
 
