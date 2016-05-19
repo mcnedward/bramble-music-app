@@ -112,27 +112,26 @@ public class MusicUtil {
             Song song = MediaCache.getSong(context);
             if (song != null) {
                 MusicUtil.startPlayingMusic(song, context);
-                MusicUtil.switchPlayButton(playButtons, false, context);
             }
         } else {
             if (player.isPlaying()) {
                 player.pause();
-                MusicUtil.switchPlayButton(playButtons, true, context);
+                MusicUtil.switchPlayButton(playButtons, false, context);
             } else {
                 player.start();
-                MusicUtil.switchPlayButton(playButtons, false, context);
+                MusicUtil.switchPlayButton(playButtons, true, context);
             }
             MediaService.notifySongPlayingListeners();
         }
     }
 
-    public static void switchPlayButton(List<ImageView> playButtons, boolean pause, Context context) {
-        if (pause) {
-            for (ImageView view : playButtons)
-                view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_play));
-        } else {
+    public static void switchPlayButton(List<ImageView> playButtons, boolean isPlaying, Context context) {
+        if (isPlaying) {
             for (ImageView view : playButtons)
                 view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_pause));
+        } else {
+            for (ImageView view : playButtons)
+                view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_play));
         }
     }
 

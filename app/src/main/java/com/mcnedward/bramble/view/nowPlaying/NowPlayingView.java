@@ -52,10 +52,10 @@ public class NowPlayingView extends SlidingView implements MediaListener {
     }
 
     @Override
-    public void notifyMediaStarted() {
+    public void notifyUpdateMediaStatus(boolean playing) {
         loadAlbum();
         setButtonListeners();
-        MusicUtil.switchPlayButton(playButtons, false, mContext);
+        MusicUtil.switchPlayButton(playButtons, playing, mContext);
     }
 
     @Override
@@ -77,6 +77,7 @@ public class NowPlayingView extends SlidingView implements MediaListener {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser == true) {
                     player.seekTo(seekBar.getProgress());
+                    txtPassed.setText(MusicUtil.getTimeString(progress));
                 } else {
                     // Do nothing
                 }

@@ -10,13 +10,12 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
-import com.mcnedward.bramble.listener.SongPlayingListener;
 import com.mcnedward.bramble.listener.MediaListener;
+import com.mcnedward.bramble.listener.SongPlayingListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.MediaCache;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,7 +31,7 @@ public class MediaService extends Service {
     private static MediaPlayer mPlayer;
     private static Song mSong;
     private static Album mAlbum;
-    private static Set<MediaListener> mListeners;
+    private static Set<MediaListener> mMediaListeners;
     private static Set<SongPlayingListener> mSongPlayingListeners;
 
     private static MediaThread mMediaThread;
@@ -41,8 +40,6 @@ public class MediaService extends Service {
     @Override
     public void onCreate() {
         Log.d(TAG, "Creating MediaService!");
-        mPlayer = new MediaPlayer();
-        mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         if (mMediaThread == null)
             mMediaThread = new MediaThread();
         if (mNowPlayingThread == null)
@@ -58,6 +55,7 @@ public class MediaService extends Service {
 
             MediaCache.saveSong(mSong, getApplicationContext());
             MediaCache.saveAlbum(mAlbum, getApplicationContext());
+
             mMediaThread.startThread();
             mNowPlayingThread.startThread();
         }
@@ -72,37 +70,37 @@ public class MediaService extends Service {
     }
 
     public static void attachMediaListener(MediaListener listener) {
-        if (mListeners == null)
-            mListeners = new HashSet<>();
-        mListeners.add(listener);
+        if (mMediaListeners == null)
+            mMediaListeners = new HashSet<>();
+        mMediaListeners.add(listener);
         if (mSong != null)
-            listener.notifyMediaStarted();
+            listener.notifyUpdateMediaStatus(isPlaying());
     }
 
     public static void removeMediaListener(MediaListener listener) {
-        if (mListeners == null)
-            mListeners = new HashSet<>();
-        if (mListeners.contains(listener))
-            mListeners.remove(listener);
+        if (mMediaListeners == null)
+            mMediaListeners = new HashSet<>();
+        if (mMediaListeners.contains(listener))
+            mMediaListeners.remove(listener);
     }
 
     public static void unRegisterListeners() {
-        for (MediaListener listener : mListeners)
-            removeMediaListener(listener);
+        mMediaListeners = new HashSet<>();
+        mSongPlayingListeners = new HashSet<>();
     }
 
     public static void notifyMediaListeners() {
         if (mSong == null) return;
-        for (MediaListener listener : mListeners)
-            listener.notifyMediaStarted();
+        for (MediaListener listener : mMediaListeners)
+            listener.notifyUpdateMediaStatus(isPlaying());
     }
 
     public static void attachSongPlayingListener(SongPlayingListener listener) {
         if (mSongPlayingListeners == null)
             mSongPlayingListeners = new HashSet<>();
         mSongPlayingListeners.add(listener);
-        if (mSong != null && mPlayer != null)
-            listener.notifySongChange(mSong, mPlayer.isPlaying());
+        if (mSong != null)
+            listener.notifySongChange(mSong, isPlaying());
     }
 
     public static void removeMediaListener(SongPlayingListener listener) {
@@ -115,7 +113,7 @@ public class MediaService extends Service {
     public static void notifySongPlayingListeners() {
         if (mSongPlayingListeners == null || mPlayer == null) return;
         for (SongPlayingListener listener : mSongPlayingListeners) {
-            listener.notifySongChange(mSong, mPlayer.isPlaying());
+            listener.notifySongChange(mSong, isPlaying());
         }
     }
 
@@ -129,7 +127,13 @@ public class MediaService extends Service {
     }
 
     public static boolean isPlaying() {
-        return mPlayer != null && mPlayer.isPlaying();
+        boolean isPlaying = false;
+        try {
+            isPlaying = mPlayer != null && mPlayer.isPlaying();
+        } catch (IllegalStateException e) {
+            Log.w(TAG, "The player is null or in an illegal state when checking the isPlaying status.");
+        }
+        return isPlaying;
     }
 
     @Nullable
@@ -159,14 +163,16 @@ public class MediaService extends Service {
         @Override
         public void doStopAction() {
             mPlayer.stop();
+            mPlayer.reset();
             mPlayer.release();
+            mPlayer = null;
         }
 
         private void startPlayingMusic() {
             Log.d(TAG, String.format("Starting to play media for %s", mSong));
             final Uri songUri = Uri.parse(mSong.getData());
             try {
-                if (mPlayer.isPlaying()) {
+                if (isPlaying()) {
                     MediaPlayer nextPlayer = MediaPlayer.create(getApplicationContext(), songUri);
                     nextPlayer.setOnPreparedListener(mOnPreparedListener);
                     mPlayer.setNextMediaPlayer(nextPlayer);
@@ -176,6 +182,7 @@ public class MediaService extends Service {
                     mPlayer = MediaPlayer.create(getApplicationContext(), songUri);
                     mPlayer.setOnPreparedListener(mOnPreparedListener);
                 }
+                mPlayer.setOnErrorListener(mErrorListener);
             } catch (IllegalArgumentException e) {
                 Log.e(TAG, e.getMessage(), e);
             } catch (SecurityException e) {
@@ -194,10 +201,16 @@ public class MediaService extends Service {
                     mPlayer = mp;
                 }
                 mPlayer.start();
-                for (MediaListener listener : mListeners) {
-                    listener.notifyMediaStarted();
-                }
+                notifyMediaListeners();
                 notifySongPlayingListeners();
+            }
+        };
+
+        private final MediaPlayer.OnErrorListener mErrorListener = new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                Log.w(TAG, String.format("Something went wrong with the MediaPlayer %s; The what is: %s; The extra is: %s", mp, what, extra));
+                return false;
             }
         };
     }
@@ -210,7 +223,7 @@ public class MediaService extends Service {
 
         @Override
         public void doRunAction() {
-            for (final MediaListener listener : mListeners) {
+            for (final MediaListener listener : mMediaListeners) {
                 View view = listener.getView();
                 if (view == null || view.getHandler() == null) return;
                 view.getHandler().post(new Runnable() {
