@@ -9,6 +9,6 @@ import com.mcnedward.bramble.media.Song;
  */
 public interface MediaChangeListener {
 
-    void notifyMediaChange(Song currentSong,boolean playing);
+    void notifyMediaChange(Song currentSong, boolean playing);
 
 }

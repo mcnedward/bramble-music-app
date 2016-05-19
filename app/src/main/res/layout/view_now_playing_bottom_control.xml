@@ -30,14 +30,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:text="@string/zero_duration"/>
+                android:text="@string/no_duration"/>
 
             <TextView
                 android:id="@+id/now_playing_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:text="@string/zero_duration"/>
+                android:text="@string/no_duration"/>
         </RelativeLayout>
 
         <RelativeLayout

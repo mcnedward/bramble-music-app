@@ -49,6 +49,28 @@ public final class MediaCache {
         song.save(editor);
     }
 
+    public static void setPlaybackLooping(boolean looping, Context context) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE).edit();
+        editor.putBoolean("playback_looping", looping);
+        editor.commit();
+    }
+
+    public static boolean isPlaybackLooping(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
+        return sharedPreferences.getBoolean("playback_looping", false);
+    }
+
+    public static void setPlaybackShuffling(boolean shuffling, Context context) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE).edit();
+        editor.putBoolean("playback_shuffling", shuffling);
+        editor.commit();
+    }
+
+    public static boolean isPlaybackShuffling(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
+        return sharedPreferences.getBoolean("playback_shuffling", false);
+    }
+
     public static Artist getArtist(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
         Artist artist = null;

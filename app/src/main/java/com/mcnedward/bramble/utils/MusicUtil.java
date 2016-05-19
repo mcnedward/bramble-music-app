@@ -121,10 +121,19 @@ public class MusicUtil {
                 player.start();
                 MusicUtil.switchPlayButton(playButton, true, context);
             }
+            if (MediaService.isStopped()) {
+                MediaService.pauseNowPlayingThread(false);
+            }
             MediaService.notifyMediaChangeListeners();
         }
     }
 
+    /**
+     * Switches a play button's image. If you want to show the pause image, pass true. If you want to show the play image, pass false.
+     * @param playButton The play button to update.
+     * @param isPlaying True for the pause image, false for the play image.
+     * @param context The context.
+     */
     public static void switchPlayButton(ImageView playButton, boolean isPlaying, Context context) {
         if (isPlaying) {
             playButton.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_pause));
