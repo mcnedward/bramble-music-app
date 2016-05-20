@@ -3,7 +3,6 @@ package com.mcnedward.bramble.view.nowPlaying;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,8 +15,6 @@ import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RepositoryUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
-
-import java.util.List;
 
 /**
  * Created by edward on 27/12/15.

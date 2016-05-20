@@ -21,8 +21,9 @@ import java.util.List;
 
 /**
  * Created by Edward on 5/20/2016.
+ * Some help from: https://www.velir.com/blog/2010/11/17/android-creating-snapping-horizontal-scroll-view
  */
-public class HorizontalTitleBarView extends HorizontalScrollView {
+public class HorizontalTitleBarView extends HorizontalScrollView implements IScrollView {
     private static final String TAG = "HorizontalTitleBarView";
 
     private static final int SWIPE_MIN_DISTANCE = 5;
@@ -35,9 +36,6 @@ public class HorizontalTitleBarView extends HorizontalScrollView {
     private int mActiveIndex = 0;
     private SlidingView mParentView;
     private float mAnchorX;
-    private float mAnchorY;
-    private boolean mMovementLock;
-    private boolean mMoveVertical;
     private boolean mIsScrolling;
 
     public HorizontalTitleBarView(Context context) {
@@ -55,15 +53,12 @@ public class HorizontalTitleBarView extends HorizontalScrollView {
     public boolean doTouchAction(View v, MotionEvent event) {
         int action = event.getAction();
         ViewConfiguration vc = ViewConfiguration.get(mContext);
-        int touchSlop = vc.getScaledTouchSlop();
-        float eventX = event.getX();
-        float eventY = event.getY();
 
         // If this is a swipe
         if (mGestureDetector.onTouchEvent(event)) {
             return true;
         } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-            if (mIsScrolling || !mMovementLock) {
+            if (mIsScrolling) {
                 int scrollX = getScrollX();
                 int width = v.getMeasuredWidth();
                 mActiveIndex = ((scrollX + (width / 2)) / width);
@@ -71,7 +66,6 @@ public class HorizontalTitleBarView extends HorizontalScrollView {
                 smoothScrollTo(scrollTo, 0);
                 return true;
             } else {
-                mMovementLock = true;
                 return mParentView.doTouchAction(v, event);
             }
         } else {
@@ -151,6 +145,20 @@ public class HorizontalTitleBarView extends HorizontalScrollView {
         for (Song s : RepositoryUtil.getSongRepository(mContext).getSongsForAlbum(song.getAlbumId())) {
             createView(s);
         }
+    }
+
+    @Override
+    public void slideUp(boolean top) {
+        if (top) {
+            setVisibility(GONE);
+        } else {
+            setVisibility(VISIBLE);
+        }
+    }
+
+    @Override
+    public void setSize(int width, int height) {
+
     }
 
     public void switchSliderIcon(boolean top) {

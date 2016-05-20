@@ -14,9 +14,6 @@ import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.MusicUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by edward on 27/12/15.
  */
@@ -41,6 +38,7 @@ public class NowPlayingView extends SlidingView implements MediaChangeListener {
     @Override
     protected void switchSliderIcon(boolean top) {
         mTitleBar.slideUp(top);
+        mHorBar.slideUp(top);
     }
 
     @Override
@@ -86,7 +84,7 @@ public class NowPlayingView extends SlidingView implements MediaChangeListener {
         imgAlbumArt = (ImageView) findViewById(R.id.now_playing_album_art);
 
         mHorBar.setParentView(this);
-        setSlidable(mHorBar);
+        setSlider(mHorBar);
         setContent(findViewById(R.id.now_playing_content));
     }
 
