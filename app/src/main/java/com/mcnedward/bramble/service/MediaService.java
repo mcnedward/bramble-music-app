@@ -15,8 +15,10 @@ import com.mcnedward.bramble.listener.MediaStopListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.MediaCache;
+import com.mcnedward.bramble.utils.MusicUtil;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -134,19 +136,29 @@ public class MediaService extends Service {
             mPlayer = null;
         }
 
+        private Song mNextSong;
+        private MediaPlayer mNextPlayer;
+
         private void startPlayingMusic() {
             Log.d(TAG, String.format("Starting to play media for %s", mSong));
             final Uri songUri = Uri.parse(mSong.getData());
             try {
                 if (isPlaying()) {
                     MediaPlayer nextPlayer = MediaPlayer.create(getApplicationContext(), songUri);
+                    setupNextSong(nextPlayer);  // Setup the next player with the next song
+
                     nextPlayer.setOnPreparedListener(mOnPreparedListener);
+                    nextPlayer.setOnErrorListener(mErrorListener);
+                    nextPlayer.setOnCompletionListener(mCompletionListener);
                     mPlayer.setNextMediaPlayer(nextPlayer);
+
                     mPlayer.stop();
                     mPlayer.reset();
                 } else {
                     mPlayer = MediaPlayer.create(getApplicationContext(), songUri);
                     mPlayer.setOnPreparedListener(mOnPreparedListener);
+
+                    setupNextSong(mPlayer);
                 }
                 mPlayer.setOnErrorListener(mErrorListener);
                 mPlayer.setOnCompletionListener(mCompletionListener);
@@ -157,6 +169,25 @@ public class MediaService extends Service {
                 Log.e(TAG, e.getMessage(), e);
             } catch (IllegalStateException e) {
                 Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        /**
+         * Prepares a MediaPlayer with the next song in an album. This retrieves the next song from the MusicUtil, sets the mNextPlayer with that
+         * song's data, and sets the passed in player to have the mNextPlayer as its NextMediaPlayer. The mNextPlayer gets the default OnError and
+         * OnCompletion listeners that are given to the mPlayer.
+         *
+         * @param player The MediaPlayer to setup with the next song.
+         */
+        private void setupNextSong(MediaPlayer player) {
+            if (mAlbum != null) {
+                // Setup the next song in the album
+                mNextSong = MusicUtil.getNextSongForAlbum(mAlbum, getApplicationContext());
+                mNextPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(mNextSong.getData()));
+                player.setNextMediaPlayer(mNextPlayer);
+                mNextPlayer.setOnErrorListener(mErrorListener);
+                mNextPlayer.setOnCompletionListener(mCompletionListener);
+                mNextPlayer.setLooping(MediaCache.isPlaybackLooping(getApplicationContext()));
             }
         }
 
@@ -185,9 +216,17 @@ public class MediaService extends Service {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 if (mp.isLooping()) return;
-                mStopped = true;
-                pauseNowPlayingThread(true);
-                notifyMediaStopListeners();
+                if (mNextPlayer != null) {
+                    mPlayer = mNextPlayer;
+                    mSong = mNextSong;
+                    MediaCache.saveSong(mSong, getApplicationContext());
+                    setupNextSong(mPlayer);
+                } else {
+                    mStopped = true;
+                    pauseNowPlayingThread(true);
+                    notifyMediaStopListeners();
+                }
+                notifyMediaChangeListeners();
             }
         };
     }

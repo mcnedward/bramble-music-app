@@ -47,6 +47,7 @@ public class NowPlayingView extends SlidingView implements MediaChangeListener {
     }
 
     private void loadAlbum() {
+        // TODO I think this is being called twice? At least on next song start
         Song song = MediaCache.getSong(mContext);
         if (song == null) {
             Log.w(TAG, "No song is setup for play.");

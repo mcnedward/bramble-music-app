@@ -76,22 +76,28 @@ public class MusicUtil {
     }
 
     public static void doForwardButtonAction(Context context) {
-        Song song = MediaCache.getSong(context);
         Album album = MediaCache.getAlbum(context);
-        if (song == null || album == null) return;
+        Song nextSong = getNextSongForAlbum(album, context);
+        if (nextSong == null) return;
+        startPlayingMusic(nextSong, album, context);
+    }
+
+    public static Song getNextSongForAlbum(Album album, Context context) {
+        Song song = MediaCache.getSong(context);
+        if (song == null || album == null) return null;
         SongRepository songRepository = getSongRepository(context);
         List<Song> songs = songRepository.getSongsForAlbum(album.getId());
-        if (songs.isEmpty()) return;
+        if (songs.isEmpty()) return null;
 
         int currentIndex = getSongIndex(songs, song);
-        if (currentIndex == -1) return;
+        if (currentIndex == -1) return null;
         Song nextSong;
         if (currentIndex == songs.size() - 1) {
             nextSong = songs.get(0);
         } else {
             nextSong = songs.get(currentIndex + 1);
         }
-        startPlayingMusic(nextSong, album, context);
+        return nextSong;
     }
 
     private static int getSongIndex(List<Song> songs, Song song) {
