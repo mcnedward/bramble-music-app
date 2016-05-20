@@ -20,12 +20,12 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
     private Context context;
 
     private ViewGroup root;
-    private View slidable;
-    private View content;
+    private View mSlider;
+    private View mContent;
     private View bottom;
     private boolean mLockToBottom;
 
-    private boolean controlsTouched;
+    private boolean mControlsTouched;
     protected boolean contentFocused = false;
 
     public SlidingView(int resourceId, Context context) {
@@ -45,41 +45,35 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
         bottom = findViewById(R.id.now_playing_bottom_control);
     }
 
-    protected abstract void switchSlidable(boolean top);
+    protected abstract void switchSliderIcon(boolean top);
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    public boolean doTouchAction(View v, MotionEvent event) {
         int action = event.getAction();
-        int eventY = (int) event.getY();
+        int eventY = (int) event.getRawY();
         int anchorY = 0;
-        int slidableY = (int) content.getY();
-        int slidableHeight = slidable.getHeight();
+        int contentY = (int) mContent.getY();
+        int sliderHeight = mSlider.getHeight();
         int topBounds = root.getHeight() / 5;
         int bottomBounds = (int) (root.getHeight() * 0.8);
 
-        ViewConfiguration vc = ViewConfiguration.get(slidable.getContext());
+        Log.d(TAG, "X: " + event.getX() + "; Y: " + eventY);
+
+        ViewConfiguration vc = ViewConfiguration.get(mSlider.getContext());
         int touchSlop = vc.getScaledTouchSlop();
 
         switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                anchorY = eventY;
-                if (anchorY > slidableY && anchorY < (slidableY + slidableHeight)) {
-                    controlsTouched = true;
-                    return true;
-                }
-                break;
             case MotionEvent.ACTION_MOVE:
-                if (controlsTouched) {
+//                if (mControlsTouched) {
                     int newY;
-                    if (eventY > (slidableY + slidableHeight)) {
+                    if (eventY > (contentY + sliderHeight)) {
                         // Moving down
-                        newY = eventY - slidableHeight;
+                        newY = eventY - sliderHeight;
                     } else {
                         // Moving up
-                        int diff = Math.abs(eventY - slidableY);
+                        int diff = Math.abs(eventY - contentY);
                         newY = eventY - diff;
                     }
-                    content.setY(newY);
+                    mContent.setY(newY);
                     if (root != null && eventY >= root.getHeight()) {
                         // Prevent moving below bottom of screen
                         snapToBottom();
@@ -88,20 +82,20 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                     if (eventY < 0) {
                         // Prevent moving above top of screen
                         // -5 to take shadow into account
-                        content.setY(-5);
-                        switchSlidable(true);
+                        mContent.setY(-5);
+                        switchSliderIcon(true);
                     }
                     if (root != null && eventY > bottomBounds) {
                         // Content is in bottom half
-                        switchSlidable(false);
+                        switchSliderIcon(false);
                     } else {
-                        switchSlidable(true);
+                        switchSliderIcon(true);
                     }
-                    return true;
-                }
+//                    return true;
+//                }
                 break;
             case MotionEvent.ACTION_UP:
-                if (controlsTouched) {
+//                if (mControlsTouched) {
                     if (mLockToBottom) {
                         // Moving from top to bottom, but finger went off screen
                         mLockToBottom = false;
@@ -115,7 +109,7 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                     } else {
                         if (eventY > root.getHeight()) {    // Finger moved off bottom of screen
                             snapToBottom();
-                            controlsTouched = false;
+                            mControlsTouched = false;
                             return true;
                         }
                         if (contentFocused) {   // View is up on top
@@ -131,15 +125,21 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
                                 animateToBottom();
                             }
                         }
-                        controlsTouched = false;
+                        mControlsTouched = false;
                         return true;
                     }
-                }
-                controlsTouched = false;
+//                }
+                mControlsTouched = false;
                 break;
         }
+        mContent.invalidate();
         // Allow the underlying view to handle touch events when the sliding view is not focused
         return contentFocused;
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return doTouchAction(v, event);
     }
 
     public void animateToBottom() {
@@ -147,29 +147,29 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
     }
 
     public void animateToBottom(int duration) {
-        switchSlidable(false);
+        switchSliderIcon(false);
         if (root != null) {
-            int contentY = (int) (content.getY() + slidable.getHeight());
+            int contentY = (int) (mContent.getY() + mSlider.getHeight());
             int animationDistance = Math.abs(contentY - root.getHeight());
-            content.animate().translationYBy(animationDistance);
-            slidable.animate().alpha(1.0f).setDuration(duration);
+            mContent.animate().translationYBy(animationDistance);
+            mSlider.animate().alpha(1.0f).setDuration(duration);
             contentFocused = false;
         }
     }
 
     public void animateToTop() {
-        switchSlidable(true);
-        content.animate().translationY(0);
+        switchSliderIcon(true);
+        mContent.animate().translationY(0);
         contentFocused = true;
     }
 
     public void snapToBottom() {
-        snapToBottom(root.getHeight() - slidable.getHeight());
+        snapToBottom(root.getHeight() - mSlider.getHeight());
     }
 
     public void snapToBottom(int position) {
-        switchSlidable(false);
-        content.setY(position);
+        switchSliderIcon(false);
+        mContent.setY(position);
         contentFocused = false;
     }
 
@@ -178,7 +178,11 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
     }
 
     public boolean isControlsTouched() {
-        return controlsTouched;
+        return mControlsTouched;
+    }
+
+    public void setControlsTouched(boolean controlsTouched) {
+        this.mControlsTouched = controlsTouched;
     }
 
     public void updateViewMeasures(ViewGroup root) {
@@ -186,14 +190,14 @@ public abstract class SlidingView extends RelativeLayout implements View.OnTouch
     }
 
     public void setSlidable(View slidable) {
-        this.slidable = slidable;
+        this.mSlider = slidable;
     }
 
     public int getSlidableHeight() {
-        return slidable.getHeight();
+        return mSlider.getHeight();
     }
 
     public void setContent(View content) {
-        this.content = content;
+        this.mContent = content;
     }
 }

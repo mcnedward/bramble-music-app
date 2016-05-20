@@ -181,6 +181,9 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
+        if (id == R.id.action_open) {
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }

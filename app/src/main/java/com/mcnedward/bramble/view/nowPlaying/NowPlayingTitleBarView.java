@@ -3,6 +3,7 @@ package com.mcnedward.bramble.view.nowPlaying;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -13,6 +14,7 @@ import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.MusicUtil;
+import com.mcnedward.bramble.utils.RepositoryUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
 
 import java.util.List;
@@ -20,22 +22,24 @@ import java.util.List;
 /**
  * Created by edward on 27/12/15.
  */
-public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeListener {
+public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeListener, IScrollView {
     private final static String TAG = "NowPlayingTitleBar";
 
     // Layout height + padding
     public static int HEIGHT = 75;
 
     private Context mContext;
+    private Song mSong;
 
     private ImageView mImgAlbumArt;
     private TextView mTxtNowPlayingTitle;
     private TextView mTxtNowPlayingAlbum;
     private ImageView mBtnPlay;
 
-    public NowPlayingTitleBarView(Context context) {
+    public NowPlayingTitleBarView(Context context, Song song) {
         super(context, null);
         initialize(context);
+        update(song, null);
     }
 
     public NowPlayingTitleBarView(Context context, AttributeSet attrs) {
@@ -44,7 +48,7 @@ public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeL
     }
 
     private void initialize(Context context) {
-        this.mContext = context;
+        mContext = context;
         inflate(context, R.layout.view_now_playing_title_bar, this);
         mImgAlbumArt = (ImageView) findViewById(R.id.now_playing_bottom_album_art);
         mTxtNowPlayingTitle = (TextView) findViewById(R.id.now_playing_title);
@@ -61,19 +65,17 @@ public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeL
         });
     }
 
-    public void updateAlbumArt(Album album) {
+    public void update(Song song, Album album) {
+        if (album == null) {
+            album = RepositoryUtil.getAlbumRepository(mContext).get(song.getAlbumId());
+        }
         MusicUtil.loadAlbumArt(album.getAlbumArt(), mImgAlbumArt, mContext);
+        mTxtNowPlayingAlbum.setText(album.getTitle());
+        mTxtNowPlayingTitle.setText(song.getTitle());
     }
 
-    public void updateSongTitle(String songTitle) {
-        mTxtNowPlayingTitle.setText(songTitle);
-    }
-
-    public void updateAlbumTitle(String albumTitle) {
-        mTxtNowPlayingAlbum.setText(albumTitle);
-    }
-
-    public void update(boolean top) {
+    @Override
+    public void slideUp(boolean top) {
         if (top) {
             updatePlayButton(0f, GONE);
             updateOpacity(0.75f);
@@ -81,6 +83,11 @@ public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeL
             updatePlayButton(1f, VISIBLE);
             updateOpacity(1f);
         }
+    }
+
+    @Override
+    public void setSize(int width, int height) {
+        setLayoutParams(new LinearLayout.LayoutParams(width, height));
     }
 
     private void updatePlayButton(float alpha, int visibility) {

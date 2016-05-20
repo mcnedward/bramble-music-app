@@ -14,6 +14,9 @@ import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.MusicUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by edward on 27/12/15.
  */
@@ -22,7 +25,6 @@ public class NowPlayingView extends SlidingView implements MediaChangeListener {
 
     private Context mContext;
     private AlbumRepository mAlbumRepository;
-    private NowPlayingBottomControlView mBottomControl;
 
     public NowPlayingView(Context context) {
         super(R.layout.view_now_playing, context);
@@ -37,8 +39,8 @@ public class NowPlayingView extends SlidingView implements MediaChangeListener {
     }
 
     @Override
-    protected void switchSlidable(boolean top) {
-        mTitleBar.update(top);
+    protected void switchSliderIcon(boolean top) {
+        mTitleBar.slideUp(top);
     }
 
     @Override
@@ -54,11 +56,10 @@ public class NowPlayingView extends SlidingView implements MediaChangeListener {
         } else {
             Album album = mAlbumRepository.get(song.getAlbumId());
             if (album == null) return;
-            mTitleBar.updateAlbumTitle(album.getAlbumName());
+            mTitleBar.update(song, album);
+            mHorBar.update(song, album);
             // Load album art
-            mTitleBar.updateAlbumArt(album);
             MusicUtil.loadAlbumArt(album.getAlbumArt(), imgAlbumArt, mContext);
-            mTitleBar.updateSongTitle(song.getTitle());
         }
     }
 
@@ -67,22 +68,25 @@ public class NowPlayingView extends SlidingView implements MediaChangeListener {
         mAlbumRepository = new AlbumRepository(context);
 
         setupViews();
+        loadAlbum();
+
         // Register this as listeners
         MediaService.attachMediaChangeListener(this);
-
-        loadAlbum();
     }
 
     private NowPlayingTitleBarView mTitleBar;
+    private NowPlayingBottomControlView mBottomControl;
+    private HorizontalTitleBarView mHorBar;
     private ImageView imgAlbumArt;
 
     private void setupViews() {
         mTitleBar = (NowPlayingTitleBarView) findViewById(R.id.now_playing_title_bar);
+        mBottomControl = (NowPlayingBottomControlView) findViewById(R.id.now_playing_bottom_control);
+        mHorBar = (HorizontalTitleBarView) findViewById(R.id.view_horizontal_bar);
         imgAlbumArt = (ImageView) findViewById(R.id.now_playing_album_art);
 
-        mBottomControl = (NowPlayingBottomControlView) findViewById(R.id.now_playing_bottom_control);
-
-        setSlidable(mTitleBar);
+        mHorBar.setParentView(this);
+        setSlidable(mHorBar);
         setContent(findViewById(R.id.now_playing_content));
     }
 

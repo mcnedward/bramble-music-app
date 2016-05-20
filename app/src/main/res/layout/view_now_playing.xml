@@ -25,10 +25,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.mcnedward.bramble.view.nowPlaying.NowPlayingTitleBarView
-                android:id="@+id/now_playing_title_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                <com.mcnedward.bramble.view.nowPlaying.NowPlayingTitleBarView
+                    android:id="@+id/now_playing_title_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
         </FrameLayout>
 
         <com.mcnedward.bramble.view.nowPlaying.NowPlayingBottomControlView
@@ -37,4 +37,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"/>
     </FrameLayout>
+
+    <com.mcnedward.bramble.view.nowPlaying.HorizontalTitleBarView
+        android:id="@+id/view_horizontal_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        android:layout_alignParentTop="true"/>
 </RelativeLayout>
