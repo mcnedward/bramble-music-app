@@ -38,11 +38,11 @@
             android:layout_gravity="bottom"/>
     </FrameLayout>
 
-    <com.mcnedward.bramble.view.nowPlaying.HorizontalTitleBarView
-        android:id="@+id/view_horizontal_bar"
+    <RelativeLayout
+        android:id="@+id/view_slider_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fillViewport="true"
-        android:scrollbars="none"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+    </RelativeLayout>
 </RelativeLayout>

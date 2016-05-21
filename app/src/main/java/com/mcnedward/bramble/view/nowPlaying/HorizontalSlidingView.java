@@ -6,65 +6,94 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.media.Song;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by edward on 27/12/15.
  */
-public abstract class HorizontalSlidingView extends RelativeLayout implements View.OnTouchListener {
+public abstract class HorizontalSlidingView extends RelativeLayout {//implements View.OnTouchListener {
     private final static String TAG = "SlidingView";
 
-    private Context context;
+    private static final int LEFT_DIRECTION = -1;
+    private static final int RIGHT_DIRECTION = 1;
+
+    protected Context mContext;
+    private List<Song> mItems;
+    private int mActiveIndex;
+    private View[] mRecycleViews;
 
     private ViewGroup mRoot;
     private View mSlider;
     private View mSliderReplacement;
-
+    private LayoutInflater mInflater;
+    private int mMoveAnchor;
     private int mAnchorX;
     private boolean mMovingRight;
     private boolean mUpdateLock;
 
     private boolean controlsTouched;
-    protected boolean contentFocused = false;
 
-    public HorizontalSlidingView(int resourceId, Context context) {
+    public HorizontalSlidingView(Context context, List<Song> songs) {
         super(context);
-        initialize(resourceId, context);
+        initialize(context, songs);
     }
 
-    public HorizontalSlidingView(int resourceId, Context context, AttributeSet attrs) {
+    public HorizontalSlidingView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initialize(resourceId, context);
+        initialize(context, new ArrayList<Song>());
     }
 
-    private void initialize(int resourceId, Context context) {
-        this.context = context;
+    private void initialize(Context context, List<Song> songs) {
+        this.mContext = context;
         mRoot = this;
-        mSliderReplacement = new RelativeLayout(context);
+        mActiveIndex = 0;
+        mRecycleViews = new View[2];
+        mItems = songs;
 
-        setOnTouchListener(this);
+//        setOnTouchListener(this);
 
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view1 = inflater.inflate(resourceId, (RelativeLayout) mSlider);
-        View view2 = inflater.inflate(resourceId, (RelativeLayout) mSliderReplacement);
-        addView(mSliderReplacement);
-        ((TextView) view1.findViewById(R.id.now_playing_title)).setText("Main");
-        ((TextView) view2.findViewById(R.id.now_playing_title)).setText("Replacement");
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mSlider = getOrCreateView(mActiveIndex, mSlider, 0);
+    }
+
+    protected abstract View getView(int position, View convertView);
+
+    private View getOrCreateView(int position, View convertView, int recycleIndex) {
+        View view = getView(position, convertView);
+        boolean exists = false;
+        for (int i = 0; i < mRecycleViews.length; i++) {
+            if (mRecycleViews[i] == view) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) {
+            addView(view);
+            mRecycleViews[recycleIndex] = view;
+        }
+        return view;
     }
 
     private void setupReplacement(int oldViewX) {
         boolean placeOnRight = mSlider.getX() > 0;
         if (placeOnRight) {
+            int index = mActiveIndex - 1 < 0 ? mItems.size() - 1 : Math.abs(mActiveIndex - 1);
+            mSliderReplacement = getOrCreateView(index, mRecycleViews[1], 1);
             // Setup the content for the right
             mSliderReplacement.setX(oldViewX - mSliderReplacement.getWidth());
             if (!mUpdateLock) {
                 updateRightContent(mSliderReplacement);
             }
         } else {
+            int index = mActiveIndex + 1 > mItems.size() - 1 ? 0 : mActiveIndex + 1;
+            mSliderReplacement = getOrCreateView(index, mRecycleViews[1], 1);
             // Setup the content for the left
             mSliderReplacement.setX(oldViewX + mSliderReplacement.getWidth());
             if (!mUpdateLock) {
@@ -74,8 +103,60 @@ public abstract class HorizontalSlidingView extends RelativeLayout implements Vi
         mUpdateLock = true;
     }
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    public void doMoveAction(int eventX) {
+        int sliderX = (int) mSlider.getX();
+        int newX;
+        int moveDiff = Math.abs(mMoveAnchor - eventX);
+        if (eventX > mMoveAnchor) {
+            // Moving right
+            newX = sliderX + moveDiff;
+            mMovingRight = true;
+        } else {
+            // Moving left
+            newX = sliderX - moveDiff;
+            mMovingRight = false;
+        }
+        // Move the slider
+        mSlider.setX(newX);
+        // Setup the replacement view
+        setupReplacement(newX);
+        mMoveAnchor = eventX;
+    }
+
+    public void doUpAction(int eventX) {
+        int sliderX = (int) mSlider.getX();
+        int sliderWidth = mSlider.getWidth();
+        int rightBounds = (int) (sliderX + sliderWidth * 0.66);
+        int leftBounds = sliderX + (sliderWidth / 3);
+        int rootWidth = mRoot.getWidth();
+        ViewConfiguration vc = ViewConfiguration.get(mContext);
+        int touchSlop = vc.getScaledTouchSlop();
+        int moveDiff = Math.abs(mAnchorX - eventX); // Check the slop to avoid single clicks
+        if (moveDiff > touchSlop) {
+            if (mMovingRight) {
+                if (rightBounds > rootWidth) {
+                    // Slide off screen
+                    slideViews();
+                } else {
+                    // Move back to default
+                    moveToDefault();
+                }
+            } else {
+                // Slide off screen
+                if (leftBounds < 0) {
+                    slideViews();
+                } else {
+                    // Move back to default
+                    moveToDefault();
+                }
+            }
+        }
+        mUpdateLock = false;    // Unlock the updates so they can be updated again on the first movement
+    }
+
+//    @Override
+//    public boolean  onTouch(View v, MotionEvent event) {
+    public boolean doTouchAction(View v, MotionEvent event) {
         int action = event.getAction();
         int eventX = (int) event.getX();
         int eventY = (int) event.getY();
@@ -88,36 +169,26 @@ public abstract class HorizontalSlidingView extends RelativeLayout implements Vi
         int rootWidth = mRoot.getWidth();
 
         switch (action) {
-            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_DOWN: {
+                mMoveAnchor = eventX;
                 mAnchorX = eventX;
-                if (eventY > sliderY && eventY < (sliderY + sliderHeight)) {
-                    controlsTouched = true;
-                    return true;
-                }
+//                if (eventY > sliderY && eventY < (sliderY + sliderHeight)) {
+//                    controlsTouched = true;
+//                    return true;
+//                }
+                return true;
+            }
+            case MotionEvent.ACTION_MOVE: {
+//                if (controlsTouched) {
+//                }
                 break;
-            case MotionEvent.ACTION_MOVE:
-                if (controlsTouched) {
-                    int newX;
-                    int moveDiff = Math.abs(mAnchorX - eventX);
-                    if (eventX > mAnchorX) {
-                        // Moving right
-                        newX = sliderX + moveDiff;
-                        mMovingRight = true;
-                    } else {
-                        // Moving left
-                        newX = sliderX - moveDiff;
-                        mMovingRight = false;
-                    }
-                    // Move the slider
-                    mSlider.setX(newX);
-                    // Setup the replacement view
-                    setupReplacement(newX);
-                    mAnchorX = eventX;
-                    return true;
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                if (controlsTouched) {
+            }
+            case MotionEvent.ACTION_UP: {
+//                if (controlsTouched) {
+                ViewConfiguration vc = ViewConfiguration.get(mContext);
+                int touchSlop = vc.getScaledTouchSlop();
+                int moveDiff = Math.abs(mAnchorX - eventX); // Check the slop to avoid single clicks
+                if (moveDiff > touchSlop) {
                     if (mMovingRight) {
                         if (rightBounds > rootWidth) {
                             // Slide off screen
@@ -135,13 +206,27 @@ public abstract class HorizontalSlidingView extends RelativeLayout implements Vi
                             moveToDefault();
                         }
                     }
+                    return true;
                 }
+//                }
                 mUpdateLock = false;    // Unlock the updates so they can be updated again on the first movement
                 controlsTouched = false;
                 break;
+            }
         }
         // Allow the underlying view to handle touch events when the sliding view is not focused
-        return contentFocused;
+        return false;
+    }
+
+    public Song getItem(int position) {
+        if (mItems.isEmpty()) return null;
+        return mItems.get(position);
+    }
+
+    public void setItems(List<Song> songs) {
+        mItems = songs;
+        mActiveIndex = 0;
+        mSlider = getOrCreateView(mActiveIndex, mSlider, 0);
     }
 
     public void moveToDefault() {
@@ -149,10 +234,10 @@ public abstract class HorizontalSlidingView extends RelativeLayout implements Vi
             mSlider.animate().translationX(0);
             if (mMovingRight) {
                 // Slide replacement back to the left
-                mSliderReplacement.animate().translationX(mSliderReplacement.getWidth() * -1);
+                mSliderReplacement.animate().translationX(mSliderReplacement.getWidth() * -1).setListener(null);
             } else {
                 // Slide replacement back to the right
-                mSliderReplacement.animate().translationX(mRoot.getWidth());
+                mSliderReplacement.animate().translationX(mRoot.getWidth()).setListener(null);
             }
         }
     }
@@ -183,7 +268,7 @@ public abstract class HorizontalSlidingView extends RelativeLayout implements Vi
             public void onAnimationEnd(Animator animation) {
                 slider.setX(endPosition);
                 if (isMain) {
-                    updateMainView();
+                    updateMainView(mMovingRight ? -1 : 1);
                 }
             }
 
@@ -197,7 +282,17 @@ public abstract class HorizontalSlidingView extends RelativeLayout implements Vi
         };
     }
 
-    protected abstract void updateMainView();
+    protected void updateMainView(int direction) {
+        switch (direction) {
+            case LEFT_DIRECTION:
+                mActiveIndex = mActiveIndex - 1 < 0 ? mItems.size() - 1 : Math.abs(mActiveIndex - 1);
+                break;
+            case RIGHT_DIRECTION:
+                mActiveIndex = mActiveIndex + 1 > mItems.size() - 1 ? 0 : mActiveIndex + 1;
+                break;
+        }
+        mSlider = getOrCreateView(mActiveIndex, mSlider, 0);
+    }
 
     protected abstract void updateReplacementView();
 

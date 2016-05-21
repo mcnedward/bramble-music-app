@@ -52,71 +52,67 @@ public class HorizontalTitleBarView extends HorizontalScrollView implements IScr
 
     public boolean doTouchAction(View v, MotionEvent event) {
         int action = event.getAction();
-        ViewConfiguration vc = ViewConfiguration.get(mContext);
 
         // If this is a swipe
         if (mGestureDetector.onTouchEvent(event)) {
             return true;
         } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-            if (mIsScrolling) {
+//            if (mIsScrolling) {
                 int scrollX = getScrollX();
                 int width = v.getMeasuredWidth();
                 mActiveIndex = ((scrollX + (width / 2)) / width);
                 int scrollTo = mActiveIndex * width;
                 smoothScrollTo(scrollTo, 0);
                 return true;
-            } else {
-                return mParentView.doTouchAction(v, event);
-            }
+//            }
         } else {
-            return mParentView.doTouchAction(v, event);
+            return false;
         }
     }
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        /*
-         * This method JUST determines whether we want to intercept the motion.
-         * If we return true, onTouchEvent will be called and we do the actual
-         * scrolling there.
-         */
-        final int action = MotionEventCompat.getActionMasked(event);
-
-        // Always handle the case of the touch gesture being complete.
-        if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
-            // Release the scroll.
-            mIsScrolling = false;
-            return false; // Do not intercept touch event, let the child handle it
-        }
-        switch (action) {
-            case MotionEvent.ACTION_DOWN: {
-                mAnchorX = event.getX();
-                break;
-            }
-            case MotionEvent.ACTION_MOVE: {
-                if (mIsScrolling) {
-                    // We're currently scrolling, so yes, intercept the
-                    // touch event!
-                    return true;
-                }
-
-                // If the user has dragged his finger horizontally more than the touch slop, start the scroll
-                final int xDiff = (int) Math.abs(mAnchorX - event.getX());
-                ViewConfiguration vc = ViewConfiguration.get(mContext);
-                int touchSlop = vc.getScaledTouchSlop();
-                if (xDiff > touchSlop) {
-                    // Start scrolling!
-                    mIsScrolling = true;
-                    return true;
-                }
-                break;
-            }
-        }
-
-        // In general, we don't want to intercept touch events. They should be
-        // handled by the child view.
-        return false;
-    }
+//    @Override
+//    public boolean onInterceptTouchEvent(MotionEvent event) {
+//        /*
+//         * This method JUST determines whether we want to intercept the motion.
+//         * If we return true, onTouchEvent will be called and we do the actual
+//         * scrolling there.
+//         */
+//        final int action = MotionEventCompat.getActionMasked(event);
+//
+//        // Always handle the case of the touch gesture being complete.
+//        if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
+//            // Release the scroll.
+//            mIsScrolling = false;
+//            return false; // Do not intercept touch event, let the child handle it
+//        }
+//        switch (action) {
+//            case MotionEvent.ACTION_DOWN: {
+//                mAnchorX = event.getX();
+//                break;
+//            }
+//            case MotionEvent.ACTION_MOVE: {
+//                if (mIsScrolling) {
+//                    // We're currently scrolling, so yes, intercept the touch event!
+//                    return true;
+//                }
+//
+//                // If the user has dragged his finger horizontally more than the touch slop, start the scroll
+//                final int xDiff = (int) Math.abs(mAnchorX - event.getX());
+//                ViewConfiguration vc = ViewConfiguration.get(mContext);
+//                int touchSlop = vc.getScaledTouchSlop();
+//                if (xDiff > touchSlop) {
+//                    // Start scrolling!
+//                    mIsScrolling = true;
+//                    return true;
+//                }
+//                break;
+//            }
+//        }
+//
+//        // In general, we don't want to intercept touch events. They should be
+//        // handled by the child view.
+//        return false;
+//    }
 
     private void initialize(Context context) {
         mContext = context;
@@ -127,12 +123,13 @@ public class HorizontalTitleBarView extends HorizontalScrollView implements IScr
         mContainer.setOrientation(LinearLayout.HORIZONTAL);
         addView(mContainer);
         mGestureDetector = new GestureDetector(mContext, new HorizontalGestureDetector());
-        setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return doTouchAction(v, event);
-            }
-        });
+        setOnTouchListener(null);
+//        setOnTouchListener(new OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                return doTouchAction(v, event);
+//            }
+//        });
     }
 
     public void update(Song song, Album album) {
@@ -159,11 +156,6 @@ public class HorizontalTitleBarView extends HorizontalScrollView implements IScr
     @Override
     public void setSize(int width, int height) {
 
-    }
-
-    public void switchSliderIcon(boolean top) {
-        IScrollView view = getScrollView(mActiveIndex);
-        view.slideUp(top);
     }
 
     public IScrollView createView(Song song) {
