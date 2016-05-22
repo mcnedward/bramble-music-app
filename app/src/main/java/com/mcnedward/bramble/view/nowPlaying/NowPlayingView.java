@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Created by edward on 27/12/15.
  */
-public class NowPlayingView extends SlidingView implements MediaChangeListener {
+public class NowPlayingView extends CrossSlidingView implements MediaChangeListener {
     private final static String TAG = "NowPlayingView";
 
     private Context mContext;
@@ -101,57 +101,5 @@ public class NowPlayingView extends SlidingView implements MediaChangeListener {
     }
 
     public NowPlayingBottomControlView getBottomControl() { return mBottomControl; }
-
-//    @Override
-//    public boolean onTouch(View v, MotionEvent event) {
-//        if (mIsMoving) {
-//            if (mMovingHorizontal) {
-//                return mSlider.onTouch(v, event);
-//            } else {
-//                return doTouchAction(v, event, mAnchorX, mAnchorY);
-//            }
-//        }
-//        return false;
-//    }
-//
-//    private int mAnchorX, mAnchorY;
-//    private boolean mIsMoving;
-//    private boolean mMovingHorizontal;
-//    @Override
-//    public boolean onInterceptTouchEvent(MotionEvent event) {
-//        final int action = MotionEventCompat.getActionMasked(event);
-//        // Always handle the case of the touch gesture being complete.
-//        if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
-//            return false; // Do not intercept touch event, let the child handle it
-//        }
-//        switch (action) {
-//            case MotionEvent.ACTION_DOWN:
-//                mAnchorX = (int) event.getX();
-//                mAnchorY = (int) event.getY();
-//                return false;
-//            case MotionEvent.ACTION_MOVE: {
-//                int moveDiffX = (int) Math.abs(mAnchorX - event.getX());
-//                int moveDiffY = (int) Math.abs(mAnchorY - event.getY());
-//
-//                ViewConfiguration vc = ViewConfiguration.get(mContext);
-//                int touchSlop = vc.getScaledTouchSlop();
-//
-//                if (moveDiffX > touchSlop) {
-//                    Log.d(TAG, "MOVING HORIZONTAL");
-//                    mMovingHorizontal = true;
-//                    mIsMoving = true;
-//                    return true;
-//                }
-//                if (moveDiffY > touchSlop) {
-//                    Log.d(TAG, "MOVING VERTICAL");
-//                    mMovingHorizontal = false;
-//                    mIsMoving = true;
-//                    return true;
-//                }
-//                break;
-//            }
-//        }
-//        return false;
-//    }
 
 }

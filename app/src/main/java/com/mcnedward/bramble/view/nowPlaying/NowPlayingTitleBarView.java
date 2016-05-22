@@ -12,6 +12,7 @@ import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.service.MediaService;
+import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RepositoryUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
@@ -22,9 +23,6 @@ import com.mcnedward.bramble.utils.RippleUtil;
 public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeListener, IScrollView {
     private final static String TAG = "NowPlayingTitleBar";
 
-    // Layout height + padding
-    public static int HEIGHT = 75;
-
     private Context mContext;
     private Song mSong;
 
@@ -34,7 +32,7 @@ public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeL
     private ImageView mBtnPlay;
 
     public NowPlayingTitleBarView(Context context, Song song) {
-        super(context, null);
+        super(context);
         initialize(context);
         update(song, null);
     }
@@ -63,7 +61,10 @@ public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeL
     }
 
     public void update(Song song, Album album) {
-        if (album == null) {
+        if (song == null) {
+            song = MediaCache.getSong(mContext);
+        }
+        if (album == null || song == null) {
             album = RepositoryUtil.getAlbumRepository(mContext).get(song.getAlbumId());
         }
         MusicUtil.loadAlbumArt(album.getAlbumArt(), mImgAlbumArt, mContext);
@@ -84,7 +85,7 @@ public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeL
 
     @Override
     public void setSize(int width, int height) {
-        setLayoutParams(new LinearLayout.LayoutParams(width, height));
+        setLayoutParams(new LayoutParams(width, height));
     }
 
     private void updatePlayButton(float alpha, int visibility) {

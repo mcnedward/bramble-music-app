@@ -21,10 +21,10 @@ public class Slider extends HorizontalSlidingView {
     protected View getView(int position, View convertView) {
         ViewHolder holder;
 
-        final NowPlayingTitleBarView2 titleBarView;
+        final NowPlayingTitleBarView titleBarView;
         Song item = getItem(position);
         if (convertView == null) {
-            titleBarView = new NowPlayingTitleBarView2(mContext, item);
+            titleBarView = new NowPlayingTitleBarView(mContext, item);
             convertView = titleBarView;
 
             holder = new ViewHolder(titleBarView);
@@ -38,25 +38,9 @@ public class Slider extends HorizontalSlidingView {
         return convertView;
     }
 
-    @Override
-    protected void updateReplacementView() {
-
-    }
-
-    @Override
-    protected void updateLeftContent(View view) {
-
-    }
-
-    @Override
-    protected void updateRightContent(View view) {
-
-    }
-
     protected static class ViewHolder {
-        public NowPlayingTitleBarView2 mTitleBar;
-
-        public ViewHolder(NowPlayingTitleBarView2 titleBar) {
+        public NowPlayingTitleBarView mTitleBar;
+        public ViewHolder(NowPlayingTitleBarView titleBar) {
             mTitleBar = titleBar;
         }
     }
