@@ -22,6 +22,7 @@ public interface IRepository<T extends Media> {
     /**
      * Get all of the columns for the repository.
      * The first item should ALWAYS be the id, so that it can be found at the first index.
+     * The second item should ALWAYS be the key, so that it can be found at the second index.
      * @return The columns.
      */
     String[] getColumns();
@@ -33,6 +34,8 @@ public interface IRepository<T extends Media> {
     List<T> getAll();
 
     T get(int id);
+
+    T get(String key);
 
     MediaType getMediaType();
 

@@ -80,6 +80,30 @@ public abstract class BaseRepository<T extends Media> implements IRepository<T> 
         return null;
     }
 
+    // TODO ERROR HANDLING
+    @Override
+    public T get(String key) {
+        String selection = String.format("%s = ?", getColumns()[1]);
+        Cursor cursor = null;
+        try {
+            cursor = mContext.getContentResolver().query(
+                    getMediaUri(),
+                    getColumns(),
+                    selection,
+                    new String[] { key },
+                    getSortOrder());
+            if (cursor.moveToFirst()) {
+                return createMedia(cursor);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage(), e);
+        } finally {
+            if (cursor != null && !cursor.isClosed())
+                cursor.close();
+        }
+        return null;
+    }
+
     @Override
     public MediaType getMediaType() {
         return mMediaType;

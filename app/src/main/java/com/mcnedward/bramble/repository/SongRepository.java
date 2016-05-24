@@ -89,8 +89,8 @@ public class SongRepository extends BaseRepository<Song> {
     public String[] getColumns() {
         return new String[]{
                 MediaStore.Audio.Media._ID,
-                MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.TITLE_KEY,
+                MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.DISPLAY_NAME,
                 MediaStore.Audio.Media.ARTIST_ID,
                 MediaStore.Audio.Media.ALBUM_ID,

@@ -4,16 +4,19 @@ import android.content.Context;
 import android.view.View;
 
 import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
 
 import java.util.List;
 
 /**
  * Created by Edward on 5/21/2016.
+ *
+ * View for
  */
-public class Slider extends HorizontalSlidingView {
+public class NowPlayingTitleBarSliderView extends HorizontalSlidingView<Song> {
 
-    public Slider(Context context, List<Song> songs) {
+    public NowPlayingTitleBarSliderView(Context context, List<Song> songs) {
         super(context, songs);
     }
 
@@ -36,6 +39,17 @@ public class Slider extends HorizontalSlidingView {
         titleBarView.update(item, null);
         RippleUtil.setRippleBackground(titleBarView, mContext);
         return convertView;
+    }
+
+    @Override
+    protected void notifyMainViewUpdated(Song newItem, View mainView, boolean isMovingRight) {
+        if (isMovingRight) {
+            // Play the previous song
+            MusicUtil.doPreviousButtonAction(mContext);
+        } else {
+            // Play the next song
+            MusicUtil.doForwardButtonAction(mContext);
+        }
     }
 
     protected static class ViewHolder {

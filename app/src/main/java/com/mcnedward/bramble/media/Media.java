@@ -26,7 +26,7 @@ public abstract class Media implements Serializable {
         cacheKey = generateCacheKey();
     }
 
-    public void save(SharedPreferences.Editor editor) {
+    public boolean save(SharedPreferences.Editor editor) {
         String theMediaType = mediaType.type();
         editor.putInt(theMediaType + "_id", id);
         editor.putString(theMediaType + "_imagePath", imagePath);
@@ -34,7 +34,7 @@ public abstract class Media implements Serializable {
         editor.putString(theMediaType + "_key", key);
         editor.putString(theMediaType + "_mediaType", theMediaType);
         saveMedia(editor);
-        editor.commit();
+        return editor.commit();
     }
 
     protected abstract void saveMedia(SharedPreferences.Editor editor);

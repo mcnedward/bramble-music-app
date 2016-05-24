@@ -13,8 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.RelativeLayout;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.fragment.AlbumFragment;
@@ -23,10 +21,8 @@ import com.mcnedward.bramble.activity.fragment.MediaFragment;
 import com.mcnedward.bramble.activity.fragment.SongFragment;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.service.MediaService;
-import com.mcnedward.bramble.utils.RepositoryUtil;
 import com.mcnedward.bramble.view.MainView;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
-import com.mcnedward.bramble.view.nowPlaying.Slider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,11 +79,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed()  {
-//        if (nowPlayingView.isContentFocused()) {
-//            nowPlayingView.animateToBottom();
-//        } else {
+        if (nowPlayingView.isContentFocused()) {
+            nowPlayingView.animateToBottom();
+        } else {
             super.onBackPressed();
-//        }
+        }
     }
 
     @Override
@@ -104,9 +100,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         Log.d(TAG, "BRAMBLE CLOSED");
-//        MediaService.unRegisterListeners();
+        MediaService.unRegisterListeners();
         // TODO This stops the media playing, fix it!
-//        stopService(new Intent(this, MediaService.class));
+        stopService(new Intent(this, MediaService.class));
         super.onDestroy();
     }
 

@@ -33,7 +33,6 @@ public class BaseDataLoader<T extends Media> extends AsyncTaskLoader<List<T>> {
 
     @Override
     public List<T> loadInBackground() {
-        MediaCache.setLoading(mMediaType, true);
         return mRepository.getAll();
     }
 
@@ -57,7 +56,6 @@ public class BaseDataLoader<T extends Media> extends AsyncTaskLoader<List<T>> {
         if (oldDataList != null && oldDataList != dataList && oldDataList.size() > 0) {
             resetDataList(mDataList);
         }
-        MediaCache.setLoading(mMediaType, false);
     }
 
     /**
@@ -82,7 +80,6 @@ public class BaseDataLoader<T extends Media> extends AsyncTaskLoader<List<T>> {
     @Override
     public void onStopLoading() {
         cancelLoad();
-        MediaCache.setLoading(mMediaType, false);
     }
 
     /**
@@ -95,7 +92,6 @@ public class BaseDataLoader<T extends Media> extends AsyncTaskLoader<List<T>> {
         // TODO Change this
         if (dataList != null & dataList.size() > 0)
             resetDataList(dataList);
-        MediaCache.setLoading(mMediaType, false);
     }
 
     /**

@@ -17,6 +17,7 @@ import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.MusicUtil;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +33,7 @@ public class MediaService extends Service {
 
     private static MediaPlayer mPlayer;
     private static Song mSong;
+    private static ArrayList<String> mSongList;
     private static Album mAlbum;
     private static Set<MediaChangeListener> mMediaChangeListeners;
     private static Set<MediaStopListener> mMediaStopListeners;
@@ -55,10 +57,12 @@ public class MediaService extends Service {
         Log.d(TAG, "Starting MediaService!");
         if (intent != null) {
             mSong = (Song) intent.getSerializableExtra("song");
+            mSongList = intent.getStringArrayListExtra("songList");  // TODO Create enums for these extras
             mAlbum = (Album) intent.getSerializableExtra("album");
 
-            MediaCache.saveSong(mSong, getApplicationContext());
-            MediaCache.saveAlbum(mAlbum, getApplicationContext());
+            MediaCache.saveSong(getApplicationContext(), mSong);
+            MediaCache.saveSongList(getApplicationContext(), mSongList);
+            MediaCache.saveAlbum(getApplicationContext(), mAlbum);
 
             mMediaThread.startThread();
             mNowPlayingThread.startThread();
@@ -180,14 +184,15 @@ public class MediaService extends Service {
          * @param player The MediaPlayer to setup with the next song.
          */
         private void setupNextSong(MediaPlayer player) {
-            if (mAlbum != null) {
+            if (mSongList != null) {
+//                String nextKey = mSongList.(mSong.getKey());
                 // Setup the next song in the album
-                mNextSong = MusicUtil.getNextSongForAlbum(mAlbum, getApplicationContext());
-                mNextPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(mNextSong.getData()));
-                player.setNextMediaPlayer(mNextPlayer);
-                mNextPlayer.setOnErrorListener(mErrorListener);
-                mNextPlayer.setOnCompletionListener(mCompletionListener);
-                mNextPlayer.setLooping(MediaCache.isPlaybackLooping(getApplicationContext()));
+//                mNextSong = MusicUtil.getNextSongForAlbum(getApplicationContext(), mAlbum);
+//                mNextPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(mNextSong.getData()));
+//                player.setNextMediaPlayer(mNextPlayer);
+//                mNextPlayer.setOnErrorListener(mErrorListener);
+//                mNextPlayer.setOnCompletionListener(mCompletionListener);
+//                mNextPlayer.setLooping(MediaCache.isPlaybackLooping(getApplicationContext()));
             }
         }
 
@@ -219,7 +224,7 @@ public class MediaService extends Service {
                 if (mNextPlayer != null) {
                     mPlayer = mNextPlayer;
                     mSong = mNextSong;
-                    MediaCache.saveSong(mSong, getApplicationContext());
+                    MediaCache.saveSong(getApplicationContext(), mSong);
                     setupNextSong(mPlayer);
                 } else {
                     mStopped = true;

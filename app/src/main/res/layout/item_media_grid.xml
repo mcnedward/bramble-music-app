@@ -3,33 +3,41 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_gravity="center"
-              android:layout_margin="5dp"
-              android:background="@drawable/album_card"
-              android:orientation="vertical">
+              android:clipToPadding="false"
+              android:padding="5dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:background="@color/White"
+        android:orientation="vertical"
+        android:elevation="5dp">
 
-        <com.mcnedward.bramble.view.SquareImageCard
-            android:id="@+id/media_icon"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.mcnedward.bramble.view.SquareImageCard
+                android:id="@+id/media_icon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/no_album_art"/>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/txt_media_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:src="@drawable/no_album_art"/>
-    </RelativeLayout>
+            android:background="@color/White"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:padding="5dp"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:text="@string/placeholder"/>
 
-    <TextView
-        android:id="@+id/txt_media_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/WhiteSmoke"
-        android:ellipsize="marquee"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:padding="5dp"
-        android:scrollHorizontally="true"
-        android:singleLine="true"
-        android:text="@string/placeholder"/>
+    </LinearLayout>
 </LinearLayout>

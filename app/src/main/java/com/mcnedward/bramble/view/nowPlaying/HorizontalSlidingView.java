@@ -22,13 +22,13 @@ import java.util.List;
  * <p/>
  * This is a view that can be slid in a horizontal motion.
  */
-public abstract class HorizontalSlidingView extends RelativeLayout {
+public abstract class HorizontalSlidingView<T> extends RelativeLayout {
     private final static String TAG = "SlidingView";
 
     private static final int MOVE_DURATION = 300;
 
     protected Context mContext;
-    private List<Song> mItems;  // The list of items to use in this view
+    private List<T> mItems;  // The list of items to use in this view
     private int mActiveIndex;   // The currently active index of this view
     private View[] mRecycleViews;   // An array of Views that can be recycled
     private ViewGroup mRoot;    // The root of this view
@@ -38,23 +38,24 @@ public abstract class HorizontalSlidingView extends RelativeLayout {
     private int mAnchorX;   // The anchor position of the x on the MotionEvent.DOWN
     private boolean mMovingRight;  // Flag for determining if the view if moving to right or not
 
-    public HorizontalSlidingView(Context context, List<Song> songs) {
+    public HorizontalSlidingView(Context context, List<T> songs) {
         super(context);
         initialize(context, songs);
     }
 
     public HorizontalSlidingView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initialize(context, new ArrayList<Song>());
+        initialize(context, new ArrayList<T>());
     }
 
-    private void initialize(Context context, List<Song> songs) {
+    private void initialize(Context context, List<T> songs) {
         this.mContext = context;
         mRoot = this;
         mActiveIndex = 0;
         mRecycleViews = new View[2];
         mItems = songs;
         mSlider = getOrCreateView(mActiveIndex, mSlider, 0);
+        setClipToPadding(false);
     }
 
     /**
@@ -65,6 +66,8 @@ public abstract class HorizontalSlidingView extends RelativeLayout {
      * @return The created or updated View.
      */
     protected abstract View getView(int position, View convertView);
+
+    protected abstract void notifyMainViewUpdated(T newItem, View mainView, boolean isMovingRight);
 
     /**
      * Gets or creates the View at the current position. If the View has not been created yet, it will be added to the ViewGroup and the list of
@@ -109,6 +112,7 @@ public abstract class HorizontalSlidingView extends RelativeLayout {
             // Setup the content for the left
             mSliderReplacement.setX(oldViewX + mSliderReplacement.getWidth());
         }
+        mSlider.bringToFront(); // This should have this as always being on the top, right?
     }
 
     /**
@@ -185,17 +189,17 @@ public abstract class HorizontalSlidingView extends RelativeLayout {
 
     /**
      * Performs the action for this view on a fling gesture.
+     *
      * @param isRightFling True if this is a fling to the right, false if it is a fling to the left.
      * @return
      */
     public boolean doFlingAction(boolean isRightFling) {
         if (isRightFling) {
             slideViews(false, 100);
-            return true;
         } else {
             slideViews(true, 100);
-            return true;
         }
+        return true;
     }
 
     /**
@@ -204,7 +208,7 @@ public abstract class HorizontalSlidingView extends RelativeLayout {
      * @param position The index of the item.
      * @return The item.
      */
-    public Song getItem(int position) {
+    public T getItem(int position) {
         if (mItems.isEmpty()) return null;
         return mItems.get(position);
     }
@@ -214,7 +218,7 @@ public abstract class HorizontalSlidingView extends RelativeLayout {
      *
      * @param songs The list of items.
      */
-    public void setItems(List<Song> songs) {
+    public void setItems(List<T> songs) {
         mItems = songs;
         mActiveIndex = 0;
         mSlider = getOrCreateView(mActiveIndex, mSlider, 0);
@@ -308,6 +312,7 @@ public abstract class HorizontalSlidingView extends RelativeLayout {
             mActiveIndex = mActiveIndex + 1 > mItems.size() - 1 ? 0 : mActiveIndex + 1;
         }
         mSlider = getOrCreateView(mActiveIndex, mSlider, 0);
+        notifyMainViewUpdated(getItem(mActiveIndex), mSlider, mMovingRight);
     }
 
 }

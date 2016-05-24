@@ -10,8 +10,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/container_now_playing_title_bar"
-        android:orientation="horizontal">
+        android:id="@+id/container_now_playing_title_bar">
 
         <ImageView
             android:id="@+id/now_playing_bottom_album_art"

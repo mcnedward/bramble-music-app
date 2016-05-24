@@ -1,5 +1,6 @@
 package com.mcnedward.bramble.view.nowPlaying;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -22,6 +23,8 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
 
     private static final int SWIPE_MIN_DISTANCE = 5;
     private static final int SWIPE_THRESHOLD_VELOCITY = 300;
+    private static final int MOVE_DURATION = 300;
+    private static final int QUICK_MOVE_DURATION = 100;
 
     private ViewGroup mRoot;
     private View mContent;  // The main view that holds all the other views
@@ -34,6 +37,7 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
     // ListView or some other intractable view is available underneath
     protected boolean mContentFocused;
     private boolean mIsScrollingHorizontal; // Flag for determining if the horizontal view is being scrolled.
+    private boolean mIsScrollingVertical;   // Flag for determining if the vertical view is being scrolled.
     // Flag for determining if the user has dragged the horizontal view, and the MotionEvent.UP action should be delegated to the
     // HorizontalSlidingView.
     private boolean mHorizontalMoveForUpAction;
@@ -110,10 +114,12 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
      * @param bottomBounds The bottom bounds of the main content view.
      */
     private void doContentUpAction(int eventY, int touchSlop, int topBounds, int bottomBounds) {
+        int moveDiffY = Math.abs(mAnchorY - eventY);
+
         if (mLockToBottom) {
             // Moving from top to bottom, but finger went off screen
             mLockToBottom = false;
-        } else if (eventY > touchSlop) {
+        } else if (moveDiffY < touchSlop) {
             // Handle a single tap
             if (mContentFocused) {
                 animateToBottom();
@@ -123,14 +129,16 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
         } else {
             if (eventY > mRoot.getHeight()) {    // Finger moved off bottom of screen
                 snapToBottom();
-            } else if (mContentFocused) {   // View is up on top
-                if (mRoot != null && eventY < topBounds) {
+            } else if (mAnchorY > eventY) {
+                // Moving up
+                if (eventY < bottomBounds) {
                     animateToTop();
                 } else {
                     animateToBottom();
                 }
             } else {
-                if (mRoot != null && eventY < bottomBounds) {
+                // Moving down
+                if (eventY < topBounds) {
                     animateToTop();
                 } else {
                     animateToBottom();
@@ -148,17 +156,18 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
      */
     public boolean doTouchAction(View v, MotionEvent event) {
         // If this is a swipe
-        if (mGestureDetector.onTouchEvent(event)) {
-            return true;
-        }
+        if (!mContentFocused)
+            if (mGestureDetector.onTouchEvent(event)) {
+                return true;
+            }
 
         int action = event.getAction();
         int eventX = (int) event.getX();
         int eventY = (int) event.getY();
         int contentY = (int) mContent.getY();
         int titleBarHeight = mTitleBar.getHeight();
-        int topBounds = mRoot.getHeight() / 5;
-        int bottomBounds = (int) (mRoot.getHeight() * 0.95);
+        int topBounds = mRoot.getHeight() / 4;
+        int bottomBounds = (int) (mRoot.getHeight() * 0.75);
 
         ViewConfiguration vc = ViewConfiguration.get(getContext());
         int touchSlop = vc.getScaledTouchSlop();
@@ -176,8 +185,9 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
             case MotionEvent.ACTION_MOVE:
                 if (mControlsTouched) {
                     // If content focused, then we know we should only handle content move actions, the horizontal bar should be disabled
-                    if (mContentFocused) {
+                    if (mContentFocused || mIsScrollingVertical) {
                         doContentMoveAction(eventY, contentY, titleBarHeight, bottomBounds);
+                        mIsScrollingHorizontal = false;
                         mHorizontalMoveForUpAction = false;
                     } else if (mIsScrollingHorizontal) {
                         mHSlider.doMoveAction(eventX);
@@ -186,17 +196,18 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
                         int moveDiffY = Math.abs(mAnchorY - eventY);
 
                         if (moveDiffY > touchSlop) {
+                            mIsScrollingVertical = true;
                             mIsScrollingHorizontal = false;
                             mHorizontalMoveForUpAction = false;
                             doContentMoveAction(eventY, contentY, titleBarHeight, bottomBounds);
                             mHSlider.moveToDefault();
                         } else if (moveDiffX > touchSlop) {
+                            mIsScrollingVertical = false;
                             mIsScrollingHorizontal = true;
                             mHorizontalMoveForUpAction = true;
                             mHSlider.doMoveAction(eventX);
                         }
                     }
-                    return true;
                 }
                 break;
         }
@@ -210,9 +221,10 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
                     doContentUpAction(eventY, touchSlop, topBounds, bottomBounds);
                     mHSlider.moveToDefault();
                 }
+                mIsScrollingVertical = false;
                 mIsScrollingHorizontal = false;
                 mHorizontalMoveForUpAction = false;
-                return true;    // Event handled
+                mControlsTouched = false;
             }
         }
         // Allow the underlying view to handle touch events when the sliding view is not focused
@@ -228,7 +240,7 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
      * Animates this view to the bottom position at an animation duration rate of 300 ms.
      */
     public void animateToBottom() {
-        animateToBottom(300);
+        animateToBottom(MOVE_DURATION);
     }
 
     /**
@@ -243,16 +255,20 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
             int animationDistance = Math.abs(contentY - mRoot.getHeight());
             mContent.animate().translationYBy(animationDistance);
             mTitleBar.animate().alpha(1.0f).setDuration(duration);
-            mContentFocused = false;
         }
+        mContentFocused = false;
+    }
+
+    public void animateToTop() {
+        animateToTop(MOVE_DURATION);
     }
 
     /**
      * Animates this view to the top position.
      */
-    public void animateToTop() {
+    public void animateToTop(int duration) {
         switchSliderIcon(true);
-        mContent.animate().translationY(0);
+        mContent.animate().translationY(0).setDuration(duration);
         mContentFocused = true;
     }
 
@@ -309,10 +325,18 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             try {
-                // Right to left swipe
+                if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                    animateToTop(QUICK_MOVE_DURATION);
+                    return true;
+                } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                    animateToBottom(QUICK_MOVE_DURATION);
+                    return true;
+                }
                 if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                    // Right to left swipe
                     return mHSlider.doFlingAction(true);
                 } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                    // Left to right swipe
                     return mHSlider.doFlingAction(false);
                 }
             } catch (Exception e) {

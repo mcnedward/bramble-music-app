@@ -1,14 +1,9 @@
 package com.mcnedward.bramble.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
-import android.os.Handler;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.mcnedward.bramble.R;
@@ -23,16 +18,15 @@ import com.mcnedward.bramble.service.MediaService;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by edward on 25/12/15.
  */
 public class MusicUtil {
     private final static String TAG = "MusicUtil";
-
-    private static SongRepository mSongRepository;
-    private static AlbumRepository mAlbumRepository;
 
     public static void loadAlbumArt(String albumArtPath, ImageView imageView, Context context) {
         if (albumArtPath != null && !albumArtPath.equals("")) {
@@ -45,8 +39,8 @@ public class MusicUtil {
 
     public static void doPreviousButtonAction(Context context) {
         Song song = MediaCache.getSong(context);
-        Album album = MediaCache.getAlbum(context);
-        if (song == null || album == null) return;
+        List<String> songList = MediaCache.getSongList(context);
+        if (song == null) return;
 
         // First check if the current song should just be restarted
         // If the player is null, then all songs have stopped, or the app is freshly opened, so the song should not be restarted, but should go to the previous
@@ -54,57 +48,51 @@ public class MusicUtil {
         if (player != null) {
             int currentPosition = getTimeInSeconds(player.getCurrentPosition());
             if (currentPosition > 2) {
-                startPlayingMusic(song, album, context);
+                startPlayingMusic(song, songList, context);
                 return;
             }
         }
 
-        SongRepository songRepository = getSongRepository(context);
-        List<Song> songs = songRepository.getSongsForAlbum(album.getId());
-        if (songs.isEmpty()) return;
+        if (songList.isEmpty()) return; // TODO Restart song if there are no other songs in list? Or should there always be at least one song in the list? Yes there should.
 
-        int currentIndex = getSongIndex(songs, song);
+        int currentIndex = getSongIndex(songList, song);
         if (currentIndex == -1) return;
-        Song nextSong;
+        String nextSongKey;
         // Get the previous song, or the last one if the current song is the first
         if (currentIndex == 0) {
-            nextSong = songs.get(songs.size() - 1);
+            nextSongKey = songList.get(songList.size() - 1);
         } else {
-            nextSong = songs.get(currentIndex - 1);
+            nextSongKey = songList.get(currentIndex - 1);
         }
-        startPlayingMusic(nextSong, album, context);
+        Song nextSong = RepositoryUtil.getSongRepository(context).get(nextSongKey);
+        startPlayingMusic(nextSong, context);
     }
 
     public static void doForwardButtonAction(Context context) {
-        Album album = MediaCache.getAlbum(context);
-        Song nextSong = getNextSongForAlbum(album, context);
-        if (nextSong == null) return;
-        startPlayingMusic(nextSong, album, context);
-    }
-
-    public static Song getNextSongForAlbum(Album album, Context context) {
         Song song = MediaCache.getSong(context);
-        if (song == null || album == null) return null;
-        SongRepository songRepository = getSongRepository(context);
-        List<Song> songs = songRepository.getSongsForAlbum(album.getId());
-        if (songs.isEmpty()) return null;
+        List<String> songList = MediaCache.getSongList(context);
+        if (song == null) return;
 
-        int currentIndex = getSongIndex(songs, song);
-        if (currentIndex == -1) return null;
-        Song nextSong;
-        if (currentIndex == songs.size() - 1) {
-            nextSong = songs.get(0);
+        if (songList.isEmpty()) return; // TODO Restart song if there are no other songs in list? Or should there always be at least one song in the list? Yes there should.
+
+        int currentIndex = getSongIndex(songList, song);
+        if (currentIndex == -1) return;
+        String nextSongKey;
+        // Get the next song, or the first if the current song is the last
+        if (currentIndex == songList.size() - 1) {
+            nextSongKey = songList.get(0);
         } else {
-            nextSong = songs.get(currentIndex + 1);
+            nextSongKey = songList.get(currentIndex + 1);
         }
-        return nextSong;
+        Song nextSong = RepositoryUtil.getSongRepository(context).get(nextSongKey);
+        startPlayingMusic(nextSong, context);
     }
 
-    private static int getSongIndex(List<Song> songs, Song song) {
+    private static int getSongIndex(List<String> songList, Song song) {
         int currentIndex = -1;
-        for (int i = 0; i < songs.size(); i++) {
-            Song albumSong = songs.get(i);
-            if (albumSong.getId() == song.getId()) {
+        for (int i = 0; i < songList.size(); i++) {
+            String songKey = songList.get(i);
+            if (song.getKey().equals(songKey)) {
                 currentIndex = i;
                 break;
             }
@@ -167,10 +155,10 @@ public class MusicUtil {
         context.startService(intent);
     }
 
-    public static void startPlayingMusic(Song song, Album album, Context context) {
+    public static void startPlayingMusic(Song song, List<String> songList, Context context) {
         Intent intent = new Intent(context, MediaService.class);
         intent.putExtra("song", song);
-        intent.putExtra("album", album);
+        intent.putExtra("songList", new ArrayList<>(songList));
         context.startService(intent);
     }
 
@@ -188,20 +176,6 @@ public class MusicUtil {
 
     public static int getTimeInSeconds(long millis) {
         return (int) ((millis / 1000) % 60);
-    }
-
-    public static SongRepository getSongRepository(Context context) {
-        if (mSongRepository == null) {
-            mSongRepository = new SongRepository(context);
-        }
-        return mSongRepository;
-    }
-
-    public static AlbumRepository getAlbumRepository(Context context) {
-        if (mAlbumRepository == null) {
-            mAlbumRepository = new AlbumRepository(context);
-        }
-        return mAlbumRepository;
     }
 
 }

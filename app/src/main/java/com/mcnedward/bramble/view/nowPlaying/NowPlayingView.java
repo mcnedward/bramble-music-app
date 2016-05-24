@@ -59,7 +59,7 @@ public class NowPlayingView extends CrossSlidingView implements MediaChangeListe
             Album album = mAlbumRepository.get(song.getAlbumId());
             if (album == null) return;
             mTitleBar.update(song, album);
-            mSlider.setItems(RepositoryUtil.getSongRepository(mContext).getSongsForAlbum(album.getId()));
+            mNowPlayingTitleBarSliderView.setItems(RepositoryUtil.getSongRepository(mContext).getSongsForAlbum(album.getId()));
             // Load album art
             MusicUtil.loadAlbumArt(album.getAlbumArt(), imgAlbumArt, mContext);
         }
@@ -78,7 +78,7 @@ public class NowPlayingView extends CrossSlidingView implements MediaChangeListe
 
     private NowPlayingTitleBarView mTitleBar;
     private NowPlayingBottomControlView mBottomControl;
-    private Slider mSlider;
+    private NowPlayingTitleBarSliderView mNowPlayingTitleBarSliderView;
     private ImageView imgAlbumArt;
 
     private void setupViews() {
@@ -88,11 +88,11 @@ public class NowPlayingView extends CrossSlidingView implements MediaChangeListe
 
         // Setup the slider
         RelativeLayout container = (RelativeLayout) findViewById(R.id.view_slider_bar);
-        mSlider = new Slider(mContext, new ArrayList<Song>());
-        container.addView(mSlider);
+        mNowPlayingTitleBarSliderView = new NowPlayingTitleBarSliderView(mContext, new ArrayList<Song>());
+        container.addView(mNowPlayingTitleBarSliderView);
 
         setTitleBar(mTitleBar);
-        setHorizontalSlider(mSlider);
+        setHorizontalSlider(mNowPlayingTitleBarSliderView);
         setContent(findViewById(R.id.now_playing_content));
     }
 
