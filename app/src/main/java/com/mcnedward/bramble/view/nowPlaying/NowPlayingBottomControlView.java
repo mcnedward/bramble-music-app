@@ -158,7 +158,7 @@ public class NowPlayingBottomControlView extends LinearLayout implements MediaPl
         mBtnPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicUtil.doPlayButtonAction(mBtnPlay, mContext);
+                MusicUtil.doPlayButtonAction(mContext, mBtnPlay);
             }
         });
         mBtnForward.setOnClickListener(new OnClickListener() {
@@ -198,7 +198,7 @@ public class NowPlayingBottomControlView extends LinearLayout implements MediaPl
 
     @Override
     public void notifyMediaChange(Song currentSong, boolean playing) {
-        MusicUtil.switchPlayButton(mBtnPlay, playing, mContext);
+        MusicUtil.switchPlayButton(mContext, mBtnPlay, playing);
     }
 
     @Override
@@ -206,7 +206,7 @@ public class NowPlayingBottomControlView extends LinearLayout implements MediaPl
         post(new Runnable() {
             @Override
             public void run() {
-                MusicUtil.switchPlayButton(mBtnPlay, false, mContext);
+                MusicUtil.switchPlayButton(mContext, mBtnPlay, false);
                 mTxtDuration.setText(String.valueOf(song.getDuration()));
                 mTxtPassed.setText("0:00");
                 mSeekBar.setProgress(0);

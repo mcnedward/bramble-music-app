@@ -21,13 +21,13 @@ public class AlbumGridAdapter extends MediaGridAdapter<Album> {
         super(context);
     }
 
-    public AlbumGridAdapter(List<Album> albums, Context context) {
-        super(albums, context);
+    public AlbumGridAdapter(Context context, List<Album> albums) {
+        super(context, albums);
     }
 
     @Override
     protected void doOnClickAction(Album album, View view) {
-        MusicUtil.openAlbum(album, mContext);
+        MusicUtil.openAlbum(mContext, album);
     }
 
 }

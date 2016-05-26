@@ -18,7 +18,7 @@ public class ArtistListAdapter extends MediaListAdapter<Artist> {
 
     @Override
     protected void doOnClickAction(Artist artist, MediaItem view) {
-        MusicUtil.startAlbumPopup(artist, mContext);
+        MusicUtil.startAlbumPopup(mContext, artist);
     }
 
 }

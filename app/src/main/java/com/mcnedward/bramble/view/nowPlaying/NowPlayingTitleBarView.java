@@ -55,7 +55,7 @@ public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeL
         mBtnPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicUtil.doPlayButtonAction(mBtnPlay, mContext);
+                MusicUtil.doPlayButtonAction(mContext, mBtnPlay);
             }
         });
     }
@@ -67,7 +67,7 @@ public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeL
         if (album == null || song == null) {
             album = RepositoryUtil.getAlbumRepository(mContext).get(song.getAlbumId());
         }
-        MusicUtil.loadAlbumArt(album.getAlbumArt(), mImgAlbumArt, mContext);
+        MusicUtil.loadAlbumArt(mContext, album.getAlbumArt(), mImgAlbumArt);
         mTxtNowPlayingAlbum.setText(album.getTitle());
         mTxtNowPlayingTitle.setText(song.getTitle());
     }
@@ -99,6 +99,6 @@ public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeL
 
     @Override
     public void notifyMediaChange(Song currentSong, boolean playing) {
-        MusicUtil.switchPlayButton(mBtnPlay, playing, mContext);
+        MusicUtil.switchPlayButton(mContext, mBtnPlay, playing);
     }
 }

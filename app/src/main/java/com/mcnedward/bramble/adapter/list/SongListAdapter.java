@@ -29,7 +29,7 @@ public class SongListAdapter extends MediaListAdapter<Song> {
 
     @Override
     protected void doOnClickAction(Song song, MediaItem view) {
-        MusicUtil.startPlayingMusic(song, mContext);
+        MusicUtil.startPlayingMusic(mContext, song);
         ((SongMediaItem) view).setGifViewCurrentSong(song);
         view.update(song);
     }

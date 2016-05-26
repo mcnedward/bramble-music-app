@@ -28,7 +28,7 @@ import java.util.Set;
 public class MusicUtil {
     private final static String TAG = "MusicUtil";
 
-    public static void loadAlbumArt(String albumArtPath, ImageView imageView, Context context) {
+    public static void loadAlbumArt(Context context, String albumArtPath, ImageView imageView) {
         if (albumArtPath != null && !albumArtPath.equals("")) {
             File imageFile = new File(albumArtPath);
             PicassoUtil.getPicasso(context).with(context).load(imageFile).into(imageView);
@@ -48,7 +48,7 @@ public class MusicUtil {
         if (player != null) {
             int currentPosition = getTimeInSeconds(player.getCurrentPosition());
             if (currentPosition > 2) {
-                startPlayingMusic(song, songList, context);
+                startPlayingMusic(context, song, songList);
                 return;
             }
         }
@@ -65,7 +65,7 @@ public class MusicUtil {
             nextSongKey = songList.get(currentIndex - 1);
         }
         Song nextSong = RepositoryUtil.getSongRepository(context).get(nextSongKey);
-        startPlayingMusic(nextSong, context);
+        startPlayingMusic(context, nextSong);
     }
 
     public static void doForwardButtonAction(Context context) {
@@ -85,7 +85,7 @@ public class MusicUtil {
             nextSongKey = songList.get(currentIndex + 1);
         }
         Song nextSong = RepositoryUtil.getSongRepository(context).get(nextSongKey);
-        startPlayingMusic(nextSong, context);
+        startPlayingMusic(context, nextSong);
     }
 
     private static int getSongIndex(List<String> songList, Song song) {
@@ -100,20 +100,20 @@ public class MusicUtil {
         return currentIndex;
     }
 
-    public static void doPlayButtonAction(ImageView playButton, Context context) {
+    public static void doPlayButtonAction(Context context, ImageView playButton) {
         MediaPlayer player = MediaService.getPlayer();
         if (player == null) {
             Song song = MediaCache.getSong(context);
             if (song != null) {
-                MusicUtil.startPlayingMusic(song, context);
+                MusicUtil.startPlayingMusic(context, song);
             }
         } else {
             if (player.isPlaying()) {
                 player.pause();
-                MusicUtil.switchPlayButton(playButton, false, context);
+                MusicUtil.switchPlayButton(context, playButton, false);
             } else {
                 player.start();
-                MusicUtil.switchPlayButton(playButton, true, context);
+                MusicUtil.switchPlayButton(context, playButton, true);
             }
             if (MediaService.isStopped()) {
                 MediaService.pauseNowPlayingThread(false);
@@ -128,7 +128,7 @@ public class MusicUtil {
      * @param isPlaying True for the pause image, false for the play image.
      * @param context The context.
      */
-    public static void switchPlayButton(ImageView playButton, boolean isPlaying, Context context) {
+    public static void switchPlayButton(Context context, ImageView playButton, boolean isPlaying) {
         if (isPlaying) {
             playButton.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.icon_pause));
         } else {
@@ -136,26 +136,27 @@ public class MusicUtil {
         }
     }
 
-    public static void startAlbumPopup(Artist artist, Context context) {
-        Intent intent = new Intent(context, AlbumPopup.class);
-        intent.putExtra("artist", artist);
-        context.startActivity(intent);
+    public static void startAlbumPopup(Context context, Artist artist) {
+        AlbumPopup.startAlbumPopup(context, artist);
+//        Intent intent = new Intent(context, AlbumPopup.class);
+//        intent.putExtra("artist", artist);
+//        context.startActivity(intent);
     }
 
-    public static void openAlbum(Album album, Context context) {
+    public static void openAlbum(Context context, Album album) {
         Intent intent = new Intent(context, AlbumActivity.class);
         intent.putExtra("album", album);
         context.startActivity(intent);
     }
 
-    public static void startPlayingMusic(Song song, Context context) {
+    public static void startPlayingMusic(Context context, Song song) {
         // Start playing music!
         Intent intent = new Intent(context, MediaService.class);
         intent.putExtra("song", song);
         context.startService(intent);
     }
 
-    public static void startPlayingMusic(Song song, List<String> songList, Context context) {
+    public static void startPlayingMusic(Context context, Song song, List<String> songList) {
         Intent intent = new Intent(context, MediaService.class);
         intent.putExtra("song", song);
         intent.putExtra("songList", new ArrayList<>(songList));

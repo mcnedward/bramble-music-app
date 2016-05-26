@@ -61,7 +61,7 @@ public class NowPlayingView extends CrossSlidingView implements MediaChangeListe
             mTitleBar.update(song, album);
             mNowPlayingTitleBarSliderView.setItems(RepositoryUtil.getSongRepository(mContext).getSongsForAlbum(album.getId()));
             // Load album art
-            MusicUtil.loadAlbumArt(album.getAlbumArt(), imgAlbumArt, mContext);
+            MusicUtil.loadAlbumArt(mContext, album.getAlbumArt(), imgAlbumArt);
         }
     }
 

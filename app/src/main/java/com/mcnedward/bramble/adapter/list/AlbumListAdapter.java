@@ -18,7 +18,7 @@ public class AlbumListAdapter extends MediaListAdapter<Album> {
 
     @Override
     protected void doOnClickAction(Album album, MediaItem view) {
-        MusicUtil.openAlbum(album, mContext);
+        MusicUtil.openAlbum(mContext, album);
     }
 
 }

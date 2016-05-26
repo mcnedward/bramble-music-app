@@ -25,7 +25,7 @@ public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
     protected LayoutInflater inflater;
     private LruCache<String, Bitmap> mLruCache;
 
-    public MediaGridAdapter(List<T> groups, Context context) {
+    public MediaGridAdapter(Context context, List<T> groups) {
         mGroups = groups;
         mContext = context;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -42,8 +42,7 @@ public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
     }
 
     public MediaGridAdapter(Context context) {
-        this(new ArrayList<T>(), context);
-
+        this(context, new ArrayList<T>());
     }
 
     @Override
