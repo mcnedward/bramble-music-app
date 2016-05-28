@@ -8,6 +8,7 @@ import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.repository.media.ArtistRepository;
 import com.mcnedward.bramble.repository.IRepository;
+import com.mcnedward.bramble.repository.media.IMediaRepository;
 
 import java.util.Random;
 
@@ -23,7 +24,7 @@ public class ArtistFragment extends MediaFragment<Artist> {
     }
 
     @Override
-    public IRepository<Artist> createRepository() {
+    public IMediaRepository<Artist> createRepository() {
         return new ArtistRepository(getActivity());
     }
 

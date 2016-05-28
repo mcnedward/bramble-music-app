@@ -21,6 +21,7 @@ import com.mcnedward.bramble.media.Media;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.adapter.list.MediaListAdapter;
 import com.mcnedward.bramble.repository.IRepository;
+import com.mcnedward.bramble.repository.media.IMediaRepository;
 
 import java.util.List;
 
@@ -58,7 +59,7 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         return null;
     }
 
-    protected abstract IRepository<T> createRepository();
+    protected abstract IMediaRepository<T> createRepository();
 
     protected abstract MediaListAdapter<T> createMediaListAdapter();
 

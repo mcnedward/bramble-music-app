@@ -10,16 +10,21 @@ import android.util.Log;
 import android.view.View;
 
 import com.mcnedward.bramble.enums.IntentKey;
+import com.mcnedward.bramble.exception.EntityAlreadyExistsException;
+import com.mcnedward.bramble.exception.EntityDoesNotExistException;
 import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.listener.MediaPlayingListener;
 import com.mcnedward.bramble.listener.MediaStopListener;
 import com.mcnedward.bramble.media.Album;
+import com.mcnedward.bramble.media.Playlist;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.MusicUtil;
+import com.mcnedward.bramble.utils.RepositoryUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -57,12 +62,13 @@ public class MediaService extends Service {
         Log.d(TAG, "Starting MediaService!");
         if (intent != null) {
             mSong = (Song) intent.getSerializableExtra(IntentKey.SONG.name());
-            mSongKeys = intent.getStringArrayListExtra(IntentKey.SONG_KEYS.name());
             mAlbum = (Album) intent.getSerializableExtra(IntentKey.ALBUM.name());
+            mSongKeys = intent.getStringArrayListExtra(IntentKey.SONG_KEYS.name());
 
             MediaCache.saveSong(getApplicationContext(), mSong);
-            MediaCache.saveSongKeys(getApplicationContext(), mSongKeys);
             MediaCache.saveAlbum(getApplicationContext(), mAlbum);
+            RepositoryUtil.getPlaylistRepository(getApplicationContext()).saveCurrentPlaylist(mSongKeys);
+            List<String> p2 = RepositoryUtil.getPlaylistRepository(getApplicationContext()).getCurrentPlaylist();
 
             mMediaThread.startThread();
             mNowPlayingThread.startThread();
@@ -186,8 +192,12 @@ public class MediaService extends Service {
         private void setupNextSong(MediaPlayer player) {
             if (mSongKeys != null) {
                 // Setup the next song in the list
-                mNextSong = MusicUtil.getNextSongFromKeys(context, mSong, mSongKeys);
-                if (mNextSong == null) return;
+                try {
+                    mNextSong = MusicUtil.getNextSongFromKeys(context, mSong, mSongKeys);
+                } catch (EntityDoesNotExistException e) {
+                    Log.w(TAG, e.getMessage());
+                    return;
+                }
                 mNextPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(mNextSong.getData()));
                 player.setNextMediaPlayer(mNextPlayer);
                 mNextPlayer.setOnErrorListener(mErrorListener);

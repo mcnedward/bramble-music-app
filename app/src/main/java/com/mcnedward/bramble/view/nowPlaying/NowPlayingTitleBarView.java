@@ -2,12 +2,14 @@ package com.mcnedward.bramble.view.nowPlaying;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.exception.EntityDoesNotExistException;
 import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
@@ -66,7 +68,12 @@ public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeL
             song = MediaCache.getSong(mContext);
         }
         if (album == null || song == null) {
-            album = RepositoryUtil.getAlbumRepository(mContext).get(song.getAlbumId());
+            try {
+                album = RepositoryUtil.getAlbumRepository(mContext).get(song.getAlbumId());
+            } catch (EntityDoesNotExistException e) {
+                Log.w(TAG, e.getMessage());
+                return;
+            }
         }
         MusicUtil.loadAlbumArt(mContext, album.getAlbumArt(), mImgAlbumArt);
         mTxtNowPlayingAlbum.setText(album.getTitle());

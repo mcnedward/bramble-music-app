@@ -7,6 +7,7 @@ import com.mcnedward.bramble.adapter.list.SongListAdapter;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.media.Song;
 import com.mcnedward.bramble.repository.IRepository;
+import com.mcnedward.bramble.repository.media.IMediaRepository;
 import com.mcnedward.bramble.repository.media.SongRepository;
 
 import java.util.Random;
@@ -23,7 +24,7 @@ public class SongFragment extends MediaFragment<Song> {
     }
 
     @Override
-    public IRepository<Song> createRepository() {
+    public IMediaRepository<Song> createRepository() {
         return new SongRepository(getActivity());
     }
 

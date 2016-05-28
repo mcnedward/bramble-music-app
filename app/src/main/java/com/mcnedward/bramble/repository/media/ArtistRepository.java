@@ -1,5 +1,6 @@
-package com.mcnedward.bramble.repository;
+package com.mcnedward.bramble.repository.media;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -7,18 +8,19 @@ import android.provider.MediaStore;
 
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.repository.Repository;
 
 /**
  * Created by Edward on 5/16/2016.
  */
-public class ArtistRepository extends BaseRepository<Artist> {
+public class ArtistRepository extends MediaRepository<Artist> {
 
     public ArtistRepository(Context context) {
-        super(MediaType.ARTIST, context);
+        super(context, MediaType.ARTIST);
     }
 
     @Override
-    public Artist createMedia(Cursor cursor) {
+    public Artist generateEntityFromCursor(Cursor cursor) {
         Integer artistId = cursor.getInt(
                 cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists._ID));
         String artistName = cursor.getString(
@@ -32,12 +34,17 @@ public class ArtistRepository extends BaseRepository<Artist> {
     }
 
     @Override
-    public Uri getMediaUri() {
+    protected ContentValues generateContentValuesFromEntity(Artist entity) {
+        return null;
+    }
+
+    @Override
+    public Uri getUri() {
         return MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI;
     }
 
     @Override
-    public String getSortOrder() {
+    public String getOrderBy() {
         return MediaStore.Audio.Artists.ARTIST + " ASC";
     }
 

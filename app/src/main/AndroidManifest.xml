@@ -22,15 +22,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.AlbumPopup"
-            android:theme="@style/AppTheme.PopupWindow"/>
-        <activity
             android:name=".activity.AlbumActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
             android:name=".service.MediaService"
             android:exported="false"/>
+        
+        <provider
+            android:authorities="com.mcnedward.bramble.provider"
+            android:name=".provider.PlaylistContentProvider"/>
     </application>
 
 </manifest>

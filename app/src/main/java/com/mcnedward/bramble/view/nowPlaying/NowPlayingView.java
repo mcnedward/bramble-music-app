@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.exception.EntityDoesNotExistException;
 import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
@@ -57,15 +58,21 @@ public class NowPlayingView extends CrossSlidingView implements MediaChangeListe
         if (song == null) {
             Log.w(TAG, "No song is setup for play.");
         } else {
-            Album album = mAlbumRepository.get(song.getAlbumId());
-            if (album == null) return;
+            Album album = null;
+            try {
+                album = mAlbumRepository.get(song.getAlbumId());
+            } catch (EntityDoesNotExistException e) {
+                Log.w(TAG, e.getMessage());
+                return;
+            }
             mTitleBar.update(song, album);
 
             List<String> songKeys = MediaCache.getSongKeys(mContext);
             if (songKeys != null) {
                 List<Song> currentPlaylist = RepositoryUtil.getSongRepository(mContext).getSongsForKeys(songKeys);
                 int currentIndex = MusicUtil.getSongIndexFromSongs(currentPlaylist, song);
-                mNowPlayingTitleBarSliderView.setItems(currentPlaylist, currentIndex);
+                if (currentIndex != -1)
+                    mNowPlayingTitleBarSliderView.setItems(currentPlaylist, currentIndex);
             }
             // Load album art
             MusicUtil.loadAlbumArt(mContext, album.getAlbumArt(), imgAlbumArt);

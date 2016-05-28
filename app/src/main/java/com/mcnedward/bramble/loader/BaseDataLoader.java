@@ -1,15 +1,13 @@
 package com.mcnedward.bramble.loader;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.mcnedward.bramble.media.Media;
 import com.mcnedward.bramble.media.MediaType;
 import com.mcnedward.bramble.repository.IRepository;
-import com.mcnedward.bramble.utils.MediaCache;
+import com.mcnedward.bramble.repository.media.IMediaRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +18,12 @@ import java.util.List;
 public class BaseDataLoader<T extends Media> extends AsyncTaskLoader<List<T>> {
     private final static String TAG = "BaseDataLoader";
 
-    private IRepository<T> mRepository;
+    private IMediaRepository<T> mRepository;
     private MediaType mMediaType;
 
     private List<T> mDataList = null;
 
-    public BaseDataLoader(IRepository repository, Context context) {
+    public BaseDataLoader(IMediaRepository repository, Context context) {
         super(context);
         mRepository = repository;
         mMediaType = mRepository.getMediaType();

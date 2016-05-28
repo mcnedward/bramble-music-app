@@ -1,5 +1,6 @@
-package com.mcnedward.bramble.repository;
+package com.mcnedward.bramble.repository.media;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -7,25 +8,26 @@ import android.provider.MediaStore;
 
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.repository.Repository;
 
 import java.util.List;
 
 /**
  * Created by Edward on 5/16/2016.
  */
-public class AlbumRepository extends BaseRepository<Album> {
+public class AlbumRepository extends MediaRepository<Album> {
 
     public AlbumRepository(Context context) {
-        super(MediaType.ALBUM, context);
+        super(context, MediaType.ALBUM);
     }
 
     public List<Album> getAlbumsForArtist(int artistId) {
         Uri mediaUri = MediaStore.Audio.Artists.Albums.getContentUri("external", artistId);
-        return query(mediaUri, getColumns(), null, null, getSortOrder());
+        return read(mediaUri, getColumns(), null, null, getOrderBy());
     }
 
     @Override
-    public Album createMedia(Cursor cursor) {
+    public Album generateEntityFromCursor(Cursor cursor) {
         // Get album information
         Integer albumId = cursor.getInt(cursor
                 .getColumnIndexOrThrow(MediaStore.Audio.Albums._ID));
@@ -56,12 +58,17 @@ public class AlbumRepository extends BaseRepository<Album> {
     }
 
     @Override
-    public String getSortOrder() {
+    protected ContentValues generateContentValuesFromEntity(Album entity) {
+        return null;
+    }
+
+    @Override
+    public String getOrderBy() {
         return MediaStore.Audio.Albums.ALBUM + " ASC";
     }
 
     @Override
-    public Uri getMediaUri() {
+    public Uri getUri() {
         return MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
     }
 

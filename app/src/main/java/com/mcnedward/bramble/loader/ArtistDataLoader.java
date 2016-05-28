@@ -23,7 +23,7 @@ public class ArtistDataLoader extends BaseDataLoader<Artist> {
     }
 
 //    @Override
-//    protected Uri getMediaUri() {
+//    protected Uri getUri() {
 //        return MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI;
 //    }
 //

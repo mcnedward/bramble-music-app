@@ -1,42 +1,32 @@
 package com.mcnedward.bramble.repository;
 
-import android.database.Cursor;
-import android.net.Uri;
-
-import com.mcnedward.bramble.media.Media;
-import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.exception.EntityDoesNotExistException;
 
 import java.util.List;
 
 /**
  * Created by Edward on 5/16/2016.
  */
-public interface IRepository<T extends Media> {
-
-    T createMedia(Cursor cursor);
-
-    Uri getMediaUri();
-
-    String getSortOrder();
+public interface IRepository<T> {
 
     /**
-     * Get all of the columns for the repository.
-     * The first item should ALWAYS be the id, so that it can be found at the first index.
-     * The second item should ALWAYS be the key, so that it can be found at the second index.
-     * @return The columns.
+     * Queries the based on the options passed in.
+     *
+     * @param whereClause The filter of which rows to return (WHERE clause), with arguments passed in as "?"
+     * @param whereArgs   The arguments for the WHERE clause
+     * @param sortOrder     The order of the results to return
+     * @return A list of data
      */
-    String[] getColumns();
+    List<T> read(String whereClause, String[] whereArgs, String sortOrder);
 
-    List<T> query(String query, String... params);
+    List<T> read(String query, String... params);
 
-    List<T> query(Uri mediaUri, String[] columns, String query, String[] params, String sortOrder);
+    T readFirstOrDefault(String whereClause, String[] whereArgs) throws EntityDoesNotExistException;
+
+    T readFirstOrDefault(String whereClause, String[] whereArgs, String orderBy) throws EntityDoesNotExistException;
+
+    T get(long id) throws EntityDoesNotExistException;
 
     List<T> getAll();
-
-    T get(int id);
-
-    T get(String key);
-
-    MediaType getMediaType();
 
 }

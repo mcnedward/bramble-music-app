@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.AlbumActivity;
 import com.mcnedward.bramble.activity.AlbumPopup;
 import com.mcnedward.bramble.enums.IntentKey;
+import com.mcnedward.bramble.exception.EntityDoesNotExistException;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.Song;
@@ -52,7 +54,14 @@ public class MusicUtil {
 
         if (songKeys.isEmpty()) return; // TODO Restart song if there are no other songs in list? Or should there always be at least one song in the list? Yes there should.
 
-        Song nextSong = getPreviousSongFromKeys(context, song, songKeys);
+
+        Song nextSong = null;
+        try {
+            nextSong = getPreviousSongFromKeys(context, song, songKeys);
+        } catch (EntityDoesNotExistException e) {
+            Log.e(TAG, e.getMessage(), e);
+            return;
+        }
         startPlayingMusic(context, nextSong);
     }
 
@@ -63,11 +72,18 @@ public class MusicUtil {
 
         if (songKeys.isEmpty()) return; // TODO Restart song if there are no other songs in list? Or should there always be at least one song in the list? Yes there should.
 
-        Song nextSong = getNextSongFromKeys(context, song, songKeys);
+
+        Song nextSong = null;
+        try {
+            nextSong = getNextSongFromKeys(context, song, songKeys);
+        } catch (EntityDoesNotExistException e) {
+            Log.e(TAG, e.getMessage(), e);
+            return;
+        }
         startPlayingMusic(context, nextSong);
     }
 
-    public static Song getNextSongFromKeys(Context context, Song currentSong, List<String> songKeys) {
+    public static Song getNextSongFromKeys(Context context, Song currentSong, List<String> songKeys) throws EntityDoesNotExistException {
         int currentIndex = getSongIndexFromKeys(songKeys, currentSong);
         if (currentIndex == -1) return null;
         String nextSongKey;
@@ -80,7 +96,7 @@ public class MusicUtil {
         return RepositoryUtil.getSongRepository(context).get(nextSongKey);
     }
 
-    public static Song getPreviousSongFromKeys(Context context, Song currentSong, List<String> songKeys) {
+    public static Song getPreviousSongFromKeys(Context context, Song currentSong, List<String> songKeys) throws EntityDoesNotExistException {
         int currentIndex = getSongIndexFromKeys(songKeys, currentSong);
         if (currentIndex == -1) return null;
         String nextSongKey;
