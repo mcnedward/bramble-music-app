@@ -2,7 +2,6 @@ package com.mcnedward.bramble.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.ArraySet;
 import android.util.Log;
 
 import com.mcnedward.bramble.media.Album;
@@ -12,7 +11,6 @@ import com.mcnedward.bramble.media.Song;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by edward on 25/12/15.
@@ -21,7 +19,7 @@ public final class MediaCache {
     private static final String TAG = "MediaCache";
 
     private static final String PREFERENCE_KEY = "preference_key";
-    private static final String SONG_LIST_KEY = "song_list";
+    private static final String SONG_KEY_LIST_KEY = "song_key_list";
 
     public static Artist getArtist(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
@@ -75,21 +73,21 @@ public final class MediaCache {
         return song.save(editor);
     }
 
-    public static List<String> getSongList(Context context) {
+    public static List<String> getSongKeys(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
         List<String> songList = null;
         try {
-            songList = new ArrayList<>(sharedPreferences.getStringSet(SONG_LIST_KEY, new HashSet<String>()));
+            songList = new ArrayList<>(sharedPreferences.getStringSet(SONG_KEY_LIST_KEY, new HashSet<String>()));
         } catch (NullPointerException | ClassCastException e) {
             Log.w(TAG, "Could not get the song list from preferences.", e);
         }
         return songList;
     }
 
-    public static boolean saveSongList(Context context, List<String> songList) {
+    public static boolean saveSongKeys(Context context, List<String> songList) {
         if (songList == null) return false;
         SharedPreferences.Editor editor = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE).edit();
-        editor.putStringSet(SONG_LIST_KEY, new HashSet<>(songList));
+        editor.putStringSet(SONG_KEY_LIST_KEY, new HashSet<>(songList));
         return editor.commit();
     }
 

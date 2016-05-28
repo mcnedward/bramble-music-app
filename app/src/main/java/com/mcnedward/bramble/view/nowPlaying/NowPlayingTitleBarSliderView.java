@@ -12,12 +12,20 @@ import java.util.List;
 /**
  * Created by Edward on 5/21/2016.
  *
- * View for
+ * View for sliding the NowPlayingTitleBar on the bottom horizontally.
  */
 public class NowPlayingTitleBarSliderView extends HorizontalSlidingView<Song> {
 
     public NowPlayingTitleBarSliderView(Context context, List<Song> songs) {
         super(context, songs);
+    }
+
+    public void slideUp(boolean top) {
+        if (top) {
+            setVisibility(GONE);
+        } else {
+            setVisibility(VISIBLE);
+        }
     }
 
     @Override

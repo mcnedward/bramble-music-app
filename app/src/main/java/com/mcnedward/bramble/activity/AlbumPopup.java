@@ -4,20 +4,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.PopupWindow;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.adapter.grid.AlbumGridAdapter;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
-import com.mcnedward.bramble.repository.AlbumRepository;
 import com.mcnedward.bramble.utils.RepositoryUtil;
 
 import java.util.List;

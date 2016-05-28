@@ -219,7 +219,6 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
                     mHSlider.doUpAction(eventX);
                 } else {
                     doContentUpAction(eventY, touchSlop, topBounds, bottomBounds);
-                    mHSlider.moveToDefault();
                 }
                 mIsScrollingVertical = false;
                 mIsScrollingHorizontal = false;
@@ -255,6 +254,7 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
             int animationDistance = Math.abs(contentY - mRoot.getHeight());
             mContent.animate().translationYBy(animationDistance);
             mTitleBar.animate().alpha(1.0f).setDuration(duration);
+            mHSlider.moveToDefault();
         }
         mContentFocused = false;
     }
@@ -269,6 +269,7 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
     public void animateToTop(int duration) {
         switchSliderIcon(true);
         mContent.animate().translationY(0).setDuration(duration);
+        mHSlider.moveToDefault();
         mContentFocused = true;
     }
 
@@ -288,6 +289,7 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
         switchSliderIcon(false);
         mContent.setY(position);
         mContentFocused = false;
+        mHSlider.moveToDefault();
     }
 
     /**
@@ -324,20 +326,24 @@ public abstract class CrossSlidingView extends RelativeLayout implements View.On
     final class HorizontalGestureDetector extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            boolean flingingUp = Math.abs(velocityY) > Math.abs(velocityX);
             try {
-                if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-                    animateToTop(QUICK_MOVE_DURATION);
-                    return true;
-                } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-                    animateToBottom(QUICK_MOVE_DURATION);
-                    return true;
-                }
-                if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    // Right to left swipe
-                    return mHSlider.doFlingAction(true);
-                } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    // Left to right swipe
-                    return mHSlider.doFlingAction(false);
+                if (flingingUp) {
+                    if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                        animateToTop(QUICK_MOVE_DURATION);
+                        return true;
+                    } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                        animateToBottom(QUICK_MOVE_DURATION);
+                        return true;
+                    }
+                } else {
+                    if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                        // Right to left swipe
+                        return mHSlider.doFlingAction(true);
+                    } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                        // Left to right swipe
+                        return mHSlider.doFlingAction(false);
+                    }
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Something went wrong when processing the Fling event: " + e.getMessage());

@@ -1,20 +1,12 @@
 package com.mcnedward.bramble.activity.fragment;
 
-import android.content.Intent;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-
-import com.mcnedward.bramble.activity.AlbumActivity;
 import com.mcnedward.bramble.adapter.grid.AlbumGridAdapter;
 import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
 import com.mcnedward.bramble.adapter.list.AlbumListAdapter;
 import com.mcnedward.bramble.adapter.list.MediaListAdapter;
-import com.mcnedward.bramble.loader.AlbumDataLoader;
-import com.mcnedward.bramble.loader.BaseDataLoader;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.MediaType;
-import com.mcnedward.bramble.repository.AlbumRepository;
+import com.mcnedward.bramble.repository.media.AlbumRepository;
 import com.mcnedward.bramble.repository.IRepository;
 
 import java.util.Random;

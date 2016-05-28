@@ -132,6 +132,8 @@ public abstract class HorizontalSlidingView<T> extends RelativeLayout {
      * @param eventX The x-position of the event.
      */
     public void doMoveAction(int eventX) {
+        if (mItems.size() <= 1) return;
+
         int sliderX = (int) mSlider.getX();
         int newX;
         int moveDiff = Math.abs(mMoveAnchor - eventX);
@@ -158,6 +160,8 @@ public abstract class HorizontalSlidingView<T> extends RelativeLayout {
      * @param eventX The x-position of the event.
      */
     public void doUpAction(int eventX) {
+        if (mItems.size() <= 1) return;
+
         int sliderX = (int) mSlider.getX();
         int sliderWidth = mSlider.getWidth();
         int rightBounds = (int) (sliderX + sliderWidth * 0.66);
@@ -218,9 +222,9 @@ public abstract class HorizontalSlidingView<T> extends RelativeLayout {
      *
      * @param songs The list of items.
      */
-    public void setItems(List<T> songs) {
+    public void setItems(List<T> songs, int currentIndex) {
         mItems = songs;
-        mActiveIndex = 0;
+        mActiveIndex = currentIndex;
         mSlider = getOrCreateView(mActiveIndex, mSlider, 0);
     }
 

@@ -9,18 +9,15 @@ import android.widget.ImageView;
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.AlbumActivity;
 import com.mcnedward.bramble.activity.AlbumPopup;
+import com.mcnedward.bramble.enums.IntentKey;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.Song;
-import com.mcnedward.bramble.repository.AlbumRepository;
-import com.mcnedward.bramble.repository.SongRepository;
 import com.mcnedward.bramble.service.MediaService;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by edward on 25/12/15.
@@ -39,7 +36,7 @@ public class MusicUtil {
 
     public static void doPreviousButtonAction(Context context) {
         Song song = MediaCache.getSong(context);
-        List<String> songList = MediaCache.getSongList(context);
+        List<String> songKeys = MediaCache.getSongKeys(context);
         if (song == null) return;
 
         // First check if the current song should just be restarted
@@ -48,51 +45,70 @@ public class MusicUtil {
         if (player != null) {
             int currentPosition = getTimeInSeconds(player.getCurrentPosition());
             if (currentPosition > 2) {
-                startPlayingMusic(context, song, songList);
+                startPlayingMusic(context, song, songKeys);
                 return;
             }
         }
 
-        if (songList.isEmpty()) return; // TODO Restart song if there are no other songs in list? Or should there always be at least one song in the list? Yes there should.
+        if (songKeys.isEmpty()) return; // TODO Restart song if there are no other songs in list? Or should there always be at least one song in the list? Yes there should.
 
-        int currentIndex = getSongIndex(songList, song);
-        if (currentIndex == -1) return;
-        String nextSongKey;
-        // Get the previous song, or the last one if the current song is the first
-        if (currentIndex == 0) {
-            nextSongKey = songList.get(songList.size() - 1);
-        } else {
-            nextSongKey = songList.get(currentIndex - 1);
-        }
-        Song nextSong = RepositoryUtil.getSongRepository(context).get(nextSongKey);
+        Song nextSong = getPreviousSongFromKeys(context, song, songKeys);
         startPlayingMusic(context, nextSong);
     }
 
     public static void doForwardButtonAction(Context context) {
         Song song = MediaCache.getSong(context);
-        List<String> songList = MediaCache.getSongList(context);
+        List<String> songKeys = MediaCache.getSongKeys(context);
         if (song == null) return;
 
-        if (songList.isEmpty()) return; // TODO Restart song if there are no other songs in list? Or should there always be at least one song in the list? Yes there should.
+        if (songKeys.isEmpty()) return; // TODO Restart song if there are no other songs in list? Or should there always be at least one song in the list? Yes there should.
 
-        int currentIndex = getSongIndex(songList, song);
-        if (currentIndex == -1) return;
-        String nextSongKey;
-        // Get the next song, or the first if the current song is the last
-        if (currentIndex == songList.size() - 1) {
-            nextSongKey = songList.get(0);
-        } else {
-            nextSongKey = songList.get(currentIndex + 1);
-        }
-        Song nextSong = RepositoryUtil.getSongRepository(context).get(nextSongKey);
+        Song nextSong = getNextSongFromKeys(context, song, songKeys);
         startPlayingMusic(context, nextSong);
     }
 
-    private static int getSongIndex(List<String> songList, Song song) {
+    public static Song getNextSongFromKeys(Context context, Song currentSong, List<String> songKeys) {
+        int currentIndex = getSongIndexFromKeys(songKeys, currentSong);
+        if (currentIndex == -1) return null;
+        String nextSongKey;
+        // Get the next song, or the first if the current song is the last
+        if (currentIndex == songKeys.size() - 1) {
+            nextSongKey = songKeys.get(0);
+        } else {
+            nextSongKey = songKeys.get(currentIndex + 1);
+        }
+        return RepositoryUtil.getSongRepository(context).get(nextSongKey);
+    }
+
+    public static Song getPreviousSongFromKeys(Context context, Song currentSong, List<String> songKeys) {
+        int currentIndex = getSongIndexFromKeys(songKeys, currentSong);
+        if (currentIndex == -1) return null;
+        String nextSongKey;
+        // Get the previous song, or the last one if the current song is the first
+        if (currentIndex == 0) {
+            nextSongKey = songKeys.get(songKeys.size() - 1);
+        } else {
+            nextSongKey = songKeys.get(currentIndex - 1);
+        }
+        return RepositoryUtil.getSongRepository(context).get(nextSongKey);
+    }
+
+    public static int getSongIndexFromKeys(List<String> songKeys, Song song) {
         int currentIndex = -1;
-        for (int i = 0; i < songList.size(); i++) {
-            String songKey = songList.get(i);
+        for (int i = 0; i < songKeys.size(); i++) {
+            String songKey = songKeys.get(i);
             if (song.getKey().equals(songKey)) {
+                currentIndex = i;
+                break;
+            }
+        }
+        return currentIndex;
+    }
+
+    public static int getSongIndexFromSongs(List<Song> songs, Song song) {
+        int currentIndex = -1;
+        for (int i = 0; i < songs.size(); i++) {
+            if (song.getKey().equals(songs.get(i).getKey())) {
                 currentIndex = i;
                 break;
             }
@@ -105,15 +121,15 @@ public class MusicUtil {
         if (player == null) {
             Song song = MediaCache.getSong(context);
             if (song != null) {
-                MusicUtil.startPlayingMusic(context, song);
+                startPlayingMusic(context, song);
             }
         } else {
             if (player.isPlaying()) {
                 player.pause();
-                MusicUtil.switchPlayButton(context, playButton, false);
+                switchPlayButton(context, playButton, false);
             } else {
                 player.start();
-                MusicUtil.switchPlayButton(context, playButton, true);
+                switchPlayButton(context, playButton, true);
             }
             if (MediaService.isStopped()) {
                 MediaService.pauseNowPlayingThread(false);
@@ -138,28 +154,35 @@ public class MusicUtil {
 
     public static void startAlbumPopup(Context context, Artist artist) {
         AlbumPopup.startAlbumPopup(context, artist);
-//        Intent intent = new Intent(context, AlbumPopup.class);
-//        intent.putExtra("artist", artist);
-//        context.startActivity(intent);
     }
 
     public static void openAlbum(Context context, Album album) {
         Intent intent = new Intent(context, AlbumActivity.class);
-        intent.putExtra("album", album);
+        intent.putExtra(IntentKey.ALBUM.name(), album);
         context.startActivity(intent);
     }
 
     public static void startPlayingMusic(Context context, Song song) {
         // Start playing music!
         Intent intent = new Intent(context, MediaService.class);
-        intent.putExtra("song", song);
+        intent.putExtra(IntentKey.SONG.name(), song);
         context.startService(intent);
     }
 
-    public static void startPlayingMusic(Context context, Song song, List<String> songList) {
+    public static void startPlayingMusic(Context context, Song song, Album album) {
+        // Get all the song ids in the album
+        List<Song> songsForAlbum = RepositoryUtil.getSongRepository(context).getSongsForAlbum(album.getId());
+        List<String> songKeys = new ArrayList<>();
+        for (Song songForAlbum : songsForAlbum) {
+            songKeys.add(songForAlbum.getKey());
+        }
+        startPlayingMusic(context, song, songKeys);
+    }
+
+    public static void startPlayingMusic(Context context, Song song, List<String> songKeys) {
         Intent intent = new Intent(context, MediaService.class);
-        intent.putExtra("song", song);
-        intent.putExtra("songList", new ArrayList<>(songList));
+        intent.putExtra(IntentKey.SONG.name(), song);
+        intent.putExtra(IntentKey.SONG_KEYS.name(), new ArrayList<>(songKeys));
         context.startService(intent);
     }
 

@@ -44,8 +44,7 @@ public class AlbumSongItem extends RelativeLayout implements MediaChangeListener
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-//                MusicUtil.startPlayingMusic(mSong, nowPlayingAlbum, activity);
-                MusicUtil.startPlayingMusic(activity, mSong);
+                MusicUtil.startPlayingMusic(activity, mSong, nowPlayingAlbum);
             }
         });
     }

@@ -1,19 +1,13 @@
 package com.mcnedward.bramble.activity.fragment;
 
-import android.view.View;
-import android.widget.AdapterView;
-
 import com.mcnedward.bramble.adapter.grid.ArtistGridAdapter;
 import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
 import com.mcnedward.bramble.adapter.list.ArtistListAdapter;
 import com.mcnedward.bramble.adapter.list.MediaListAdapter;
-import com.mcnedward.bramble.loader.ArtistDataLoader;
-import com.mcnedward.bramble.loader.BaseDataLoader;
 import com.mcnedward.bramble.media.Artist;
 import com.mcnedward.bramble.media.MediaType;
-import com.mcnedward.bramble.repository.ArtistRepository;
+import com.mcnedward.bramble.repository.media.ArtistRepository;
 import com.mcnedward.bramble.repository.IRepository;
-import com.mcnedward.bramble.utils.MusicUtil;
 
 import java.util.Random;
 

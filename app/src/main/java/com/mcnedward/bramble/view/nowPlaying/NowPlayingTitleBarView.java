@@ -60,6 +60,7 @@ public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeL
         });
     }
 
+    @Override
     public void update(Song song, Album album) {
         if (song == null) {
             song = MediaCache.getSong(mContext);

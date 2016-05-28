@@ -10,13 +10,14 @@ import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.media.Song;
-import com.mcnedward.bramble.repository.AlbumRepository;
+import com.mcnedward.bramble.repository.media.AlbumRepository;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RepositoryUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by edward on 27/12/15.
@@ -42,7 +43,7 @@ public class NowPlayingView extends CrossSlidingView implements MediaChangeListe
     @Override
     protected void switchSliderIcon(boolean top) {
         mTitleBar.slideUp(top);
-//        mHorBar.slideUp(top);
+        mNowPlayingTitleBarSliderView.slideUp(top);
     }
 
     @Override
@@ -59,7 +60,13 @@ public class NowPlayingView extends CrossSlidingView implements MediaChangeListe
             Album album = mAlbumRepository.get(song.getAlbumId());
             if (album == null) return;
             mTitleBar.update(song, album);
-            mNowPlayingTitleBarSliderView.setItems(RepositoryUtil.getSongRepository(mContext).getSongsForAlbum(album.getId()));
+
+            List<String> songKeys = MediaCache.getSongKeys(mContext);
+            if (songKeys != null) {
+                List<Song> currentPlaylist = RepositoryUtil.getSongRepository(mContext).getSongsForKeys(songKeys);
+                int currentIndex = MusicUtil.getSongIndexFromSongs(currentPlaylist, song);
+                mNowPlayingTitleBarSliderView.setItems(currentPlaylist, currentIndex);
+            }
             // Load album art
             MusicUtil.loadAlbumArt(mContext, album.getAlbumArt(), imgAlbumArt);
         }
@@ -100,6 +107,8 @@ public class NowPlayingView extends CrossSlidingView implements MediaChangeListe
         return mTitleBar;
     }
 
-    public NowPlayingBottomControlView getBottomControl() { return mBottomControl; }
+    public NowPlayingBottomControlView getBottomControl() {
+        return mBottomControl;
+    }
 
 }

@@ -4,7 +4,7 @@
     android:id="@+id/now_playing_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToPadding="false">
+    android:background="@color/White">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -24,8 +24,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="5dp">
+            android:layout_height="wrap_content">
 
                 <com.mcnedward.bramble.view.nowPlaying.NowPlayingTitleBarView
                     android:id="@+id/now_playing_title_bar"

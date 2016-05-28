@@ -3,6 +3,7 @@ package com.mcnedward.bramble.activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import com.mcnedward.bramble.enums.IntentKey;
 import com.mcnedward.bramble.media.Album;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.view.AlbumParallaxView;
@@ -19,7 +20,7 @@ public class AlbumActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Album album = (Album) getIntent().getSerializableExtra("album");
+        Album album = (Album) getIntent().getSerializableExtra(IntentKey.ALBUM.name());
 
         AlbumParallaxView albumParallaxView = new AlbumParallaxView(album, this);
         mNowPlayingView = albumParallaxView.getNowPlayingView();

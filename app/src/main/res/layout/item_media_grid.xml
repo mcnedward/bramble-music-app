@@ -36,8 +36,7 @@
             android:marqueeRepeatLimit="marquee_forever"
             android:padding="5dp"
             android:scrollHorizontally="true"
-            android:singleLine="true"
-            android:text="@string/placeholder"/>
+            android:singleLine="true"/>
 
     </LinearLayout>
 </LinearLayout>

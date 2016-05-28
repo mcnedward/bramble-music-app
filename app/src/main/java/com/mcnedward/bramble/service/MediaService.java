@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
+import com.mcnedward.bramble.enums.IntentKey;
 import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.listener.MediaPlayingListener;
 import com.mcnedward.bramble.listener.MediaStopListener;
@@ -19,7 +20,6 @@ import com.mcnedward.bramble.utils.MusicUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -33,7 +33,7 @@ public class MediaService extends Service {
 
     private static MediaPlayer mPlayer;
     private static Song mSong;
-    private static ArrayList<String> mSongList;
+    private static ArrayList<String> mSongKeys;
     private static Album mAlbum;
     private static Set<MediaChangeListener> mMediaChangeListeners;
     private static Set<MediaStopListener> mMediaStopListeners;
@@ -56,12 +56,12 @@ public class MediaService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Starting MediaService!");
         if (intent != null) {
-            mSong = (Song) intent.getSerializableExtra("song");
-            mSongList = intent.getStringArrayListExtra("songList");  // TODO Create enums for these extras
-            mAlbum = (Album) intent.getSerializableExtra("album");
+            mSong = (Song) intent.getSerializableExtra(IntentKey.SONG.name());
+            mSongKeys = intent.getStringArrayListExtra(IntentKey.SONG_KEYS.name());
+            mAlbum = (Album) intent.getSerializableExtra(IntentKey.ALBUM.name());
 
             MediaCache.saveSong(getApplicationContext(), mSong);
-            MediaCache.saveSongList(getApplicationContext(), mSongList);
+            MediaCache.saveSongKeys(getApplicationContext(), mSongKeys);
             MediaCache.saveAlbum(getApplicationContext(), mAlbum);
 
             mMediaThread.startThread();
@@ -184,15 +184,15 @@ public class MediaService extends Service {
          * @param player The MediaPlayer to setup with the next song.
          */
         private void setupNextSong(MediaPlayer player) {
-            if (mSongList != null) {
-//                String nextKey = mSongList.(mSong.getKey());
-                // Setup the next song in the album
-//                mNextSong = MusicUtil.getNextSongForAlbum(getApplicationContext(), mAlbum);
-//                mNextPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(mNextSong.getData()));
-//                player.setNextMediaPlayer(mNextPlayer);
-//                mNextPlayer.setOnErrorListener(mErrorListener);
-//                mNextPlayer.setOnCompletionListener(mCompletionListener);
-//                mNextPlayer.setLooping(MediaCache.isPlaybackLooping(getApplicationContext()));
+            if (mSongKeys != null) {
+                // Setup the next song in the list
+                mNextSong = MusicUtil.getNextSongFromKeys(context, mSong, mSongKeys);
+                if (mNextSong == null) return;
+                mNextPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(mNextSong.getData()));
+                player.setNextMediaPlayer(mNextPlayer);
+                mNextPlayer.setOnErrorListener(mErrorListener);
+                mNextPlayer.setOnCompletionListener(mCompletionListener);
+                mNextPlayer.setLooping(MediaCache.isPlaybackLooping(getApplicationContext()));
             }
         }
 
