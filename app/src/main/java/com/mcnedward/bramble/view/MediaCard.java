@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
-import com.mcnedward.bramble.media.Media;
+import com.mcnedward.bramble.entity.media.Media;
 import com.mcnedward.bramble.utils.BitmapUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
 
@@ -43,12 +43,18 @@ public class MediaCard<T extends Media> extends LinearLayout {
     }
 
     public void update(T item) {
+        update(item, true);
+    }
+
+    public void update(T item, boolean updateImages) {
         mItem = item;
-        if (item.getImagePath() == null) {
-            imgMediaIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.no_album_art));
-            txtMediaTitle.setText(item.getTitle());
-        } else {
-            BitmapUtil.startBitmapLoadTask(context, item, this, cache);
+        txtMediaTitle.setText(item.getTitle());
+        if (updateImages) {
+            if (item.getImagePath() == null || item.getImagePath().equals("")) {
+                imgMediaIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.no_album_art));
+            } else {
+                BitmapUtil.startBitmapLoadTask(context, item, this, cache);
+            }
         }
     }
 
@@ -57,7 +63,6 @@ public class MediaCard<T extends Media> extends LinearLayout {
             txtMediaTitle.setText(item.getTitle());
             setImage(bitmap);
         }
-
         mItem = item;
     }
 

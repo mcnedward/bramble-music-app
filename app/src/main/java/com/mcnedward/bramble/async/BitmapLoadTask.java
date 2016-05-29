@@ -9,7 +9,7 @@ import android.support.v4.util.LruCache;
 import android.util.Log;
 
 import com.mcnedward.bramble.enums.ImageSize;
-import com.mcnedward.bramble.media.Media;
+import com.mcnedward.bramble.entity.media.Media;
 import com.mcnedward.bramble.view.MediaCard;
 
 import java.io.File;

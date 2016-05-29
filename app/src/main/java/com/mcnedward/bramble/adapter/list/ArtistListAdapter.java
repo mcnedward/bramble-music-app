@@ -1,9 +1,8 @@
 package com.mcnedward.bramble.adapter.list;
 
 import android.content.Context;
-import android.view.View;
 
-import com.mcnedward.bramble.media.Artist;
+import com.mcnedward.bramble.entity.media.Artist;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.view.mediaItem.MediaItem;
 

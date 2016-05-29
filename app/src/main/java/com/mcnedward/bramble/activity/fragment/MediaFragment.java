@@ -14,13 +14,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
-import com.mcnedward.bramble.adapter.list.BaseMediaAdapter;
 import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
-import com.mcnedward.bramble.loader.BaseDataLoader;
-import com.mcnedward.bramble.media.Media;
-import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.adapter.list.BaseMediaAdapter;
 import com.mcnedward.bramble.adapter.list.MediaListAdapter;
-import com.mcnedward.bramble.repository.IRepository;
+import com.mcnedward.bramble.entity.media.Media;
+import com.mcnedward.bramble.entity.media.MediaType;
+import com.mcnedward.bramble.loader.DataLoader;
 import com.mcnedward.bramble.repository.media.IMediaRepository;
 
 import java.util.List;
@@ -29,14 +28,14 @@ import java.util.List;
  * Created by edward on 26/12/15.
  */
 public abstract class MediaFragment<T extends Media> extends Fragment implements LoaderManager.LoaderCallbacks<List<T>> {
-    private final static String TAG = "ArtistFragment";
+    private final static String TAG = "MediaFragment";
 
     private MediaType mediaType;
 
     protected ListView listView;
     protected GridView gridView;
 
-    protected BaseDataLoader<T> mDataLoader;
+    protected DataLoader<T> mDataLoader;
     protected BaseMediaAdapter<T> mListAdapter;
     protected MediaGridAdapter<T> mGridAdapter;
 
@@ -91,7 +90,7 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         switch (mediaType) {
             case ARTIST:
                 txtProgress.setText(getContext().getString(R.string.artist_loading_text));
-                toggleMediaView(false);
+                toggleMediaView(true);
                 break;
             case ALBUM:
                 txtProgress.setText(getContext().getString(R.string.album_loading_text));
@@ -134,14 +133,14 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, String.format("Calling %s Fragment initLoader with id %s!", mediaType.type(), getLoaderId()));
+        Log.d(TAG, String.format("Calling %s Fragment initLoader with mId %s!", mediaType.type(), getLoaderId()));
         getLoaderManager().initLoader(getLoaderId(), savedInstanceState, this);
     }
 
     @Override
     public Loader<List<T>> onCreateLoader(int id, Bundle args) {
         if (mDataLoader == null) {
-            mDataLoader = new BaseDataLoader<>(createRepository(), getContext());
+            mDataLoader = new DataLoader<>(createRepository(), getContext());
         }
         return mDataLoader;
     }

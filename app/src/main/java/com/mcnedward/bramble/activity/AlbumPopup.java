@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.adapter.grid.AlbumGridAdapter;
-import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.media.Artist;
+import com.mcnedward.bramble.entity.media.Album;
+import com.mcnedward.bramble.entity.media.Artist;
 import com.mcnedward.bramble.utils.RepositoryUtil;
 
 import java.util.List;

@@ -12,9 +12,9 @@ import com.mcnedward.bramble.activity.AlbumActivity;
 import com.mcnedward.bramble.activity.AlbumPopup;
 import com.mcnedward.bramble.enums.IntentKey;
 import com.mcnedward.bramble.exception.EntityDoesNotExistException;
-import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.media.Artist;
-import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.entity.media.Album;
+import com.mcnedward.bramble.entity.media.Artist;
+import com.mcnedward.bramble.entity.media.Song;
 import com.mcnedward.bramble.service.MediaService;
 
 import java.io.File;

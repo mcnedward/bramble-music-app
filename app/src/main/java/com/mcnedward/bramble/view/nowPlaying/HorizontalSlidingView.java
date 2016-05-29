@@ -3,16 +3,10 @@ package com.mcnedward.bramble.view.nowPlaying;
 import android.animation.Animator;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-
-import com.mcnedward.bramble.media.Song;
 
 import java.util.ArrayList;
 import java.util.List;

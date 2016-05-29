@@ -10,14 +10,12 @@ import android.util.Log;
 import android.view.View;
 
 import com.mcnedward.bramble.enums.IntentKey;
-import com.mcnedward.bramble.exception.EntityAlreadyExistsException;
 import com.mcnedward.bramble.exception.EntityDoesNotExistException;
 import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.listener.MediaPlayingListener;
 import com.mcnedward.bramble.listener.MediaStopListener;
-import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.media.Playlist;
-import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.entity.media.Album;
+import com.mcnedward.bramble.entity.media.Song;
 import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RepositoryUtil;

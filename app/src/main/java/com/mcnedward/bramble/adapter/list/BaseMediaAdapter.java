@@ -6,12 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.mcnedward.bramble.media.Media;
-import com.mcnedward.bramble.service.MediaService;
+import com.mcnedward.bramble.entity.media.Media;
 import com.mcnedward.bramble.utils.RippleUtil;
-import com.mcnedward.bramble.view.MediaCard;
 import com.mcnedward.bramble.view.mediaItem.MediaItem;
-import com.mcnedward.bramble.view.mediaItem.SongMediaItem;
 
 import java.util.ArrayList;
 import java.util.List;

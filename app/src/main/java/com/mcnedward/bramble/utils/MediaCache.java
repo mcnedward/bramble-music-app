@@ -4,9 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.media.Artist;
-import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.entity.media.Album;
+import com.mcnedward.bramble.entity.media.Artist;
+import com.mcnedward.bramble.entity.media.Song;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -1,7 +1,6 @@
-package com.mcnedward.bramble.media;
+package com.mcnedward.bramble.entity.media;
 
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
@@ -173,6 +172,6 @@ public class Song extends Media implements Serializable {
 
     @Override
     public String toString() {
-        return title;
+        return mTitle;
     }
 }

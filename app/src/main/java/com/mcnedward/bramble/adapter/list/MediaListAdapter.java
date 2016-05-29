@@ -1,9 +1,8 @@
 package com.mcnedward.bramble.adapter.list;
 
 import android.content.Context;
-import android.view.View;
 
-import com.mcnedward.bramble.media.Media;
+import com.mcnedward.bramble.entity.media.Media;
 import com.mcnedward.bramble.view.mediaItem.MediaItem;
 
 import java.util.List;

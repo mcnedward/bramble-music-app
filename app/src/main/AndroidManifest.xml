@@ -30,8 +30,14 @@
             android:exported="false"/>
         
         <provider
-            android:authorities="com.mcnedward.bramble.provider"
+            android:authorities="com.mcnedward.bramble.provider.playlist"
             android:name=".provider.PlaylistContentProvider"/>
+        <provider
+            android:authorities="com.mcnedward.bramble.provider.artist_image"
+            android:name=".provider.ArtistImageContentProvider"/>
+        <provider
+            android:authorities="com.mcnedward.bramble.provider.thumbnail"
+            android:name=".provider.ThumbnailContentProvider"/>
     </application>
 
 </manifest>

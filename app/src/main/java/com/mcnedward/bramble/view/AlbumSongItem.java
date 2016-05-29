@@ -8,8 +8,8 @@ import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.listener.MediaChangeListener;
-import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.entity.media.Album;
+import com.mcnedward.bramble.entity.media.Song;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
 import com.mcnedward.bramble.view.mediaItem.GifView;

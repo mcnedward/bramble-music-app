@@ -5,9 +5,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
-import com.mcnedward.bramble.media.Media;
-import com.mcnedward.bramble.media.MediaType;
-import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.entity.media.Media;
+import com.mcnedward.bramble.entity.media.MediaType;
+import com.mcnedward.bramble.entity.media.Song;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.RippleUtil;
 

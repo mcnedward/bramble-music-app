@@ -1,7 +1,6 @@
 package com.mcnedward.bramble.provider;
 
 import android.content.ContentProvider;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -26,8 +25,8 @@ public abstract class DataContentProvider extends ContentProvider {
     protected static final int ENTITY = 10;
     protected static final int ENTITY_ID = 20;
 
-    protected static final String AUTHORITY = "com.mcnedward.bramble.provider";
-    protected static final String CONTENT_AUTHORITY = "content://" + AUTHORITY;
+    protected static final String BASE_AUTHORITY = "com.mcnedward.bramble.provider.";
+    protected static final String BASE_CONTENT_AUTHORITY = "content://" + BASE_AUTHORITY;
 
     protected static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 

@@ -6,9 +6,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.media.MediaType;
-import com.mcnedward.bramble.repository.Repository;
+import com.mcnedward.bramble.entity.media.Album;
+import com.mcnedward.bramble.entity.media.MediaType;
 
 import java.util.List;
 

@@ -19,7 +19,8 @@ import com.mcnedward.bramble.activity.fragment.AlbumFragment;
 import com.mcnedward.bramble.activity.fragment.ArtistFragment;
 import com.mcnedward.bramble.activity.fragment.MediaFragment;
 import com.mcnedward.bramble.activity.fragment.SongFragment;
-import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.controller.WebController;
+import com.mcnedward.bramble.entity.media.MediaType;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.view.MainView;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
@@ -52,11 +53,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        setContentView(R.layout.activity_slider);
-//        RelativeLayout container = (RelativeLayout) findViewById(R.id.slider);
-//        Slider slider = new Slider(this, RepositoryUtil.getSongRepository(this).getSongsForAlbum(4));
-//        container.addView(slider);
 
         mainView = new MainView(this);
         setContentView(mainView);
@@ -182,14 +178,12 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
         if (id == R.id.action_open) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

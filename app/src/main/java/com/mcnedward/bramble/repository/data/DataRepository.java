@@ -1,11 +1,13 @@
 package com.mcnedward.bramble.repository.data;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import com.mcnedward.bramble.exception.EntityAlreadyExistsException;
 import com.mcnedward.bramble.exception.EntityDoesNotExistException;
-import com.mcnedward.bramble.media.Data;
+import com.mcnedward.bramble.entity.data.Data;
 import com.mcnedward.bramble.repository.Repository;
 
 /**
@@ -20,8 +22,16 @@ public abstract class DataRepository<T extends Data> extends Repository<T> imple
     }
 
     public T save(T entity) throws EntityAlreadyExistsException {
-        mContext.getContentResolver().insert(getUri(), generateContentValuesFromEntity(entity));
-        // TODO Get the id from the uri returned from insert and add it to entity
+        Uri entityUri = mContext.getContentResolver().insert(getUri(), generateContentValuesFromEntityWithNoId(entity));
+        if (entityUri != null) {
+            String lastSegment = entityUri.getLastPathSegment();
+            try {
+                int id = Integer.parseInt(lastSegment);
+                entity.setId(id);
+            } catch (NumberFormatException e) {
+                Log.w(TAG, "Could not parse int on: " + lastSegment);
+            }
+        }
         return entity;
     }
 
@@ -39,5 +49,12 @@ public abstract class DataRepository<T extends Data> extends Repository<T> imple
         int result = mContext.getContentResolver().delete(getUri(), WHERE_ID_CLAUSE, new String[] { String.valueOf(id) });
         return result != -1;
     }
+
+    /**
+     * To be used for inserting, since the id should be auto-incremented.
+     * @param entity The entity to generate from.
+     * @return
+     */
+    protected abstract ContentValues generateContentValuesFromEntityWithNoId(T entity);
 
 }

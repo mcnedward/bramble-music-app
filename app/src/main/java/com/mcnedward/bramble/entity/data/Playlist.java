@@ -1,4 +1,6 @@
-package com.mcnedward.bramble.media;
+package com.mcnedward.bramble.entity.data;
+
+import com.mcnedward.bramble.entity.data.Data;
 
 import java.util.ArrayList;
 import java.util.List;

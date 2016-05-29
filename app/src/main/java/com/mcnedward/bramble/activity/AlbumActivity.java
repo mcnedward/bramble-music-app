@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import com.mcnedward.bramble.enums.IntentKey;
-import com.mcnedward.bramble.media.Album;
+import com.mcnedward.bramble.entity.media.Album;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.view.AlbumParallaxView;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;

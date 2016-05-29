@@ -6,7 +6,6 @@ import android.graphics.PorterDuffColorFilter;
 import android.media.MediaPlayer;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,14 +16,12 @@ import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.listener.MediaPlayingListener;
 import com.mcnedward.bramble.listener.MediaStopListener;
-import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.entity.media.Album;
+import com.mcnedward.bramble.entity.media.Song;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
-
-import java.util.List;
 
 /**
  * Created by Edward on 5/19/2016.

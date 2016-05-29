@@ -5,6 +5,6 @@ package com.mcnedward.bramble.exception;
  */
 public class EntityAlreadyExistsException extends Exception {
     public EntityAlreadyExistsException(long id) {
-        super("An entity with the id " + id + " already exists.");
+        super("An entity with the mId " + id + " already exists.");
     }
 }

@@ -2,7 +2,7 @@ package com.mcnedward.bramble.view.mediaItem;
 
 import android.content.Context;
 
-import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.entity.media.Song;
 
 /**
  * Created by edward on 26/12/15.

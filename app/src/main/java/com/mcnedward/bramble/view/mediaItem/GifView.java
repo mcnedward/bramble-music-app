@@ -8,7 +8,7 @@ import android.widget.ImageView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.listener.MediaChangeListener;
-import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.entity.media.Song;
 
 /**
  * Created by Edward on 5/17/2016.

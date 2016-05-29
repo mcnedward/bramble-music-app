@@ -96,20 +96,20 @@ public abstract class Repository<T> implements IRepository<T> {
         return read(null);
     }
 
-    protected abstract Uri getUri();
-
     protected abstract T generateEntityFromCursor(Cursor cursor);
 
     protected abstract ContentValues generateContentValuesFromEntity(T entity);
 
     /**
      * Get all of the columns for the repository.
-     * The first item should ALWAYS be the id, so that it can be found at the first index.
+     * The first item should ALWAYS be the mId, so that it can be found at the first index.
      * If this is a MediaRepository, the second item should ALWAYS be the key, so that it can be found at the second index.
      * @return The columns.
      */
     protected abstract String[] getColumns();
 
     protected abstract String getOrderBy();
+
+    protected abstract Uri getUri();
 
 }

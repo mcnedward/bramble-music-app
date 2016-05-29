@@ -10,7 +10,7 @@ import android.widget.ImageView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.async.BitmapLoadTask;
-import com.mcnedward.bramble.media.Media;
+import com.mcnedward.bramble.entity.media.Media;
 import com.mcnedward.bramble.view.MediaCard;
 
 import java.lang.ref.WeakReference;

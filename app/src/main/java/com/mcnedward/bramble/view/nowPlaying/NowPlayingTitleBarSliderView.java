@@ -3,7 +3,7 @@ package com.mcnedward.bramble.view.nowPlaying;
 import android.content.Context;
 import android.view.View;
 
-import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.entity.media.Song;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
 

@@ -1,8 +1,8 @@
 package com.mcnedward.bramble.repository.media;
 
 import com.mcnedward.bramble.exception.EntityDoesNotExistException;
-import com.mcnedward.bramble.media.Media;
-import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.entity.media.Media;
+import com.mcnedward.bramble.entity.media.MediaType;
 import com.mcnedward.bramble.repository.IRepository;
 
 /**

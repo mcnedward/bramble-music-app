@@ -1,4 +1,4 @@
-package com.mcnedward.bramble.media;
+package com.mcnedward.bramble.entity.media;
 
 import android.content.SharedPreferences;
 

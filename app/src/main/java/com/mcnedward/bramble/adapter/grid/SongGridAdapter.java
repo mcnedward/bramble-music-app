@@ -3,11 +3,7 @@ package com.mcnedward.bramble.adapter.grid;
 import android.content.Context;
 import android.view.View;
 
-import com.mcnedward.bramble.media.Album;
-import com.mcnedward.bramble.media.Song;
-import com.mcnedward.bramble.utils.MediaCache;
-
-import java.util.List;
+import com.mcnedward.bramble.entity.media.Song;
 
 /**
  * Created by edward on 24/12/15.

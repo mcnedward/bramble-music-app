@@ -1,6 +1,6 @@
 package com.mcnedward.bramble.listener;
 
-import com.mcnedward.bramble.media.Song;
+import com.mcnedward.bramble.entity.media.Song;
 
 /**
  * Created by edward on 27/12/15.

@@ -7,9 +7,10 @@ import android.net.Uri;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.mcnedward.bramble.entity.data.Thumbnail;
 import com.mcnedward.bramble.exception.EntityAlreadyExistsException;
 import com.mcnedward.bramble.exception.EntityDoesNotExistException;
-import com.mcnedward.bramble.media.Playlist;
+import com.mcnedward.bramble.entity.data.Playlist;
 import com.mcnedward.bramble.provider.PlaylistContentProvider;
 
 import java.lang.reflect.Type;
@@ -67,8 +68,14 @@ public class PlaylistRepository extends DataRepository<Playlist> implements IPla
 
     @Override
     protected ContentValues generateContentValuesFromEntity(Playlist entity) {
-        ContentValues values = new ContentValues();
+        ContentValues values = generateContentValuesFromEntityWithNoId(entity);
         values.put(DatabaseHelper.ID, entity.getId());
+        return values;
+    }
+
+    @Override
+    protected ContentValues generateContentValuesFromEntityWithNoId(Playlist entity) {
+        ContentValues values = new ContentValues();
         values.put(DatabaseHelper.P_SONG_KEYS, mGson.toJson(entity.getSongKeys()));
         return values;
     }

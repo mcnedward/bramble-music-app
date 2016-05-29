@@ -1,10 +1,11 @@
-package com.mcnedward.bramble.media;
+package com.mcnedward.bramble.entity.media;
 
 import android.content.SharedPreferences;
 
+import com.mcnedward.bramble.entity.data.ArtistImage;
+import com.mcnedward.bramble.entity.data.Thumbnail;
+
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by edward on 22/12/15.
@@ -13,6 +14,7 @@ public class Artist extends Media implements Serializable {
 
     private String artistName;
     private int numberOfAlbums;
+    private ArtistImage mArtistImage;
 
     public Artist(int artistId, String artistName, String artistKey, int numberOfAlbums) {
         super(artistId, "", artistName, artistKey, MediaType.ARTIST);
@@ -61,6 +63,20 @@ public class Artist extends Media implements Serializable {
 
     public void setNumberOfAlbums(int numberOfAlbums) {
         this.numberOfAlbums = numberOfAlbums;
+    }
+
+    public ArtistImage getArtistImage() {
+        return mArtistImage;
+    }
+
+    public void setArtistImage(ArtistImage artistImage) {
+        this.mArtistImage = artistImage;
+        Thumbnail thumbnail = artistImage.getThumbnail();
+        if (thumbnail == null) {
+            setImageUrl(artistImage.getMediaUrl());
+        } else {
+            setImageUrl(thumbnail.getMediaUrl());
+        }
     }
 
     @Override

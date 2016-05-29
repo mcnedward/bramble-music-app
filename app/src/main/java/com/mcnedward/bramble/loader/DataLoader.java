@@ -4,8 +4,8 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
-import com.mcnedward.bramble.media.Media;
-import com.mcnedward.bramble.media.MediaType;
+import com.mcnedward.bramble.entity.media.Media;
+import com.mcnedward.bramble.entity.media.MediaType;
 import com.mcnedward.bramble.repository.IRepository;
 import com.mcnedward.bramble.repository.media.IMediaRepository;
 
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by edward on 23/12/15.
  */
-public class BaseDataLoader<T extends Media> extends AsyncTaskLoader<List<T>> {
+public class DataLoader<T extends Media> extends AsyncTaskLoader<List<T>> {
     private final static String TAG = "BaseDataLoader";
 
     private IMediaRepository<T> mRepository;
@@ -23,7 +23,7 @@ public class BaseDataLoader<T extends Media> extends AsyncTaskLoader<List<T>> {
 
     private List<T> mDataList = null;
 
-    public BaseDataLoader(IMediaRepository repository, Context context) {
+    public DataLoader(IMediaRepository repository, Context context) {
         super(context);
         mRepository = repository;
         mMediaType = mRepository.getMediaType();

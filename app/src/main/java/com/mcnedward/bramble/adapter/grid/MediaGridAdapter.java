@@ -8,7 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.mcnedward.bramble.media.Media;
+import com.mcnedward.bramble.entity.media.Media;
+import com.mcnedward.bramble.utils.PicassoUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
 import com.mcnedward.bramble.view.MediaCard;
 
@@ -62,7 +63,14 @@ public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
             mediaCard = holder.mediaCard;
         }
 
-        mediaCard.update(item);
+        // Check if there is a bitmap path first
+        String mediaImageUrl = item.getImageUrl();
+        if (mediaImageUrl != null && !mediaImageUrl.equals("")){
+            mediaCard.update(item, false);
+            PicassoUtil.getPicasso(mContext).with(mContext).load(mediaImageUrl).fit().centerInside().into(mediaCard.getImageView());
+        } else {
+            mediaCard.update(item);
+        }
         RippleUtil.setRippleBackground(mediaCard, mContext);
         mediaCard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,8 +81,19 @@ public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
         return convertView;
     }
 
+    public void updateItem(T item) {
+        if (mGroups == null || mGroups.isEmpty()) return;
+        for (int i = 0; i < mGroups.size(); i++) {
+            T groupItem = mGroups.get(i);
+            if (groupItem.getCacheKey().equals(item.getCacheKey())) {
+                mGroups.set(i, item);
+                return;
+            }
+        }
+    }
+
     public void setGroups(List<T> groups) {
-        this.mGroups = groups;
+        mGroups = groups;
     }
 
     public void reset() {

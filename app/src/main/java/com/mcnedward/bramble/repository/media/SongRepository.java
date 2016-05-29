@@ -7,9 +7,8 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 import com.mcnedward.bramble.exception.EntityDoesNotExistException;
-import com.mcnedward.bramble.media.MediaType;
-import com.mcnedward.bramble.media.Song;
-import com.mcnedward.bramble.repository.Repository;
+import com.mcnedward.bramble.entity.media.MediaType;
+import com.mcnedward.bramble.entity.media.Song;
 
 import java.util.ArrayList;
 import java.util.Collections;

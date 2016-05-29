@@ -11,13 +11,12 @@ import java.util.HashSet;
 /**
  * Created by Edward on 5/28/2016.
  *
- * ContentProvider for accessing entities from the Playlist database table.
+ * ContentProvider for accessing entities from the Thumbnail database table.
  */
-public class PlaylistContentProvider extends DataContentProvider {
+public class ThumbnailContentProvider extends DataContentProvider {
 
-
-    public static final String AUTHORITY = "playlist";
-    public static final String PATH = "/playlist";
+    public static final String AUTHORITY = "thumbnail";
+    public static final String PATH = "/thumbnail";
     public static Uri CONTENT_URI = Uri.parse(BASE_CONTENT_AUTHORITY + AUTHORITY + PATH);
     public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + PATH;
     public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + PATH;
@@ -30,7 +29,12 @@ public class PlaylistContentProvider extends DataContentProvider {
     @Override
     protected void checkColumns(String[] projection) {
         String[] available = { DatabaseHelper.ID,
-                DatabaseHelper.P_SONG_KEYS };
+                DatabaseHelper.T_ARTIST_IMAGE_ID,
+                DatabaseHelper.T_MEDIA_URL,
+                DatabaseHelper.T_CONTENT_TYPE,
+                DatabaseHelper.T_HEIGHT,
+                DatabaseHelper.T_WIDTH,
+                DatabaseHelper.T_FILE_SIZE };
         if (projection != null) {
             HashSet<String> requestedColumns = new HashSet<>(Arrays.asList(projection));
             HashSet<String> availableColumns = new HashSet<>(Arrays.asList(available));
@@ -43,7 +47,7 @@ public class PlaylistContentProvider extends DataContentProvider {
 
     @Override
     protected String getTableName() {
-        return DatabaseHelper.PLAYLIST_TABLE;
+        return DatabaseHelper.THUMBNAIL_TABLE;
     }
 
     @Override

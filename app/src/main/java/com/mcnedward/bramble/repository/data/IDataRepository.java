@@ -2,10 +2,8 @@ package com.mcnedward.bramble.repository.data;
 
 import com.mcnedward.bramble.exception.EntityAlreadyExistsException;
 import com.mcnedward.bramble.exception.EntityDoesNotExistException;
-import com.mcnedward.bramble.media.Data;
+import com.mcnedward.bramble.entity.data.Data;
 import com.mcnedward.bramble.repository.IRepository;
-
-import java.util.List;
 
 /**
  * Created by Edward on 5/28/2016.
@@ -42,7 +40,7 @@ public interface IDataRepository<T extends Data> extends IRepository<T> {
     /**
      * Delete an existing entity.
      *
-     * @param id The id of the entity to delete.
+     * @param id The mId of the entity to delete.
      * @return True if the entity was deleted, false otherwise.
      * @throws EntityDoesNotExistException If the entity does not exist.
      */
