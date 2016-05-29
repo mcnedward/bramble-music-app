@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by Edward on 5/28/2016.
  *
- * Response container for artist image search from bing. This will also allow for creating the ArtistImage entities.
+ * Response container for artist image search from Bing. This will also allow for creating the ArtistImage entities.
  */
 public class ArtistImageResponse implements Serializable {
 

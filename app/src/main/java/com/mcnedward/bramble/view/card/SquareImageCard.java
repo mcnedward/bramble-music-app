@@ -1,4 +1,4 @@
-package com.mcnedward.bramble.view;
+package com.mcnedward.bramble.view.card;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -6,6 +6,8 @@ import android.widget.ImageView;
 
 /**
  * Created by Edward on 5/15/2016.
+ *
+ * An ImageView that is set to a square shape.
  */
 public class SquareImageCard extends ImageView {
 

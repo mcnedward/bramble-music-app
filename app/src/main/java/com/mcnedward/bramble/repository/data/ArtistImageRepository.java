@@ -7,11 +7,12 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.mcnedward.bramble.entity.data.ArtistImage;
-import com.mcnedward.bramble.entity.data.Playlist;
 import com.mcnedward.bramble.entity.data.Thumbnail;
 import com.mcnedward.bramble.exception.EntityAlreadyExistsException;
 import com.mcnedward.bramble.exception.EntityDoesNotExistException;
 import com.mcnedward.bramble.provider.ArtistImageContentProvider;
+
+import java.util.List;
 
 /**
  * Created by Edward on 5/28/2016.
@@ -19,7 +20,7 @@ import com.mcnedward.bramble.provider.ArtistImageContentProvider;
 public class ArtistImageRepository extends DataRepository<ArtistImage> implements IArtistImageRepository {
     private static final String TAG = ArtistImageRepository.class.getName();
 
-    private ThumbnailRepository mThumbnailRepository;
+    private IThumbnailRepository mThumbnailRepository;
 
     public ArtistImageRepository(Context context) {
         super(context);
@@ -27,10 +28,8 @@ public class ArtistImageRepository extends DataRepository<ArtistImage> implement
     }
 
     @Override
-    public ArtistImage getForArtistId(int artistId) throws EntityDoesNotExistException {
-        ArtistImage artistImage = null;
-        artistImage = readFirstOrDefault(String.format("%s=?", DatabaseHelper.A_ARTIST_ID), new String[]{String.valueOf(artistId)});
-        return artistImage;
+    public List<ArtistImage> getForArtistId(int artistId) throws EntityDoesNotExistException {
+        return read(String.format("%s=?", DatabaseHelper.A_ARTIST_ID), new String[]{String.valueOf(artistId)});
     }
 
     @Override
@@ -62,11 +61,13 @@ public class ArtistImageRepository extends DataRepository<ArtistImage> implement
         ai.setWidth(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.A_WIDTH)));
         ai.setHeight(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.A_HEIGHT)));
         ai.setFileSize(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.A_FILE_SIZE)));
+        ai.setContentType(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.A_CONTENT_TYPE)));
         ai.setBitmapPath(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.A_BITMAP_PATH)));
 
         int thumbnailId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.A_THUMBNAIL_ID));
         try {
             Thumbnail thumbnail = mThumbnailRepository.get(thumbnailId);
+            thumbnail.setTitle(ai.getTitle());
             ai.setThumbnail(thumbnail);
         } catch (EntityDoesNotExistException e) {
             Log.w(TAG, e.getMessage());

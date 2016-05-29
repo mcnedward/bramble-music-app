@@ -1,36 +1,74 @@
 package com.mcnedward.bramble.entity.data;
 
 import com.mcnedward.bramble.controller.ThumbnailResponse;
+import com.mcnedward.bramble.entity.ITitleAndImage;
+import com.mcnedward.bramble.utils.MusicUtil;
 
 /**
  * Created by Edward on 5/28/2016.
  */
-public class Thumbnail extends Data {
+public class Thumbnail extends Data implements ITitleAndImage {
 
-    protected long mArtistImageId;
-    protected String mMediaUrl;
-    protected String mContentType;
-    protected int mWidth;
-    protected int mHeight;
-    protected int mFileSize;
+    private String mTitle;
+    private long mArtistImageId;
+    private String mMediaUrl;
+    private String mContentType;
+    private int mWidth;
+    private int mHeight;
+    private int mFileSize;
+    private String mCacheKey;
 
-    public Thumbnail() { }
+    public Thumbnail() {
+    }
 
-    public Thumbnail(long artistImageId, String mediaUrl, String contentType, int width, int height, int fileSize) {
+    public Thumbnail(String title, long artistImageId, String mediaUrl, String contentType, int width, int height, int fileSize) {
+        mTitle = title;
         mArtistImageId = artistImageId;
         mMediaUrl = mediaUrl;
         mContentType = contentType;
         mWidth = width;
         mHeight = height;
         mFileSize = fileSize;
+        mCacheKey = MusicUtil.generateCacheKey();
     }
 
-    public Thumbnail(ThumbnailResponse thumbnail) {
+    public Thumbnail(String title, ThumbnailResponse thumbnail) {
+        mTitle = title;
         mMediaUrl = thumbnail.getMediaUrl();
         mContentType = thumbnail.getContentType();
         mWidth = thumbnail.getWidth();
         mHeight = thumbnail.getHeight();
         mFileSize = thumbnail.getFileSize();
+        mCacheKey = MusicUtil.generateCacheKey();
+    }
+
+    @Override
+    public String getTitle() {
+        return mTitle;
+    }
+
+    @Override
+    public String getImagePath() {
+        return null;
+    }
+
+    @Override
+    public String getImageUrl() {
+        return mMediaUrl;
+    }
+
+    @Override
+    public String getImageThumbnailUrl() {
+        return mMediaUrl;
+    }
+
+    @Override
+    public String getCacheKey() {
+        return mCacheKey;
+    }
+
+    public void setTitle(String title) {
+        mTitle = title;
     }
 
     public long getArtistImageId() {

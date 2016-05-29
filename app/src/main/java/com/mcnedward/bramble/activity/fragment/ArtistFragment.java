@@ -50,10 +50,10 @@ public class ArtistFragment extends MediaFragment<Artist> {
         super.onLoadFinished(loader, data);
 
         for (Artist artist : data) {
-            ArtistImage artistImage;
+            List<ArtistImage> artistImages;
             try {
-                artistImage = mRepository.getForArtistId(artist.getId());
-                artist.setArtistImage(artistImage);
+                artistImages = mRepository.getForArtistId(artist.getId());
+                artist.setArtistImages(artistImages);
                 mGridAdapter.updateItem(artist);
                 mGridAdapter.notifyDataSetChanged();
             } catch (EntityDoesNotExistException e) {
@@ -67,17 +67,18 @@ public class ArtistFragment extends MediaFragment<Artist> {
                                 if (artistImages.isEmpty()) {
                                     Log.d(TAG, "No images found for artist: " + requestArtist.getArtistName());
                                 } else {
-                                    // Get the artist image from the response, save it in the database, and handle the bitmap
-                                    ArtistImage artistImage = artistImages.get(0);
-                                    artistImage.setArtistId(requestArtist.getId());
-                                    try {
-                                        mRepository.save(artistImage);
-                                        requestArtist.setArtistImage(artistImage);
-                                        mGridAdapter.updateItem(requestArtist);
-                                        mGridAdapter.notifyDataSetChanged();
-                                    } catch (EntityAlreadyExistsException e1) {
-                                        Log.w(TAG, e1.getMessage());
+                                    // Get the artist images from the response, save them in the database, and handle the bitmap for the first one
+                                    for (ArtistImage ai : artistImages) {
+                                        ai.setArtistId(requestArtist.getId());
+                                        try {
+                                            mRepository.save(ai);
+                                        } catch (EntityAlreadyExistsException e1) {
+                                            Log.w(TAG, e1.getMessage());
+                                        }
                                     }
+                                    requestArtist.setArtistImages(artistImages);
+                                    mGridAdapter.updateItem(requestArtist);
+                                    mGridAdapter.notifyDataSetChanged();
                                 }
                             }
                         });

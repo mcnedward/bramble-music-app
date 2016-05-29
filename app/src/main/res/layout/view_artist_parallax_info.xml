@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/GhostWhite"
-    android:orientation="vertical">
+    android:background="@color/GhostWhite">
 
     <TextView
-        android:id="@+id/artist_title"
+        android:id="@+id/artist_info_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/artist_info_image_chooser"
+        android:layout_alignParentLeft="true"
         android:ellipsize="marquee"
-        android:marqueeRepeatLimit="marquee_forever"
         android:orientation="vertical"
-        android:paddingBottom="5dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:paddingTop="15dp"
+        android:padding="15dp"
         android:scrollHorizontally="true"
         android:singleLine="true"
+        android:text="@string/placeholder"
         android:textColor="@color/Black"
-        android:textSize="18dp"
+        android:textSize="20dp"
         android:textStyle="bold"/>
-</LinearLayout>
+
+    <ImageView
+        android:id="@+id/artist_info_image_chooser"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/artist_image"/>
+</RelativeLayout>

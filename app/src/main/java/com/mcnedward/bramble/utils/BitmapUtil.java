@@ -10,8 +10,8 @@ import android.widget.ImageView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.async.BitmapLoadTask;
-import com.mcnedward.bramble.entity.media.Media;
-import com.mcnedward.bramble.view.MediaCard;
+import com.mcnedward.bramble.entity.ITitleAndImage;
+import com.mcnedward.bramble.view.card.MediaCard;
 
 import java.lang.ref.WeakReference;
 
@@ -20,7 +20,7 @@ import java.lang.ref.WeakReference;
  */
 public class BitmapUtil {
 
-    public static BitmapLoadTask startBitmapLoadTask(final Context context, Media item, MediaCard mediaCard, LruCache<String, Bitmap> cache) {
+    public static BitmapLoadTask startBitmapLoadTask(final Context context, ITitleAndImage item, MediaCard mediaCard, LruCache<String, Bitmap> cache) {
         if (cancelPotentialWork(item.getCacheKey(), mediaCard)) {
             final BitmapLoadTask task = new BitmapLoadTask(mediaCard, item, cache, context);
             final AsyncDrawable drawable = new AsyncDrawable(context, task);

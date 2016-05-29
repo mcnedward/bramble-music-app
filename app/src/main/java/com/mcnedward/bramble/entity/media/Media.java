@@ -2,13 +2,16 @@ package com.mcnedward.bramble.entity.media;
 
 import android.content.SharedPreferences;
 
+import com.mcnedward.bramble.entity.ITitleAndImage;
+import com.mcnedward.bramble.utils.MusicUtil;
+
 import java.io.Serializable;
 import java.util.Random;
 
 /**
  * Created by edward on 24/12/15.
  */
-public abstract class Media implements Serializable {
+public abstract class Media implements Serializable, ITitleAndImage {
 
     protected int mId;
     protected String mImagePath;
@@ -24,7 +27,7 @@ public abstract class Media implements Serializable {
         mTitle = title;
         mKey = key;
         mMediaType = mediaType;
-        mCacheKey = generateCacheKey();
+        mCacheKey = MusicUtil.generateCacheKey();
     }
 
     public boolean save(SharedPreferences.Editor editor) {
@@ -40,45 +43,41 @@ public abstract class Media implements Serializable {
 
     protected abstract void saveMedia(SharedPreferences.Editor editor);
 
-    /**
-     * Source: http://stackoverflow.com/questions/20536566/creating-a-random-string-with-a-z-and-0-9-in-java
-     * @return
-     */
-    private String generateCacheKey() {
-        String SALT_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        StringBuilder salt = new StringBuilder();
-        Random rnd = new Random();
-        while (salt.length() < 18) {
-            int index = (int) (rnd.nextFloat() * SALT_CHARS.length());
-            salt.append(SALT_CHARS.charAt(index));
-        }
-        String saltStr = salt.toString();
-        return saltStr.toLowerCase();
-
-    }
-
     public int getId() {
         return mId;
     }
 
+    @Override
+    public String getTitle() {
+        return mTitle;
+    }
+
+    @Override
     public String getImagePath() {
         return mImagePath;
+    }
+
+    @Override
+    public String getImageUrl() {
+        return mImageUrl;
+    }
+
+    @Override
+    public String getImageThumbnailUrl() {
+        return mImageUrl;
+    }
+
+    @Override
+    public String getCacheKey() {
+        return mCacheKey;
     }
 
     public void setImagePath(String imagePath) {
         mImagePath = imagePath;
     }
 
-    public String getImageUrl() {
-        return mImageUrl;
-    }
-
     public void setImageUrl(String imageUrl) {
         mImageUrl = imageUrl;
-    }
-
-    public String getTitle() {
-        return mTitle;
     }
 
     public void setTitle(String title) {
@@ -97,7 +96,4 @@ public abstract class Media implements Serializable {
         return mMediaType;
     }
 
-    public String getCacheKey() {
-        return mCacheKey;
-    }
 }

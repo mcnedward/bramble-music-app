@@ -8,9 +8,9 @@ import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 
+import com.mcnedward.bramble.entity.ITitleAndImage;
 import com.mcnedward.bramble.enums.ImageSize;
-import com.mcnedward.bramble.entity.media.Media;
-import com.mcnedward.bramble.view.MediaCard;
+import com.mcnedward.bramble.view.card.MediaCard;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,11 +27,11 @@ public class BitmapLoadTask extends AsyncTask<Void, Void, Bitmap> {
     public String cacheKey;
     private LruCache<String, Bitmap> cache;
     private Context context;
-    private Media media;
+    private ITitleAndImage media;
     private String bitmapPath;
     private final WeakReference<MediaCard> mediaCardWeakReference;
 
-    public BitmapLoadTask(MediaCard mediaCard, Media media, LruCache<String, Bitmap> cache, Context context) {
+    public BitmapLoadTask(MediaCard mediaCard, ITitleAndImage media, LruCache<String, Bitmap> cache, Context context) {
         this.cache = cache;
         this.context = context;
         this.media = media;

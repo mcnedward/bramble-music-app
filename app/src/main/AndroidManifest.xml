@@ -25,7 +25,10 @@
             android:name=".activity.AlbumActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".activity.ArtistActivity"
+            android:name=".activity.artist.ArtistActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".activity.artist.ArtistImageChooserActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <service

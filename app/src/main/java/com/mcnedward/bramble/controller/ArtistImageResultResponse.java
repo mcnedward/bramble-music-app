@@ -2,9 +2,10 @@ package com.mcnedward.bramble.controller;
 
 /**
  * Created by Edward on 5/28/2016.
- * A result returned from a bing search.
+ * A result returned from a Bing search.
  */
 public class ArtistImageResultResponse {
+
     String ID;
     String Title;
     String MediaUrl;

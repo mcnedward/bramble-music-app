@@ -3,6 +3,7 @@ package com.mcnedward.bramble.view.parallax;
 import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -27,7 +28,10 @@ import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
  * a certain amount.
  */
 public abstract class ParallaxView<T> extends LinearLayout {
-    final private static String TAG = "ParallaxView";
+    private static final String TAG = "ParallaxView";
+    private static final float FOREGROUND_SPACE_SCALE_HEIGHT = 2f;
+    private static final float BACKGROUND_SPACE_SCALE_HEIGHT = 1.3f;
+    private static final float IMAGE_SCALE_HEIGHT = 2f;
 
     protected Context mContext;
     protected ParallaxScrollView mBgScrollView;
@@ -108,9 +112,8 @@ public abstract class ParallaxView<T> extends LinearLayout {
 
     private void initializeForegroundContent() {
         LinearLayout layout = (LinearLayout) findViewById(R.id.parallax_main_content);
-
         // Set the empty space to push list below album art
-        int spaceHeight = (dm.heightPixels / 2);
+        int spaceHeight = (int) (dm.heightPixels / getForegroundSpaceScaleHeight());
         Space space = new Space(mContext);
         LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, spaceHeight);
         space.setLayoutParams(layoutParams);
@@ -123,8 +126,8 @@ public abstract class ParallaxView<T> extends LinearLayout {
         LinearLayout layout = (LinearLayout) findViewById(R.id.parallax_background_content);
         ImageView imgBackground = (ImageView) findViewById(R.id.bg_album_art);
 
-        int spaceHeight = (int) (dm.heightPixels / 1.3f);
-        int imageHeight = (dm.heightPixels / 2);
+        int spaceHeight = (int) (dm.heightPixels / getBackgroundSpaceScaleHeight());
+        int imageHeight = (int) (dm.heightPixels / getImageScaleHeight());
 
         Space space = new Space(mContext);
         space.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, spaceHeight));
@@ -134,6 +137,36 @@ public abstract class ParallaxView<T> extends LinearLayout {
         loadBackgroundImage(imgBackground);
 
         setupBackgroundContent(layout);
+    }
+
+    /**
+     * Gets the amount to scale the Space to push the background image up.
+     * Can be overriden to change the layout of the background image.
+     *
+     * @return The space scale height
+     */
+    protected float getForegroundSpaceScaleHeight() {
+        return FOREGROUND_SPACE_SCALE_HEIGHT;
+    }
+
+    /**
+     * Gets the amount to scale the Space to push the background image up.
+     * Can be overriden to change the layout of the background image.
+     *
+     * @return The space scale height
+     */
+    protected float getBackgroundSpaceScaleHeight() {
+        return BACKGROUND_SPACE_SCALE_HEIGHT;
+    }
+
+    /**
+     * Gets the amount to scale the background image.
+     * Can be overriden to change the layout of the background image.
+     *
+     * @return The image scale height
+     */
+    protected float getImageScaleHeight() {
+        return IMAGE_SCALE_HEIGHT;
     }
 
     @Override

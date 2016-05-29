@@ -16,7 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Database title
     public static String DB_NAME = "Bramble.db";
     // Database version - increment this number to upgrade the database
-    public static final int DB_VERSION = 16;
+    public static final int DB_VERSION = 17;
 
     // Tables
     public static final String PLAYLIST_TABLE = "Playlist";

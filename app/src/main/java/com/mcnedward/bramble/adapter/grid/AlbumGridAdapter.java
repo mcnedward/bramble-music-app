@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 
 import com.mcnedward.bramble.entity.media.Album;
+import com.mcnedward.bramble.enums.CardType;
 import com.mcnedward.bramble.utils.MusicUtil;
 
 import java.util.List;
@@ -14,16 +15,16 @@ import java.util.List;
 public class AlbumGridAdapter extends MediaGridAdapter<Album> {
 
     public AlbumGridAdapter(Context context) {
-        super(context);
+        super(context, CardType.SQUARE);
     }
 
     public AlbumGridAdapter(Context context, List<Album> albums) {
-        super(context, albums);
+        super(context, albums, CardType.SQUARE);
     }
 
     @Override
     protected void doOnClickAction(Album album, View view) {
-        MusicUtil.openAlbum(mContext, album);
+        MusicUtil.startAlbumActivity(mContext, album);
     }
 
 }

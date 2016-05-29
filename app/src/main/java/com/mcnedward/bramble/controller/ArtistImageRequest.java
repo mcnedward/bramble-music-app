@@ -22,9 +22,10 @@ import java.util.Map;
 public class ArtistImageRequest extends Request<ArtistImageResponse> {
     private static final String TAG = ArtistImageRequest.class.getName();
 
+    private static final String COUNT = "6";
     private static final String APP_ID = "zNw3wW02HmL+aOcxsVkmjDuA/Pu8IdKaJ6C1tOL1eS8";
     private static final String URL = "https://api.datamarket.azure" +
-            ".com/Bing/Search/v1/Image?Market=%27en-US%27&Adult=%27Strict%27&%24format=JSON&%24top=3&Query=";
+            ".com/Bing/Search/v1/Image?Market=%27en-US%27&Adult=%27Strict%27&%24format=JSON&%24top=" + COUNT + "&Query=";
 
     private Artist mArtist;
     private Response.Listener<ArtistImageResponse> mListener;

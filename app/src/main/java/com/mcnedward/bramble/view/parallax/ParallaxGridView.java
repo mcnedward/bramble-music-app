@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
 import com.mcnedward.bramble.entity.media.Album;
 import com.mcnedward.bramble.entity.media.Artist;
+import com.mcnedward.bramble.enums.CardType;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RepositoryUtil;
 
@@ -33,10 +34,10 @@ public class ParallaxGridView extends GridView {
         setNumColumns(2);
 
         List<Album> albums = RepositoryUtil.getAlbumRepository(context).getAlbumsForArtist(artist.getId());
-        MediaGridAdapter<Album> albumGridAdapter = new MediaGridAdapter<Album>(context, albums) {
+        MediaGridAdapter<Album> albumGridAdapter = new MediaGridAdapter<Album>(context, albums, CardType.SQUARE) {
             @Override
             protected void doOnClickAction(Album media, View view) {
-                MusicUtil.openAlbum(context, media);
+                MusicUtil.startAlbumActivity(context, media);
             }
         };
         setAdapter(albumGridAdapter);
@@ -44,8 +45,7 @@ public class ParallaxGridView extends GridView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int expandSpec = MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE >> 2,
-                MeasureSpec.AT_MOST);
+        int expandSpec = MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE >> 2, MeasureSpec.AT_MOST);
         super.onMeasure(widthMeasureSpec, expandSpec);
     }
 }

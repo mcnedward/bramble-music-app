@@ -1,4 +1,4 @@
-package com.mcnedward.bramble.activity;
+package com.mcnedward.bramble.activity.artist;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;

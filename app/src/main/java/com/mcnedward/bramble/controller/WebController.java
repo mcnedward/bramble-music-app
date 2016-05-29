@@ -11,7 +11,7 @@ import com.mcnedward.bramble.entity.media.Artist;
 
 /**
  * Created by Edward on 5/28/2016.
- *
+ * <p/>
  * A controller for making web requests.
  */
 public class WebController {

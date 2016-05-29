@@ -19,7 +19,6 @@ import com.mcnedward.bramble.activity.fragment.AlbumFragment;
 import com.mcnedward.bramble.activity.fragment.ArtistFragment;
 import com.mcnedward.bramble.activity.fragment.MediaFragment;
 import com.mcnedward.bramble.activity.fragment.SongFragment;
-import com.mcnedward.bramble.controller.WebController;
 import com.mcnedward.bramble.entity.media.MediaType;
 import com.mcnedward.bramble.service.MediaService;
 import com.mcnedward.bramble.view.MainView;

@@ -1,11 +1,13 @@
 package com.mcnedward.bramble.entity.data;
 
 import com.mcnedward.bramble.controller.ArtistImageResultResponse;
+import com.mcnedward.bramble.entity.ITitleAndImage;
+import com.mcnedward.bramble.utils.MusicUtil;
 
 /**
  * Created by Edward on 5/28/2016.
  */
-public class ArtistImage extends Data {
+public class ArtistImage extends Data implements ITitleAndImage {
 
     private int mArtistId;
     private String mTitle;
@@ -18,9 +20,10 @@ public class ArtistImage extends Data {
     private String mContentType;
     private Thumbnail mThumbnail;
     private String mBitmapPath;
+    private String mCacheKey;
 
     public ArtistImage() {
-
+        mCacheKey = MusicUtil.generateCacheKey();
     }
 
     public ArtistImage(ArtistImageResultResponse response) {
@@ -32,7 +35,35 @@ public class ArtistImage extends Data {
         mHeight = response.getHeight();
         mFileSize = response.getFileSize();
         mContentType = response.getContentType();
-        mThumbnail = new Thumbnail(response.getThumbnail());
+        mThumbnail = new Thumbnail(mTitle, response.getThumbnail());
+        mCacheKey = MusicUtil.generateCacheKey();
+    }
+
+    @Override
+    public String getTitle() {
+        return mTitle;
+    }
+
+    @Override
+    public String getImagePath() {
+        return mMediaUrl;
+    }
+
+    @Override
+    public String getImageUrl() {
+        return mMediaUrl;
+    }
+
+    @Override
+    public String getImageThumbnailUrl() {
+        if (mThumbnail == null || mThumbnail.getMediaUrl() == null || mThumbnail.getMediaUrl().equals(""))
+            return mMediaUrl;
+        return mThumbnail.getMediaUrl();
+    }
+
+    @Override
+    public String getCacheKey() {
+        return mCacheKey;
     }
 
     public String getMediaUrl() {
@@ -51,12 +82,10 @@ public class ArtistImage extends Data {
         mMediaUrl = mediaUrl;
     }
 
-    public String getTitle() {
-        return mTitle;
-    }
-
     public void setTitle(String title) {
         mTitle = title;
+        if (mThumbnail == null) return;
+        mThumbnail.setTitle(title);
     }
 
     public String getSourceUrl() {

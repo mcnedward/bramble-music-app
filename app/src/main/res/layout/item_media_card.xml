@@ -14,17 +14,9 @@
         android:elevation="5dp">
 
         <RelativeLayout
+            android:id="@+id/container_media_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <com.mcnedward.bramble.view.SquareImageCard
-                android:id="@+id/media_icon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/no_album_art"/>
         </RelativeLayout>
 
         <TextView

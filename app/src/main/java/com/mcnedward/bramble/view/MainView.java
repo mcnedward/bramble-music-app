@@ -36,7 +36,6 @@ public class MainView extends FrameLayout {
         inflate(context, R.layout.activity_main, this);
         NowPlayingFragment nowPlayingFragment = (NowPlayingFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.now_playing);
         mNowPlayingView = nowPlayingFragment.getNowPlayingView();
-
         adjustForNowPlayingTitleBar();
     }
 

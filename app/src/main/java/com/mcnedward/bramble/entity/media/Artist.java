@@ -6,6 +6,8 @@ import com.mcnedward.bramble.entity.data.ArtistImage;
 import com.mcnedward.bramble.entity.data.Thumbnail;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by edward on 22/12/15.
@@ -14,18 +16,20 @@ public class Artist extends Media implements Serializable {
 
     private String artistName;
     private int numberOfAlbums;
-    private ArtistImage mArtistImage;
+    private List<ArtistImage> mArtistImages;
 
     public Artist(int artistId, String artistName, String artistKey, int numberOfAlbums) {
         super(artistId, "", artistName, artistKey, MediaType.ARTIST);
         this.artistName = artistName;
         this.numberOfAlbums = numberOfAlbums;
+        mArtistImages = new ArrayList<>();
     }
 
     public Artist(int id, String imagePath, String title, String key, MediaType mediaType, String artistName, int numberOfAlbums) {
         super(id, imagePath, title, key, mediaType);
         this.artistName = artistName;
         this.numberOfAlbums = numberOfAlbums;
+        mArtistImages = new ArrayList<>();
     }
 
     @Override
@@ -65,18 +69,16 @@ public class Artist extends Media implements Serializable {
         this.numberOfAlbums = numberOfAlbums;
     }
 
-    public ArtistImage getArtistImage() {
-        return mArtistImage;
+    public List<ArtistImage> getArtistImages() {
+        return mArtistImages;
     }
 
-    public void setArtistImage(ArtistImage artistImage) {
-        this.mArtistImage = artistImage;
-        Thumbnail thumbnail = artistImage.getThumbnail();
-        if (thumbnail == null) {
-            setImageUrl(artistImage.getMediaUrl());
-        } else {
-            setImageUrl(thumbnail.getMediaUrl());
-        }
+    public void setArtistImages(List<ArtistImage> artistImages) {
+        this.mArtistImages = artistImages;
+        // TODO This will be changed based on user preferences
+        ArtistImage artistImage = artistImages.get(0);
+        if (artistImage == null) return;
+        setImageUrl(artistImage.getMediaUrl());
     }
 
     @Override

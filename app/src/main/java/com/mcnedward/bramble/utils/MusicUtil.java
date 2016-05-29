@@ -10,17 +10,19 @@ import android.widget.ImageView;
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.AlbumActivity;
 import com.mcnedward.bramble.activity.AlbumPopup;
-import com.mcnedward.bramble.activity.ArtistActivity;
-import com.mcnedward.bramble.enums.IntentKey;
-import com.mcnedward.bramble.exception.EntityDoesNotExistException;
+import com.mcnedward.bramble.activity.artist.ArtistActivity;
+import com.mcnedward.bramble.activity.artist.ArtistImageChooserActivity;
 import com.mcnedward.bramble.entity.media.Album;
 import com.mcnedward.bramble.entity.media.Artist;
 import com.mcnedward.bramble.entity.media.Song;
+import com.mcnedward.bramble.enums.IntentKey;
+import com.mcnedward.bramble.exception.EntityDoesNotExistException;
 import com.mcnedward.bramble.service.MediaService;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by edward on 25/12/15.
@@ -173,14 +175,20 @@ public class MusicUtil {
         AlbumPopup.startAlbumPopup(context, artist);
     }
 
-    public static void openAlbum(Context context, Album album) {
+    public static void startAlbumActivity(Context context, Album album) {
         Intent intent = new Intent(context, AlbumActivity.class);
         intent.putExtra(IntentKey.ALBUM.name(), album);
         context.startActivity(intent);
     }
 
-    public static void openArtist(Context context, Artist artist) {
+    public static void startArtistActivity(Context context, Artist artist) {
         Intent intent = new Intent(context, ArtistActivity.class);
+        intent.putExtra(IntentKey.ARTIST.name(), artist);
+        context.startActivity(intent);
+    }
+
+    public static void startArtistImageChooserActivity(Context context, Artist artist) {
+        Intent intent = new Intent(context, ArtistImageChooserActivity.class);
         intent.putExtra(IntentKey.ARTIST.name(), artist);
         context.startActivity(intent);
     }
@@ -223,6 +231,22 @@ public class MusicUtil {
 
     public static int getTimeInSeconds(long millis) {
         return (int) ((millis / 1000) % 60);
+    }
+
+    /**
+     * Source: http://stackoverflow.com/questions/20536566/creating-a-random-string-with-a-z-and-0-9-in-java
+     * @return
+     */
+    public static String generateCacheKey() {
+        String SALT_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < 18) {
+            int index = (int) (rnd.nextFloat() * SALT_CHARS.length());
+            salt.append(SALT_CHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr.toLowerCase();
     }
 
 }

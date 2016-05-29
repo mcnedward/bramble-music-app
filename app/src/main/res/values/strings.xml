@@ -11,4 +11,8 @@
     <string name="no_duration">--:--</string>
     <string name="open">Open</string>
     <string name="request">Request</string>
+
+    <!-- ARTIST -->
+    <string name="choose_artist_background">Choose a new background for the artist </string>
+    <string name="choose_artist_thumbnail">Choose a new thumbnail for the artist </string>
 </resources>
