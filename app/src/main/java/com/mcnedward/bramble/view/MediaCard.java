@@ -25,13 +25,18 @@ public class MediaCard<T extends Media> extends LinearLayout {
     private TextView txtMediaTitle;
     private SquareImageCard imgMediaIcon;
 
-    public MediaCard(T item, LruCache<String, Bitmap> cache, Context context) {
+    public MediaCard(Context context, T item) {
         super(context);
-        initialize(item, cache, context);
+        initialize(context, item, null);
+    }
+
+    public MediaCard(Context context, T item, LruCache<String, Bitmap> cache) {
+        super(context);
+        initialize(context, item, cache);
         update(item);
     }
 
-    private void initialize(T item, LruCache<String, Bitmap> cache, Context context) {
+    private void initialize(Context context, T item, LruCache<String, Bitmap> cache) {
         this.mItem = item;
         this.cache = cache;
         this.context = context;

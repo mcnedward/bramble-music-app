@@ -24,6 +24,9 @@
         <activity
             android:name=".activity.AlbumActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".activity.ArtistActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
             android:name=".service.MediaService"

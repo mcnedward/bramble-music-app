@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.AlbumActivity;
 import com.mcnedward.bramble.activity.AlbumPopup;
+import com.mcnedward.bramble.activity.ArtistActivity;
 import com.mcnedward.bramble.enums.IntentKey;
 import com.mcnedward.bramble.exception.EntityDoesNotExistException;
 import com.mcnedward.bramble.entity.media.Album;
@@ -175,6 +176,12 @@ public class MusicUtil {
     public static void openAlbum(Context context, Album album) {
         Intent intent = new Intent(context, AlbumActivity.class);
         intent.putExtra(IntentKey.ALBUM.name(), album);
+        context.startActivity(intent);
+    }
+
+    public static void openArtist(Context context, Artist artist) {
+        Intent intent = new Intent(context, ArtistActivity.class);
+        intent.putExtra(IntentKey.ARTIST.name(), artist);
         context.startActivity(intent);
     }
 

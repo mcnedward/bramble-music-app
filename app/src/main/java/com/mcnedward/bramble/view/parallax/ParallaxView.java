@@ -1,4 +1,4 @@
-package com.mcnedward.bramble.view;
+package com.mcnedward.bramble.view.parallax;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,51 +11,40 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Space;
-import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.fragment.NowPlayingFragment;
-import com.mcnedward.bramble.entity.media.Album;
-import com.mcnedward.bramble.entity.media.Song;
 import com.mcnedward.bramble.listener.ScrollViewListener;
-import com.mcnedward.bramble.repository.media.SongRepository;
-import com.mcnedward.bramble.service.MediaService;
+import com.mcnedward.bramble.view.ParallaxScrollView;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
-import com.squareup.picasso.Picasso;
-
-import java.io.File;
-import java.util.List;
 
 /**
- * Created by edward on 23/12/15.
+ * Created by Edward on 5/29/2016.
+ * <p/>
+ * A View that contains 2 scrollable layouts. One in the background is used for displaying an image, one in the foreground for displaying content
+ * that should be interacted with.
+ * The background image will be hidden when the foreground content is scrolled up, then shown again when the foreground content has moved back down
+ * a certain amount.
  */
-public class AlbumParallaxView extends LinearLayout {
-    final private static String TAG = "AlbumParallaxView";
+public abstract class ParallaxView<T> extends LinearLayout {
+    final private static String TAG = "ParallaxView";
 
-    private Context mContext;
-    private SongRepository mSongRepository;
-    private Album mAlbum;
-
-    private ParallaxScrollView mBgScrollView;
-    private ParallaxScrollView mContentScrollView;
-    private NowPlayingView mNowPlayingView;
+    protected Context mContext;
+    protected ParallaxScrollView mBgScrollView;
+    protected ParallaxScrollView mContentScrollView;
+    protected NowPlayingView mNowPlayingView;
 
     private DisplayMetrics dm;
 
-    public AlbumParallaxView(Album album, Context context) {
+    public ParallaxView(Context context) {
         super(context);
         mContext = context;
-        mSongRepository = new SongRepository(mContext);
-        mAlbum = album;
-        inflate(context, R.layout.view_album, this);
+        inflate(context, R.layout.view_parallax, this);
 
         dm = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
 
         setScrollViews();
-
-        setForegroundContent(context);
-        setBackgroundContent(context);
 
         NowPlayingFragment nowPlayingFragment = (NowPlayingFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id
                 .album_now_playing);
@@ -64,6 +53,48 @@ public class AlbumParallaxView extends LinearLayout {
         adjustForNowPlayingTitleBar();
     }
 
+    /**
+     * Initialize should be called in the view that extends this.
+     */
+    protected void initialize() {
+        initializeForegroundContent();
+        initializeBackgroundContent();
+    }
+
+    /**
+     * This method is called after Space has been added to the foreground content. This should be used to setup anything that might need to go in
+     * the foreground.
+     *
+     * @param layout
+     */
+    protected abstract void afterAddingForegroundSpace(LinearLayout layout);
+
+    /**
+     * This method is called at the end of the background content initialization. This should be used to setup anything that might need to go in
+     * the background.
+     *
+     * @param layout
+     */
+    protected abstract void setupBackgroundContent(LinearLayout layout);
+
+    /**
+     * This is used to load the image displayed in the background.
+     *
+     * @param imageView The background image that needs to be loaded.
+     */
+    protected abstract void loadBackgroundImage(ImageView imageView);
+
+    /**
+     * This method is called at the end of the layout changes. This should be used to setup anything that can only be done when all other layout
+     * changes have been made.
+     * An example is for the ArtistParallaxView, the GridView needs to be added only once the background is loaded and the NowPlayingView is locked
+     * in place.
+     */
+    protected abstract void onGlobalLayoutChange();
+
+    /**
+     * Initializes and sets the listener for the ScrollViews.
+     */
     private void setScrollViews() {
         mBgScrollView = (ParallaxScrollView) findViewById(R.id.background_sv);
         mContentScrollView = (ParallaxScrollView) findViewById(R.id.content_sv);
@@ -75,52 +106,34 @@ public class AlbumParallaxView extends LinearLayout {
         });
     }
 
-    private void setForegroundContent(Context context) {
+    private void initializeForegroundContent() {
         LinearLayout layout = (LinearLayout) findViewById(R.id.parallax_main_content);
 
         // Set the empty space to push list below album art
         int spaceHeight = (dm.heightPixels / 2);
-        Space space = new Space(context);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, spaceHeight);
+        Space space = new Space(mContext);
+        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, spaceHeight);
         space.setLayoutParams(layoutParams);
         layout.addView(space);
 
-        // Set the album and artist name
-        LinearLayout albumTitleView = (LinearLayout) inflate(context, R.layout.view_album_title, null);
-        TextView txtAlbumName = (TextView) albumTitleView.findViewById(R.id.album_title_title);
-        txtAlbumName.setText(mAlbum.getAlbumName());
-        TextView txtArtistName = (TextView) albumTitleView.findViewById(R.id.album_title_artist);
-        txtArtistName.setText(mAlbum.getArtist());
-        layout.addView(albumTitleView);
-
-        // Set the list of songs
-        List<Song> songs = mSongRepository.getSongsForAlbum(mAlbum.getId());
-        mAlbum.setAlbumSongIds(songs);
-        for (Song song : songs) {
-            AlbumSongItem songItem = new AlbumSongItem(mAlbum, song, context);
-            layout.addView(songItem);
-            MediaService.attachMediaChangeListener(songItem);
-        }
+        afterAddingForegroundSpace(layout);
     }
 
-    private void setBackgroundContent(Context context) {
+    private void initializeBackgroundContent() {
         LinearLayout layout = (LinearLayout) findViewById(R.id.parallax_background_content);
-        ImageView imgAlbumArt = (ImageView) findViewById(R.id.bg_album_art);
+        ImageView imgBackground = (ImageView) findViewById(R.id.bg_album_art);
 
         int spaceHeight = (int) (dm.heightPixels / 1.3f);
         int imageHeight = (dm.heightPixels / 2);
 
-        Space space = new Space(context);
+        Space space = new Space(mContext);
         space.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, spaceHeight));
         layout.addView(space);
 
-        imgAlbumArt.setLayoutParams(new LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, imageHeight));
-        String albumArt = mAlbum.getAlbumArt();
-        if (albumArt != null) {
-            // Create the album art bitmap and scale it to fit properly and avoid over using memory
-            File imageFile = new File(mAlbum.getAlbumArt());
-            Picasso.with(context).load(imageFile).into(imgAlbumArt);
-        }
+        imgBackground.setLayoutParams(new LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, imageHeight));
+        loadBackgroundImage(imgBackground);
+
+        setupBackgroundContent(layout);
     }
 
     @Override
@@ -130,7 +143,7 @@ public class AlbumParallaxView extends LinearLayout {
     }
 
     /**
-     * Adjust height of container to account for the NowPlaying bar
+     * Adjust height of container to account for the NowPlaying bar.
      */
     private void adjustForNowPlayingTitleBar() {
         ViewTreeObserver observer = mNowPlayingView.getViewTreeObserver();
@@ -145,10 +158,17 @@ public class AlbumParallaxView extends LinearLayout {
                         .MATCH_PARENT, container.getHeight() - padding));
                 container.setLayoutParams(layoutParams);
                 mNowPlayingView.snapToBottom();
+
+                onGlobalLayoutChange();
             }
         });
     }
 
+    /**
+     * Returns the NowPlayingView for this view.
+     *
+     * @return The NowPlayingView
+     */
     public NowPlayingView getNowPlayingView() {
         return mNowPlayingView;
     }

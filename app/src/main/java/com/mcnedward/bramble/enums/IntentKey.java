@@ -9,6 +9,7 @@ public enum IntentKey {
 //    ALBUM("album", 3);
     SONG,
     SONG_KEYS,
-    ALBUM;
+    ALBUM,
+    ARTIST;
 
 }

@@ -3,16 +3,16 @@ package com.mcnedward.bramble.activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import com.mcnedward.bramble.entity.media.Artist;
 import com.mcnedward.bramble.enums.IntentKey;
-import com.mcnedward.bramble.entity.media.Album;
 import com.mcnedward.bramble.service.MediaService;
-import com.mcnedward.bramble.view.parallax.AlbumParallaxView;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
+import com.mcnedward.bramble.view.parallax.ArtistParallaxView;
 
 /**
  * Created by edward on 23/12/15.
  */
-public class AlbumActivity extends FragmentActivity {
+public class ArtistActivity extends FragmentActivity {
 
     private NowPlayingView mNowPlayingView;
 
@@ -20,11 +20,11 @@ public class AlbumActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Album album = (Album) getIntent().getSerializableExtra(IntentKey.ALBUM.name());
+        Artist artist = (Artist) getIntent().getSerializableExtra(IntentKey.ARTIST.name());
 
-        AlbumParallaxView albumParallaxView = new AlbumParallaxView(this, album);
-        mNowPlayingView = albumParallaxView.getNowPlayingView();
-        setContentView(albumParallaxView);
+        final ArtistParallaxView artistParallaxView = new ArtistParallaxView(this, artist);
+        mNowPlayingView = artistParallaxView.getNowPlayingView();
+        setContentView(artistParallaxView);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class AlbumActivity extends FragmentActivity {
     }
 
     @Override
-    public void onBackPressed()  {
+    public void onBackPressed() {
         if (mNowPlayingView.isContentFocused()) {
             mNowPlayingView.animateToBottom();
         } else {

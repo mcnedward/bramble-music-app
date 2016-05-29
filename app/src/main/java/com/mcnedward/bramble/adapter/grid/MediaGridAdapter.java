@@ -53,7 +53,7 @@ public abstract class MediaGridAdapter<T extends Media> extends BaseAdapter {
         MediaCard mediaCard;
         final T item = getItem(position);
         if (convertView == null) {
-            mediaCard = new MediaCard(item, mLruCache, mContext);
+            mediaCard = new MediaCard(mContext, item, mLruCache);
             convertView = mediaCard;
 
             holder = new ViewHolder(mediaCard);

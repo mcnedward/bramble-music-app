@@ -17,7 +17,7 @@ public class ArtistGridAdapter extends MediaGridAdapter<Artist> {
 
     @Override
     protected void doOnClickAction(Artist artist, View view) {
-        MusicUtil.startAlbumPopup(mContext, artist);
+        MusicUtil.openArtist(mContext, artist);
     }
 
 }
