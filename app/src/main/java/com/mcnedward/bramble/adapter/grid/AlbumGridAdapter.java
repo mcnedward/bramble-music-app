@@ -6,6 +6,7 @@ import android.view.View;
 import com.mcnedward.bramble.entity.media.Album;
 import com.mcnedward.bramble.enums.CardType;
 import com.mcnedward.bramble.utils.MusicUtil;
+import com.mcnedward.bramble.view.card.MediaCard;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class AlbumGridAdapter extends MediaGridAdapter<Album> {
     }
 
     @Override
-    protected void doOnClickAction(Album album, View view) {
+    protected void doOnClickAction(Album album, MediaCard view) {
         MusicUtil.startAlbumActivity(mContext, album);
     }
 

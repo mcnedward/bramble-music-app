@@ -40,6 +40,7 @@ public class ArtistImageContentProvider extends DataContentProvider {
                 DatabaseHelper.A_CONTENT_TYPE,
                 DatabaseHelper.A_BITMAP_PATH,
                 DatabaseHelper.A_SELECTED_IMAGE,
+                DatabaseHelper.A_BITMAP_BYTES,
                 DatabaseHelper.A_THUMBNAIL_ID };
         if (projection != null) {
             HashSet<String> requestedColumns = new HashSet<>(Arrays.asList(projection));

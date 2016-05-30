@@ -1,6 +1,7 @@
 package com.mcnedward.bramble.entity.media;
 
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 
 import com.mcnedward.bramble.entity.data.ArtistImage;
 import com.mcnedward.bramble.entity.data.Thumbnail;
@@ -115,6 +116,12 @@ public class Artist extends Media implements Serializable {
         }
         // Reset the image url
         setArtistImages(mArtistImages);
+    }
+
+    @Override
+    public Bitmap getBitmap() {
+        if (mSelectedImage == null) return null;
+        return mSelectedImage.getBitmap();
     }
 
     @Override

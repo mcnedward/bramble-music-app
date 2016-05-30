@@ -17,6 +17,17 @@
             android:id="@+id/container_media_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/image_selected"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:visibility="gone"
+                android:elevation="5dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:background="@color/Gold"
+                android:src="@drawable/ic_done_black_24dp"/>
         </RelativeLayout>
 
         <TextView

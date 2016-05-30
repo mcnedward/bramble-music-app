@@ -77,13 +77,13 @@ public abstract class MediaGridAdapter<T extends ITitleAndImage> extends BaseAda
             mediaCard = holder.mediaCard;
         }
 
-        updateMediaCard(item, mediaCard);
+        mediaCard.update(item);
 
         RippleUtil.setRippleBackground(mediaCard, mContext);
         mediaCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                doOnClickAction(item, v);
+                doOnClickAction(item, (MediaCard) v);
             }
         });
         return convertView;
@@ -92,29 +92,27 @@ public abstract class MediaGridAdapter<T extends ITitleAndImage> extends BaseAda
     /**
      * Updates the MediaCard. This can be overriden to allow for different image behaviour.
      * @param item The current item.
-     * @param mediaCard The current MediaCard.
      */
-    protected void updateMediaCard(T item, MediaCard mediaCard) {
-        // Check if there is a bitmap path first
-        String imagePath = item.getImagePath();
-        String imageUrl = item.getImageUrl();
-        if ((imagePath == null || imagePath.equals("")) && (imageUrl != null && !imageUrl.equals(""))) {
-            // No path, so try for a url instead
-            mediaCard.update(item, false);
-            PicassoUtil.getPicasso(mContext).with(mContext).load(imageUrl).placeholder(R.drawable.no_album_art).fit().centerInside().into(mediaCard.getImageView());
-        } else {
-            mediaCard.update(item);
-        }
-    }
+//    protected void updateMediaCard(T item, MediaCard mediaCard) {
+//        // Check if there is a bitmap path first
+//        String imagePath = item.getImagePath();
+//        String imageUrl = item.getImageUrl();
+//        if ((imagePath == null || imagePath.equals("")) && (imageUrl != null && !imageUrl.equals(""))) {
+//            // No path, so try for a url instead
+//            mediaCard.update(item, false);
+//            PicassoUtil.getPicasso(mContext).with(mContext).load(imageUrl).placeholder(R.drawable.no_album_art).fit().centerInside().into(mediaCard.getImageView());
+//        } else {
+//            mediaCard.update(item);
+//        }
+//    }
 
     public void updateItem(T item) {
         if (mGroups == null || mGroups.isEmpty()) return;
         for (int i = 0; i < mGroups.size(); i++) {
             T groupItem = mGroups.get(i);
-            if (groupItem.getCacheKey().equals(item.getCacheKey())) {
+            if (groupItem.getId() == item.getId()) {
                 mGroups.set(i, item);
                 notifyDataSetChanged();
-                return;
             }
         }
     }
@@ -128,7 +126,7 @@ public abstract class MediaGridAdapter<T extends ITitleAndImage> extends BaseAda
         mGroups = new ArrayList<>();
     }
 
-    protected abstract void doOnClickAction(T media, View view);
+    protected abstract void doOnClickAction(T media, MediaCard view);
 
     @Override
     public int getCount() {

@@ -16,7 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Database title
     public static String DB_NAME = "Bramble.db";
     // Database version - increment this number to upgrade the database
-    public static final int DB_VERSION = 18;
+    public static final int DB_VERSION = 20;
 
     // Tables
     public static final String PLAYLIST_TABLE = "Playlist";
@@ -42,6 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String A_CONTENT_TYPE = "ContentType";
     public static final String A_BITMAP_PATH = "BitmapPath";
     public static final String A_SELECTED_IMAGE = "SelectedImage";
+    public static final String A_BITMAP_BYTES = "BitmapBytes";
     public static final String A_THUMBNAIL_ID = "ThumbnailId";
     // Thumbnail table
     public static final String T_ARTIST_IMAGE_ID = "ArtistImageId";
@@ -74,10 +75,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String createCurrentTable = String.format("CREATE TABLE IF NOT EXISTS %s (%s INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
             "%s INTEGER, %s INTEGER)", CURRENT_TABLE, ID, C_SONG_ID, C_ALBUM_ID);
     private static final String createArtistImageTable = String.format("CREATE TABLE IF NOT EXISTS %s (%s INTEGER PRIMARY KEY AUTOINCREMENT NOT " +
-                    "NULL, %s INTEGER, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s INTEGER, %s INTEGER, %s INTEGER, %s TEXT, %s TEXT, %s INTEGER, %s INTEGER, FOREIGN KEY" +
+                    "NULL, %s INTEGER, %s TEXT, %s TEXT, %s TEXT, %s TEXT, %s INTEGER, %s INTEGER, %s INTEGER, %s TEXT, %s TEXT, %s INTEGER, %s BLOB, %s INTEGER, FOREIGN KEY" +
                     "(%s) REFERENCES %s(%s))",
             ARTIST_IMAGE_TABLE, ID, A_ARTIST_ID, A_TITLE, A_MEDIA_URL, A_SOURCE_URL, A_DISPLAY_URL, A_WIDTH, A_HEIGHT, A_FILE_SIZE, A_CONTENT_TYPE,
-            A_BITMAP_PATH, A_SELECTED_IMAGE, A_THUMBNAIL_ID, A_THUMBNAIL_ID, THUMBNAIL_TABLE, ID);
+            A_BITMAP_PATH, A_SELECTED_IMAGE, A_BITMAP_BYTES, A_THUMBNAIL_ID, A_THUMBNAIL_ID, THUMBNAIL_TABLE, ID);
     private static final String createThumbnailTable = String.format("CREATE TABLE IF NOT EXISTS %s (%s INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
                     " %s TEXT, %s TEXT, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, FOREIGN KEY(%s) REFERENCES %s(%s))",
             THUMBNAIL_TABLE, ID, T_MEDIA_URL, T_CONTENT_TYPE, A_WIDTH, A_HEIGHT, A_FILE_SIZE, T_ARTIST_IMAGE_ID, T_ARTIST_IMAGE_ID, ARTIST_IMAGE_TABLE, ID);

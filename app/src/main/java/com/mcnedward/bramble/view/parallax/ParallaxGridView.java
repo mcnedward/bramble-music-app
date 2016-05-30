@@ -1,7 +1,6 @@
 package com.mcnedward.bramble.view.parallax;
 
 import android.content.Context;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.LinearLayout;
@@ -12,6 +11,7 @@ import com.mcnedward.bramble.entity.media.Artist;
 import com.mcnedward.bramble.enums.CardType;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RepositoryUtil;
+import com.mcnedward.bramble.view.card.MediaCard;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ public class ParallaxGridView extends GridView {
         List<Album> albums = RepositoryUtil.getAlbumRepository(context).getAlbumsForArtist(artist.getId());
         MediaGridAdapter<Album> albumGridAdapter = new MediaGridAdapter<Album>(context, albums, CardType.SQUARE) {
             @Override
-            protected void doOnClickAction(Album media, View view) {
+            protected void doOnClickAction(Album media, MediaCard view) {
                 MusicUtil.startAlbumActivity(context, media);
             }
         };

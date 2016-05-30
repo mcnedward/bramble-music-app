@@ -72,6 +72,11 @@ public abstract class Media implements Serializable, ITitleAndImage {
         return mCacheKey;
     }
 
+    @Override
+    public boolean isSelected() {
+        return false;
+    }
+
     public void setImagePath(String imagePath) {
         mImagePath = imagePath;
     }

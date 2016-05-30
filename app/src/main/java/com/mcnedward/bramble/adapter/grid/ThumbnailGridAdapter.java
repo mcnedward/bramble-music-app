@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 
 import com.mcnedward.bramble.entity.data.Thumbnail;
+import com.mcnedward.bramble.view.card.MediaCard;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class ThumbnailGridAdapter extends MediaGridAdapter<Thumbnail> {
     }
 
     @Override
-    protected void doOnClickAction(Thumbnail media, View view) {
+    protected void doOnClickAction(Thumbnail media, MediaCard view) {
 
     }
 

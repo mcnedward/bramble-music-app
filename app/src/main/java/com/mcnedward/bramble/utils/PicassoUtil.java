@@ -19,7 +19,7 @@ public class PicassoUtil {
         if (picasso == null) {
             new PicassoUtil(context);
         }
-        return picasso;
+        return picasso.with(context);
     }
 
 }

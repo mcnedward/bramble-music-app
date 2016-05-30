@@ -1,6 +1,7 @@
 package com.mcnedward.bramble.entity.media;
 
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -75,6 +76,11 @@ public class Album extends Media implements Serializable {
     public void setAlbumSongIds(List<Song> songs) {
         for (Song song : songs)
             songIds.add(song.getId());
+    }
+
+    @Override
+    public Bitmap getBitmap() {
+        return null;
     }
 
     public String getAlbumName() {

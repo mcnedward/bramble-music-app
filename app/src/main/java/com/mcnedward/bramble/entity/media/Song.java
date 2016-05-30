@@ -1,6 +1,7 @@
 package com.mcnedward.bramble.entity.media;
 
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
@@ -84,6 +85,11 @@ public class Song extends Media implements Serializable {
         String data = sharedPreferences.getString(theMediaType + "_data", "");
 
         return new Song(id, imagePath, title, key, MediaType.SONG, displayName, artistId, albumId, composer, track, duration, year, dateAdded, mimeType, data);
+    }
+
+    @Override
+    public Bitmap getBitmap() {
+        return null;
     }
 
     public String getDisplayName() {

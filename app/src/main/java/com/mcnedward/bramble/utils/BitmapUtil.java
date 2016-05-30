@@ -2,6 +2,7 @@ package com.mcnedward.bramble.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
@@ -13,6 +14,7 @@ import com.mcnedward.bramble.async.BitmapLoadTask;
 import com.mcnedward.bramble.entity.ITitleAndImage;
 import com.mcnedward.bramble.view.card.MediaCard;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.ref.WeakReference;
 
 /**
@@ -22,7 +24,7 @@ public class BitmapUtil {
 
     public static BitmapLoadTask startBitmapLoadTask(final Context context, ITitleAndImage item, MediaCard mediaCard, LruCache<String, Bitmap> cache) {
         if (cancelPotentialWork(item.getCacheKey(), mediaCard)) {
-            final BitmapLoadTask task = new BitmapLoadTask(mediaCard, item, cache, context);
+            final BitmapLoadTask task = new BitmapLoadTask(context, mediaCard, item, cache);
             final AsyncDrawable drawable = new AsyncDrawable(context, task);
             mediaCard.getImageView().setImageDrawable(drawable);
             task.execute();
@@ -35,7 +37,7 @@ public class BitmapUtil {
         final BitmapLoadTask task = getBitmapLoadTask(mediaCard.getImageView());
 
         if (task != null) {
-            final String taskCacheKey = task.cacheKey;
+            final String taskCacheKey = task.mCacheKey;
             if (taskCacheKey.equals("") || !cacheKey.equals(taskCacheKey)) {
                 // Cancel the task
                 task.cancel(true);
@@ -55,6 +57,21 @@ public class BitmapUtil {
             }
         }
         return null;
+    }
+
+    public static Bitmap fromBytes(byte[] image) {
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
+    }
+    /**
+     * Thanks to: http://stackoverflow.com/questions/11790104/how-to-storebitmap-image-and-retrieve-image-from-sqlite-database-in-android
+     * TODO Compression type from ArtistImage
+     * @param bitmap
+     * @return
+     */
+    public static byte[] toBtyes(Bitmap bitmap, Bitmap.CompressFormat format) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(format, 80, stream);
+        return stream.toByteArray();
     }
 
     static class AsyncDrawable extends ColorDrawable {

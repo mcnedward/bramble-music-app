@@ -40,6 +40,15 @@ public class ArtistImageRequest extends Request<ArtistImageResponse> {
         mListener = listener;
     }
 
+    public ArtistImageRequest(String query, Artist artist, Response.Listener<ArtistImageResponse> listener, Response.ErrorListener errorListener) throws
+            UnsupportedEncodingException {
+        super(Method.GET, URL + "%27" + URLEncoder.encode(query, "UTF-8") + "%27", errorListener);
+        Log.d(TAG, String.format("Making request to: %s", URL + "%27" + URLEncoder.encode(query, "UTF-8") + "%27"));
+        mArtist = artist;
+        mGson = new Gson();
+        mListener = listener;
+    }
+
     @Override
     protected Response<ArtistImageResponse> parseNetworkResponse(NetworkResponse response) {
         String jsonString = new String(response.data);

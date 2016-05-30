@@ -1,6 +1,8 @@
 package com.mcnedward.bramble.view.parallax;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.v4.content.ContextCompat;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -40,15 +42,21 @@ public class ArtistParallaxView extends ParallaxView<Artist> {
     @Override
     protected void loadBackgroundImage(ImageView imageView) {
         // Get the higher resolution image if it exists
-        ArtistImage artistImage = mArtist.getArtistImages().get(0);
-        loadImage(artistImage, imageView);
+        loadImage(imageView);
     }
 
-    private void loadImage(ArtistImage artistImage, ImageView imageView) {
-        String imageUrl = artistImage.getMediaUrl();
-        if (imageUrl == null) return;
-        PicassoUtil.getPicasso(mContext).with(mContext).load(imageUrl).centerInside().fit().into(imageView);
-
+    private void loadImage(ImageView imageView) {
+        Bitmap bitmap = mArtist.getBitmap();
+        if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+        } else {
+            String imageUrl = mArtist.getImageUrl();
+            if (imageUrl == null) {
+                imageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.no_album_art));
+            } else {
+                PicassoUtil.getPicasso(mContext).with(mContext).load(imageUrl).centerInside().fit().into(imageView);
+            }
+        }
     }
 
     @Override
@@ -66,17 +74,13 @@ public class ArtistParallaxView extends ParallaxView<Artist> {
     }
 
     @Override
-    protected float getBackgroundSpaceScaleHeight() {
-        return 2f;
-    }
-
-    @Override
     protected float getImageScaleHeight() {
         return 3f;
     }
 
     @Override
     public void notifyMediaGridChange(ArtistImage item) {
-        loadImage(item, mImgBackground);
+        mArtist.setSelectedImage(item);
+        loadImage(mImgBackground);
     }
 }

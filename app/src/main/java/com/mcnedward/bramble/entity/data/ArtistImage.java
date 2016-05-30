@@ -1,7 +1,10 @@
 package com.mcnedward.bramble.entity.data;
 
+import android.graphics.Bitmap;
+
 import com.mcnedward.bramble.controller.ArtistImageResultResponse;
 import com.mcnedward.bramble.entity.ITitleAndImage;
+import com.mcnedward.bramble.utils.BitmapUtil;
 import com.mcnedward.bramble.utils.MusicUtil;
 
 /**
@@ -21,6 +24,7 @@ public class ArtistImage extends Data implements ITitleAndImage {
     private String mBitmapPath;
     private boolean mSelectedImage;
     private Thumbnail mThumbnail;
+    private byte[] mBitmapBytes;
     private String mCacheKey;
 
     public ArtistImage() {
@@ -40,6 +44,11 @@ public class ArtistImage extends Data implements ITitleAndImage {
         mCacheKey = MusicUtil.generateCacheKey();
     }
 
+    public Bitmap getBitmap() {
+        if (mBitmapBytes == null) return null;
+        return BitmapUtil.fromBytes(mBitmapBytes);
+    }
+
     @Override
     public String getTitle() {
         return mTitle;
@@ -47,7 +56,7 @@ public class ArtistImage extends Data implements ITitleAndImage {
 
     @Override
     public String getImagePath() {
-        return mMediaUrl;
+        return null;
     }
 
     @Override
@@ -65,6 +74,11 @@ public class ArtistImage extends Data implements ITitleAndImage {
     @Override
     public String getCacheKey() {
         return mCacheKey;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return mSelectedImage;
     }
 
     public String getMediaUrl() {
@@ -159,6 +173,14 @@ public class ArtistImage extends Data implements ITitleAndImage {
 
     public void setThumbnail(Thumbnail thumbnail) {
         mThumbnail = thumbnail;
+    }
+
+    public byte[] getBitmapBytes() {
+        return mBitmapBytes;
+    }
+
+    public void setBitmapBytes(byte[] bitmapBytes) {
+        mBitmapBytes = bitmapBytes;
     }
 
     @Override

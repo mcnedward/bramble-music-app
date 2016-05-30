@@ -132,7 +132,7 @@ public abstract class ParallaxView<T> extends LinearLayout implements MediaGridC
         LinearLayout layout = (LinearLayout) findViewById(R.id.parallax_background_content);
         mImgBackground = (ImageView) findViewById(R.id.bg_album_art);
 
-        int spaceHeight = (int) (dm.heightPixels / getBackgroundSpaceScaleHeight());
+        int spaceHeight = (int) (dm.heightPixels / BACKGROUND_SPACE_SCALE_HEIGHT);
         int imageHeight = (int) (dm.heightPixels / getImageScaleHeight());
 
         Space space = new Space(mContext);
@@ -153,16 +153,6 @@ public abstract class ParallaxView<T> extends LinearLayout implements MediaGridC
      */
     protected float getForegroundSpaceScaleHeight() {
         return FOREGROUND_SPACE_SCALE_HEIGHT;
-    }
-
-    /**
-     * Gets the amount to scale the Space to push the background image up.
-     * Can be overriden to change the layout of the background image.
-     *
-     * @return The space scale height
-     */
-    protected float getBackgroundSpaceScaleHeight() {
-        return BACKGROUND_SPACE_SCALE_HEIGHT;
     }
 
     /**

@@ -1,5 +1,7 @@
 package com.mcnedward.bramble.entity.data;
 
+import android.graphics.Bitmap;
+
 import com.mcnedward.bramble.controller.ThumbnailResponse;
 import com.mcnedward.bramble.entity.ITitleAndImage;
 import com.mcnedward.bramble.utils.MusicUtil;
@@ -48,6 +50,11 @@ public class Thumbnail extends Data implements ITitleAndImage {
     }
 
     @Override
+    public Bitmap getBitmap() {
+        return null;
+    }
+
+    @Override
     public String getImagePath() {
         return null;
     }
@@ -65,6 +72,11 @@ public class Thumbnail extends Data implements ITitleAndImage {
     @Override
     public String getCacheKey() {
         return mCacheKey;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return false;
     }
 
     public void setTitle(String title) {

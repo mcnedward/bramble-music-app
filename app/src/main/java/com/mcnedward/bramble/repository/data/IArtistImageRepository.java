@@ -14,5 +14,5 @@ public interface IArtistImageRepository extends IDataRepository<ArtistImage> {
 
     ArtistImage getSelectedImageForArtist(long artistId) throws  EntityDoesNotExistException;
 
-    boolean setSelectedImage(ArtistImage newSelectedArtistImage, long artistId);
+    ArtistImage setSelectedImage(ArtistImage newSelectedArtistImage);
 }
