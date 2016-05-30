@@ -1,7 +1,5 @@
 package com.mcnedward.bramble.entity.data;
 
-import com.mcnedward.bramble.entity.data.Data;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +8,7 @@ import java.util.List;
  */
 public class Playlist extends Data {
 
-    List<String> mSongKeys;
+    List<Long> mSongIds;
 
     public Playlist() {
         super();
@@ -18,23 +16,23 @@ public class Playlist extends Data {
 
     public Playlist(int id) {
         super(id);
-        mSongKeys = new ArrayList<>();
+        mSongIds = new ArrayList<>();
     }
 
-    public Playlist(int id, List<String> songKeys) {
+    public Playlist(int id, List<Long> songKeys) {
         super(id);
-        mSongKeys = songKeys;
+        mSongIds = songKeys;
     }
 
-    public Playlist(List<String> songKeys) {
-        mSongKeys = songKeys;
+    public Playlist(List<Long> songIds) {
+        mSongIds = songIds;
     }
 
-    public List<String> getSongKeys() {
-        return mSongKeys;
+    public List<Long> getSongKeys() {
+        return mSongIds;
     }
 
-    public void setSongIds(List<String> songKeys) {
-        mSongKeys = songKeys;
+    public void setSongIds(List<Long> songIds) {
+        mSongIds = songIds;
     }
 }

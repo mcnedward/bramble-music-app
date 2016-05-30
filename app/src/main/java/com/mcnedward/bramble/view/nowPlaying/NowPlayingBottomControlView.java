@@ -48,7 +48,7 @@ public class NowPlayingBottomControlView extends LinearLayout implements MediaPl
     }
 
     public void update() {
-        if (MediaService.isStopped()) return;
+        if (MediaService.isStopped() || !MediaService.isStateOk()) return;
         final MediaPlayer player = MediaService.getPlayer();
         // Set the current time on the UI
         updateTime(player);

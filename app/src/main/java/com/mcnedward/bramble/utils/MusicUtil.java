@@ -14,6 +14,7 @@ import com.mcnedward.bramble.activity.artist.ArtistActivity;
 import com.mcnedward.bramble.activity.artist.ArtistImageChooserActivity;
 import com.mcnedward.bramble.entity.media.Album;
 import com.mcnedward.bramble.entity.media.Artist;
+import com.mcnedward.bramble.entity.media.Media;
 import com.mcnedward.bramble.entity.media.Song;
 import com.mcnedward.bramble.enums.IntentKey;
 import com.mcnedward.bramble.exception.EntityDoesNotExistException;
@@ -39,84 +40,98 @@ public class MusicUtil {
         }
     }
 
-    public static void doPreviousButtonAction(Context context) {
-        Song song = MediaCache.getSong(context);
-        List<String> songKeys = MediaCache.getSongKeys(context);
-        if (song == null) return;
-
-        // First check if the current song should just be restarted
-        // If the player is null, then all songs have stopped, or the app is freshly opened, so the song should not be restarted, but should go to the previous
+    /**
+     * Starts the previous song in the queue. This can also check if the song should be just be restarted instead of skipped back.
+     *
+     * @param checkTime True if this should check if a few seconds have passed, and the song should just be restarted. False if the song should
+     *                  just be restarted right.
+     */
+    public static void doPreviousButtonAction(Context context, boolean checkTime) {
+        // If the player is null, then all songs have stopped, or the app is freshly opened, so the song should not be restarted, but should go
+        // to the previous
         MediaPlayer player = MediaService.getPlayer();
-        if (player != null) {
-            int currentPosition = getTimeInSeconds(player.getCurrentPosition());
-            if (currentPosition > 2) {
-                startPlayingMusic(context, song, songKeys);
-                return;
+        if (player == null) {
+            // Need to start up the Service
+            Song song = MediaCache.getSong(context);
+            List<Long> queue = MediaCache.getQueue(context);
+            try {
+                Song previousSong = getPreviousSongFromIds(context, song, queue);
+                startPlayingMusic(context, previousSong, queue);
+            } catch (EntityDoesNotExistException e) {
+                Log.w(TAG, e.getMessage());
             }
-        }
-
-        if (songKeys.isEmpty()) return; // TODO Restart song if there are no other songs in list? Or should there always be at least one song in the list? Yes there should.
-
-
-        Song nextSong = null;
-        try {
-            nextSong = getPreviousSongFromKeys(context, song, songKeys);
-        } catch (EntityDoesNotExistException e) {
-            Log.e(TAG, e.getMessage(), e);
             return;
         }
-        startPlayingMusic(context, nextSong);
+        if (checkTime) {
+            // First check if the current song should just be restarted
+            if (player != null) {
+                int currentPosition = getTimeInSeconds(player.getCurrentPosition());
+                if (currentPosition > 2) {
+                    player.seekTo(0);
+                    return;
+                }
+            }
+        }
+        MediaService.startPreviousSongInQueue();
+    }
+
+    /**
+     * Checks if the song should be restarted, or skipped back, then does the appropriate action.
+     */
+    public static void doPreviousButtonAction(Context context) {
+        doPreviousButtonAction(context, true);
     }
 
     public static void doForwardButtonAction(Context context) {
-        Song song = MediaCache.getSong(context);
-        List<String> songKeys = MediaCache.getSongKeys(context);
-        if (song == null) return;
-
-        if (songKeys.isEmpty()) return; // TODO Restart song if there are no other songs in list? Or should there always be at least one song in the list? Yes there should.
-
-
-        Song nextSong = null;
-        try {
-            nextSong = getNextSongFromKeys(context, song, songKeys);
-        } catch (EntityDoesNotExistException e) {
-            Log.e(TAG, e.getMessage(), e);
+        // If the player is null, then all songs have stopped, or the app is freshly opened, so the song should not be restarted, but should go
+        // to the previous
+        MediaPlayer player = MediaService.getPlayer();
+        if (player == null) {
+            // Need to start up the Service
+            Song song = MediaCache.getSong(context);
+            List<Long> queue = MediaCache.getQueue(context);
+            try {
+                Song nextSong = getNextSongFromIds(context, song, queue);
+                startPlayingMusic(context, nextSong, queue);
+            } catch (EntityDoesNotExistException e) {
+                Log.w(TAG, e.getMessage());
+            }
             return;
         }
-        startPlayingMusic(context, nextSong);
+        MediaService.startNextSongInQueue();
     }
 
-    public static Song getNextSongFromKeys(Context context, Song currentSong, List<String> songKeys) throws EntityDoesNotExistException {
-        int currentIndex = getSongIndexFromKeys(songKeys, currentSong);
+    public static Song getNextSongFromIds(Context context, Song currentSong, List<Long> songIds) throws EntityDoesNotExistException {
+        int currentIndex = getSongIndexFromIds(songIds, currentSong);
         if (currentIndex == -1) return null;
-        String nextSongKey;
+        Long nextSongId;
         // Get the next song, or the first if the current song is the last
-        if (currentIndex == songKeys.size() - 1) {
-            nextSongKey = songKeys.get(0);
+        if (currentIndex == songIds.size() - 1) {
+            nextSongId = songIds.get(0);
         } else {
-            nextSongKey = songKeys.get(currentIndex + 1);
+            nextSongId = songIds.get(currentIndex + 1);
         }
-        return RepositoryUtil.getSongRepository(context).get(nextSongKey);
+        return RepositoryUtil.getSongRepository(context).get(nextSongId);
     }
 
-    public static Song getPreviousSongFromKeys(Context context, Song currentSong, List<String> songKeys) throws EntityDoesNotExistException {
-        int currentIndex = getSongIndexFromKeys(songKeys, currentSong);
+    public static Song getPreviousSongFromIds(Context context, Song currentSong, List<Long> songKeys) throws EntityDoesNotExistException {
+        int currentIndex = getSongIndexFromIds(songKeys, currentSong);
         if (currentIndex == -1) return null;
-        String nextSongKey;
+        Long nextSongId;
         // Get the previous song, or the last one if the current song is the first
         if (currentIndex == 0) {
-            nextSongKey = songKeys.get(songKeys.size() - 1);
+            nextSongId = songKeys.get(songKeys.size() - 1);
         } else {
-            nextSongKey = songKeys.get(currentIndex - 1);
+            nextSongId = songKeys.get(currentIndex - 1);
         }
-        return RepositoryUtil.getSongRepository(context).get(nextSongKey);
+        return RepositoryUtil.getSongRepository(context).get(nextSongId);
     }
 
-    public static int getSongIndexFromKeys(List<String> songKeys, Song song) {
+    public static int getSongIndexFromIds(List<Long> songIds, Song song) {
         int currentIndex = -1;
-        for (int i = 0; i < songKeys.size(); i++) {
-            String songKey = songKeys.get(i);
-            if (song.getKey().equals(songKey)) {
+        for (int i = 0; i < songIds.size(); i++) {
+            Long songId = songIds.get(i);
+            if (song.getId() == songId) {
                 currentIndex = i;
                 break;
             }
@@ -140,7 +155,7 @@ public class MusicUtil {
         if (player == null) {
             Song song = MediaCache.getSong(context);
             if (song != null) {
-                startPlayingMusic(context, song);
+                startPlayingMusic(context, song, MediaCache.getQueue(context)); // Make sure to check the cache for songs in the queue
             }
         } else {
             if (player.isPlaying()) {
@@ -157,9 +172,10 @@ public class MusicUtil {
 
     /**
      * Switches a play button's image. If you want to show the pause image, pass true. If you want to show the play image, pass false.
+     *
      * @param playButton The play button to update.
-     * @param isPlaying True for the pause image, false for the play image.
-     * @param context The context.
+     * @param isPlaying  True for the pause image, false for the play image.
+     * @param context    The context.
      */
     public static void switchPlayButton(Context context, ImageView playButton, boolean isPlaying) {
         if (isPlaying) {
@@ -191,27 +207,50 @@ public class MusicUtil {
         context.startActivity(intent);
     }
 
+    /**
+     * Start playing music! Use this when you want to play a single song, with no other songs in the queue.
+     *
+     * @param context The context.
+     * @param song    The song to play.
+     */
     public static void startPlayingMusic(Context context, Song song) {
-        // Start playing music!
         Intent intent = new Intent(context, MediaService.class);
         intent.putExtra(IntentKey.SONG.name(), song);
         context.startService(intent);
     }
 
+    /**
+     * Start playing music! Use this when you want to play a song in an album. The rest of the songs in that album will be hooked up into the queue.
+     *
+     * @param context The context.
+     * @param song    The song to play.
+     * @param album   The album of the song to play, which contains the other songs to go into the queue.
+     */
     public static void startPlayingMusic(Context context, Song song, Album album) {
-        // Get all the song ids in the album
+        // Get all the song ids in the album. They need to be converted into strings in order to be sent as extras.
         List<Song> songsForAlbum = RepositoryUtil.getSongRepository(context).getSongsForAlbum(album.getId());
-        List<String> songKeys = new ArrayList<>();
+        List<Long> queue = new ArrayList<>();
         for (Song songForAlbum : songsForAlbum) {
-            songKeys.add(songForAlbum.getKey());
+            queue.add(songForAlbum.getId());
         }
-        startPlayingMusic(context, song, songKeys);
+        startPlayingMusic(context, song, queue);
     }
 
-    public static void startPlayingMusic(Context context, Song song, List<String> songKeys) {
+    /**
+     * Start playing music! Use this when you want to play a song, with a list of other songs to hook into the queue.
+     *
+     * @param context The context.
+     * @param song    The song to play.
+     * @param queue   The queue of other song ids.
+     */
+    public static void startPlayingMusic(Context context, Song song, List<Long> queue) {
+        List<String> queueAsStringList = new ArrayList<>();
+        for (Long id : queue) {
+            queueAsStringList.add(String.valueOf(id));
+        }
         Intent intent = new Intent(context, MediaService.class);
         intent.putExtra(IntentKey.SONG.name(), song);
-        intent.putExtra(IntentKey.SONG_KEYS.name(), new ArrayList<>(songKeys));
+        intent.putExtra(IntentKey.QUEUE.name(), new ArrayList<>(queueAsStringList));
         context.startService(intent);
     }
 
@@ -233,6 +272,7 @@ public class MusicUtil {
 
     /**
      * Source: http://stackoverflow.com/questions/20536566/creating-a-random-string-with-a-z-and-0-9-in-java
+     *
      * @return
      */
     public static String generateCacheKey() {

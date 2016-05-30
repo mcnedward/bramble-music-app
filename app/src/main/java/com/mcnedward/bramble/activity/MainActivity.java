@@ -73,11 +73,13 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
     }
 
+    private boolean mFromBackPress;
     @Override
     public void onBackPressed()  {
         if (nowPlayingView.isContentFocused()) {
             nowPlayingView.animateToBottom();
         } else {
+            mFromBackPress = true;
             super.onBackPressed();
         }
     }
@@ -90,15 +92,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         MediaService.notifyMediaChangeListeners();
+        mFromBackPress = false;
         super.onResume();
     }
 
     @Override
     public void onDestroy() {
         Log.d(TAG, "BRAMBLE CLOSED");
-        MediaService.unRegisterListeners();
-        // TODO This stops the media playing, fix it!
-        stopService(new Intent(this, MediaService.class));
+        if (!mFromBackPress) {
+            MediaService.unRegisterListeners();
+            // TODO This stops the media playing, fix it!
+            stopService(new Intent(this, MediaService.class));
+        }
         super.onDestroy();
     }
 

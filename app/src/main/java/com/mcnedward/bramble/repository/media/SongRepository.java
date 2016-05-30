@@ -33,12 +33,12 @@ public class SongRepository extends MediaRepository<Song> {
         return songs;
     }
 
-    public List<Song> getSongsForKeys(List<String> keys) {
+    public List<Song> getSongsForIds(List<Long> ids) {
         List<Song> songs = new ArrayList<>();
-        for (String key : keys) {
+        for (Long id : ids) {
             Song song = null;
             try {
-                song = get(key);
+                song = get(id);
             } catch (EntityDoesNotExistException e) {
                 e.printStackTrace();
             }

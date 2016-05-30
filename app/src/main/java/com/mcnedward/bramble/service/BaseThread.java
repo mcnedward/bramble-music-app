@@ -9,18 +9,15 @@ import android.util.Log;
 public abstract class BaseThread extends Thread implements IThread {
     private static final String TAG = "BaseThread";
 
-    private boolean started, running, paused, enabled;
+    private boolean mStarted, mRunning, mPaused, mEnabled;
 
-    protected Context context;
+    public BaseThread(String name) { this(name, true); }
 
-    public BaseThread(String name) { this(name, true, null); }
-
-    public BaseThread(String name, boolean enabled, Context context) {
+    public BaseThread(String name, boolean enabled) {
         super(name);
-        started = false;
-        running = false;
-        this.enabled = enabled;
-        this.context = context;
+        mStarted = false;
+        mRunning = false;
+        mEnabled = enabled;
     }
 
     /**
@@ -28,13 +25,13 @@ public abstract class BaseThread extends Thread implements IThread {
      */
     @Override
     public void run() {
-        while (running) {
+        while (mRunning) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if (paused || !enabled) continue;
+            if (mPaused || !mEnabled) continue;
             doRunAction();
         }
     }
@@ -44,7 +41,7 @@ public abstract class BaseThread extends Thread implements IThread {
      */
     @Override
     public void start() {
-        started = true;
+        mStarted = true;
         super.start();
     }
 
@@ -54,9 +51,9 @@ public abstract class BaseThread extends Thread implements IThread {
     @Override
     public void startThread() {
         Log.d(TAG, "Starting " + getName() + " thread!");
-        if (!started)
+        if (!mStarted)
             start();
-        running = enabled;
+        mRunning = mEnabled;
         doStartAction();
     }
 
@@ -66,7 +63,7 @@ public abstract class BaseThread extends Thread implements IThread {
     @Override
     public void stopThread() {
         Log.d(TAG, "Stopping " + getName() + " thread!");
-        running = false;
+        mRunning = false;
         doStopAction();
         boolean retry = true;
         while (retry) {
@@ -85,21 +82,21 @@ public abstract class BaseThread extends Thread implements IThread {
      */
     @Override
     public void pauseThread(boolean pause) {
-        paused = pause;
+        mPaused = pause;
     }
 
     @Override
     public boolean isRunning() {
-        return running;
+        return mRunning;
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        this.mEnabled = enabled;
     }
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return mEnabled;
     }
 }

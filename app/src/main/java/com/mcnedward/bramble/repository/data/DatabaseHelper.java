@@ -16,7 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Database title
     public static String DB_NAME = "Bramble.db";
     // Database version - increment this number to upgrade the database
-    public static final int DB_VERSION = 20;
+    public static final int DB_VERSION = 21;
 
     // Tables
     public static final String PLAYLIST_TABLE = "Playlist";
@@ -26,7 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Id column, which should be the same across all tables
     public static final String ID = "Id";
     // Playlist table
-    public static final String P_SONG_KEYS = "SongIds";
+    public static final String SONG_IDS = "SongIds";
     // Current table
     public static final String C_SONG_ID = "SongId";
     public static final String C_ALBUM_ID = "AlbumId";
@@ -70,8 +70,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * CREATE STATEMENTS
      */
     private static final String createPlaylistTable = String.format("CREATE TABLE IF NOT EXISTS %s (%s INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    "%s TEXT)",
-            PLAYLIST_TABLE, ID, P_SONG_KEYS);
+                    "%s INTEGER)",
+            PLAYLIST_TABLE, ID, SONG_IDS);
     private static final String createCurrentTable = String.format("CREATE TABLE IF NOT EXISTS %s (%s INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
             "%s INTEGER, %s INTEGER)", CURRENT_TABLE, ID, C_SONG_ID, C_ALBUM_ID);
     private static final String createArtistImageTable = String.format("CREATE TABLE IF NOT EXISTS %s (%s INTEGER PRIMARY KEY AUTOINCREMENT NOT " +

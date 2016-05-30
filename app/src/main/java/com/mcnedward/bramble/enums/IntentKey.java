@@ -5,11 +5,11 @@ package com.mcnedward.bramble.enums;
  */
 public enum IntentKey {
 //    SONG("song", 1),
-//    SONG_KEYS("songKey", 2),
+//    QUEUE("songKey", 2),
 //    ALBUM("album", 3);
     SONG,
-    SONG_KEYS,
     ALBUM,
-    ARTIST;
+    ARTIST,
+    QUEUE
 
 }

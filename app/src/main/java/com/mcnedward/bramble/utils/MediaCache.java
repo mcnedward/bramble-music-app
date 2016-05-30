@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mcnedward.bramble.entity.media.Album;
 import com.mcnedward.bramble.entity.media.Artist;
 import com.mcnedward.bramble.entity.media.Song;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +22,7 @@ public final class MediaCache {
     private static final String TAG = "MediaCache";
 
     private static final String PREFERENCE_KEY = "preference_key";
-    private static final String SONG_KEY_LIST_KEY = "song_key_list";
+    private static final String SONG_ID_LIST_KEY = "song_id_list";
 
     public static Artist getArtist(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
@@ -37,7 +40,6 @@ public final class MediaCache {
         SharedPreferences.Editor editor = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE).edit();
         return artist.save(editor);
     }
-
 
     public static Album getAlbum(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
@@ -73,21 +75,27 @@ public final class MediaCache {
         return song.save(editor);
     }
 
-    public static List<String> getSongKeys(Context context) {
+    public static List<Long> getQueue(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE);
-        List<String> songList = null;
+
+        List<Long> queue = new ArrayList<>();
+        Gson gson = new Gson();
+        Type typeToken = new TypeToken<List<Long>>() {}.getType();
         try {
-            songList = new ArrayList<>(sharedPreferences.getStringSet(SONG_KEY_LIST_KEY, new HashSet<String>()));
-        } catch (NullPointerException | ClassCastException e) {
+            String songIdsAsJson = sharedPreferences.getString(SONG_ID_LIST_KEY, "");
+            queue = gson.fromJson(songIdsAsJson, typeToken);
+        } catch (NullPointerException e) {
             Log.w(TAG, "Could not get the song list from preferences.", e);
         }
-        return songList;
+        return queue;
     }
 
-    public static boolean saveSongKeys(Context context, List<String> songList) {
-        if (songList == null) return false;
+    public static boolean saveQueue(Context context, List<Long> queue) {
+        if (queue == null) return false;
+        Gson gson = new Gson();
+        String songIdsAsJson = gson.toJson(queue);
         SharedPreferences.Editor editor = context.getSharedPreferences(PREFERENCE_KEY, Context.MODE_PRIVATE).edit();
-        editor.putStringSet(SONG_KEY_LIST_KEY, new HashSet<>(songList));
+        editor.putString(SONG_ID_LIST_KEY, songIdsAsJson);
         return editor.commit();
     }
 

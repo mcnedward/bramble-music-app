@@ -7,8 +7,8 @@ import java.util.List;
  */
 public interface IPlaylistRepository {
 
-    void saveCurrentPlaylist(List<String> songKeys);
+    void saveCurrentPlaylist(List<Long> songKeys);
 
-    List<String> getCurrentPlaylist();
+    List<Long> getCurrentPlaylist();
 
 }

@@ -48,7 +48,7 @@ public class StartMusicTask extends AsyncTask<Void, Void, Void> {
         // If the song keys are already set, use them.
         // Otherwise, check if this is coming from an album, and then use the album's song keys if that is true
         if (mSongKeys != null) {
-            intent.putExtra(IntentKey.SONG_KEYS.name(), new ArrayList<>(mSongKeys));
+            intent.putExtra(IntentKey.QUEUE.name(), new ArrayList<>(mSongKeys));
         } else if (mAlbum != null) {
             // Get all the song ids in the album
             List<Song> songsForAlbum = RepositoryUtil.getSongRepository(mContext).getSongsForAlbum(mAlbum.getId());
@@ -56,7 +56,7 @@ public class StartMusicTask extends AsyncTask<Void, Void, Void> {
             for (Song songForAlbum : songsForAlbum) {
                 songKeys.add(songForAlbum.getKey());
             }
-            intent.putExtra(IntentKey.SONG_KEYS.name(), new ArrayList<>(songKeys));
+            intent.putExtra(IntentKey.QUEUE.name(), new ArrayList<>(songKeys));
         }
 
         mContext.startService(intent);

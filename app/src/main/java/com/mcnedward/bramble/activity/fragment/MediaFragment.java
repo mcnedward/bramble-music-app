@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -138,7 +139,14 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         return new View.OnScrollChangeListener() {
             @Override
             public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                Log.d(TAG, "SCROLLING");
+                if (scrollY > 20) {
+                    Log.d(TAG, "Hide action bar");
+                    ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
+                } else if (scrollY < -5) {
+                    Log.d(TAG, "Show action bar");
+                    ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+                }
             }
         };
     }

@@ -17,7 +17,6 @@ import com.mcnedward.bramble.entity.media.Album;
 import com.mcnedward.bramble.entity.media.Song;
 import com.mcnedward.bramble.utils.MediaCache;
 import com.mcnedward.bramble.utils.MusicUtil;
-import com.mcnedward.bramble.utils.RepositoryUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,7 +34,7 @@ public class MediaService extends Service {
 
     private static MediaPlayer mPlayer;
     private static Song mSong;
-    private static ArrayList<String> mSongKeys;
+    private static ArrayList<Long> mQueue;
     private static Album mAlbum;
     private static Set<MediaChangeListener> mMediaChangeListeners;
     private static Set<MediaPlayingListener> mMediaPlayingListeners;
@@ -47,6 +46,7 @@ public class MediaService extends Service {
     @Override
     public void onCreate() {
         Log.d(TAG, "Creating MediaService!");
+        mQueue = new ArrayList<>();
         if (mMediaThread == null)
             mMediaThread = new MediaThread();
         if (mNowPlayingThread == null)
@@ -59,14 +59,18 @@ public class MediaService extends Service {
         if (intent != null) {
             mSong = (Song) intent.getSerializableExtra(IntentKey.SONG.name());
             mAlbum = (Album) intent.getSerializableExtra(IntentKey.ALBUM.name());
-            mSongKeys = intent.getStringArrayListExtra(IntentKey.SONG_KEYS.name());
+            List<String> songIdsAsString = intent.getStringArrayListExtra(IntentKey.QUEUE.name());
+            if (songIdsAsString != null) {
+                for (String id : songIdsAsString) {
+                    mQueue.add(Long.parseLong(id));
+                }
+            }
 
             MediaCache.saveSong(getApplicationContext(), mSong);
             MediaCache.saveAlbum(getApplicationContext(), mAlbum);
-            RepositoryUtil.getPlaylistRepository(getApplicationContext()).saveCurrentPlaylist(mSongKeys);
-            List<String> p2 = RepositoryUtil.getPlaylistRepository(getApplicationContext()).getCurrentPlaylist();
+            MediaCache.saveQueue(getApplicationContext(), mQueue);
 
-            mMediaThread.startThread();
+            mMediaThread.startPlayingMusic();
             mNowPlayingThread.startThread();
         }
         return START_STICKY;
@@ -75,8 +79,16 @@ public class MediaService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "Destroying MediaService!");
-        mNowPlayingThread.stopThread();
         mMediaThread.stopThread();
+        mNowPlayingThread.stopThread();
+    }
+
+    public static void startNextSongInQueue() {
+        mMediaThread.startNextSongInQueue();
+    }
+
+    public static void startPreviousSongInQueue() {
+        mMediaThread.startPreviousSongInQueue();
     }
 
     public static void pauseNowPlayingThread(boolean pause) {
@@ -107,6 +119,10 @@ public class MediaService extends Service {
 
     public static boolean isStopped() {
         return mStopped;
+    }
+
+    public static boolean isStateOk() {
+        return mMediaThread.isStateOk();
     }
 
     @Nullable
@@ -144,6 +160,7 @@ public class MediaService extends Service {
 
         private Song mNextSong;
         private MediaPlayer mNextPlayer;
+        private boolean mStateOk;
 
         private void startPlayingMusic() {
             Log.d(TAG, String.format("Starting to play media for %s", mSong));
@@ -153,13 +170,13 @@ public class MediaService extends Service {
                     MediaPlayer nextPlayer = MediaPlayer.create(getApplicationContext(), songUri);
                     setupNextSong(nextPlayer);  // Setup the next player with the next song
 
-                    nextPlayer.setOnPreparedListener(mOnPreparedListener);
                     nextPlayer.setOnErrorListener(mErrorListener);
                     nextPlayer.setOnCompletionListener(mCompletionListener);
                     mPlayer.setNextMediaPlayer(nextPlayer);
 
                     mPlayer.stop();
                     mPlayer.reset();
+                    mStateOk = false;
                 } else {
                     mPlayer = MediaPlayer.create(getApplicationContext(), songUri);
                     mPlayer.setOnPreparedListener(mOnPreparedListener);
@@ -179,6 +196,25 @@ public class MediaService extends Service {
         }
 
         /**
+         * Prepares a MediaPlayer with the next song in an album. This uses the passed in song, sets the mNextPlayer with that
+         * song's data, and sets the passed in player to have the mNextPlayer as its NextMediaPlayer. The mNextPlayer gets the default OnError and
+         * OnCompletion listeners that are given to the mPlayer.
+         *
+         * @param player The MediaPlayer to setup with the next song.
+         */
+        private void setupNextSong(MediaPlayer player, Song nextSong) {
+            if (mQueue != null) {
+                // Setup the next song in the list
+                mNextSong = nextSong;
+                mNextPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(mNextSong.getData()));
+                player.setNextMediaPlayer(mNextPlayer);
+                mNextPlayer.setOnErrorListener(mErrorListener);
+                mNextPlayer.setOnCompletionListener(mCompletionListener);
+                mNextPlayer.setLooping(MediaCache.isPlaybackLooping(getApplicationContext()));
+            }
+        }
+
+        /**
          * Prepares a MediaPlayer with the next song in an album. This retrieves the next song from the MusicUtil, sets the mNextPlayer with that
          * song's data, and sets the passed in player to have the mNextPlayer as its NextMediaPlayer. The mNextPlayer gets the default OnError and
          * OnCompletion listeners that are given to the mPlayer.
@@ -186,10 +222,10 @@ public class MediaService extends Service {
          * @param player The MediaPlayer to setup with the next song.
          */
         private void setupNextSong(MediaPlayer player) {
-            if (mSongKeys != null) {
+            if (mQueue != null) {
                 // Setup the next song in the list
                 try {
-                    mNextSong = MusicUtil.getNextSongFromKeys(context, mSong, mSongKeys);
+                    mNextSong = MusicUtil.getNextSongFromIds(getApplicationContext(), mSong, mQueue);
                 } catch (EntityDoesNotExistException e) {
                     Log.w(TAG, e.getMessage());
                     return;
@@ -202,25 +238,37 @@ public class MediaService extends Service {
             }
         }
 
+        /**
+         * Stops the current MediaPlayer. This should have a queue setup already, so that should start right away.
+         */
+        protected void startNextSongInQueue() {
+            mStateOk = false;
+            mPlayer.seekTo(mPlayer.getDuration());  // Seek all the way to the end, so the OnCompleteListener will be called
+        }
+
+        protected void startPreviousSongInQueue() {
+            try {
+                Song previousSong = MusicUtil.getPreviousSongFromIds(getApplicationContext(), mSong, mQueue);
+                setupNextSong(mPlayer, previousSong);
+                startNextSongInQueue(); // The next song in the queue is now the song before this one
+            } catch (EntityDoesNotExistException e) {
+                Log.w(TAG, e.getMessage());
+            }
+        }
+
         private final MediaPlayer.OnPreparedListener mOnPreparedListener = new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 if (mPlayer != mp) {
                     mPlayer.reset();
                     mPlayer.release();
+                    mStateOk = false;
                     mPlayer = mp;
                 }
                 mPlayer.start();
+                mStateOk = true;
                 notifyMediaChangeListeners();
                 notifyMediaPlayStateChangeListeners();
-            }
-        };
-
-        private final MediaPlayer.OnErrorListener mErrorListener = new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer mp, int what, int extra) {
-                Log.w(TAG, String.format("Something went wrong with the MediaPlayer %s; The what is: %s; The extra is: %s", mp, what, extra));
-                return false;
             }
         };
 
@@ -238,10 +286,24 @@ public class MediaService extends Service {
                     pauseNowPlayingThread(true);
                     notifyMediaStopListeners();
                 }
+                mPlayer.start();
+                mStateOk = true;
                 notifyMediaChangeListeners();
                 notifyMediaPlayStateChangeListeners();
             }
         };
+
+        private final MediaPlayer.OnErrorListener mErrorListener = new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                Log.w(TAG, String.format("Something went wrong with the MediaPlayer %s; The what is: %s; The extra is: %s; The state ok? %s (This is my own state, so it may not always be right, but it should be...)", mp, what, extra, mStateOk));
+                return false;
+            }
+        };
+
+        protected boolean isStateOk() {
+            return mStateOk;
+        }
     }
 
     final class NowPlayingThread extends BaseThread implements IThread {

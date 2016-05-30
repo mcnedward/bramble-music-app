@@ -54,7 +54,7 @@ public class NowPlayingTitleBarSliderView extends HorizontalSlidingView<Song> {
     protected void notifyMainViewUpdated(Song newItem, View mainView, boolean isMovingRight) {
         if (isMovingRight) {
             // Play the previous song
-            MusicUtil.doPreviousButtonAction(mContext);
+            MusicUtil.doPreviousButtonAction(mContext, false);
         } else {
             // Play the next song
             MusicUtil.doForwardButtonAction(mContext);

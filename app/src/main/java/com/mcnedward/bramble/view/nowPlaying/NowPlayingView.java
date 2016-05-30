@@ -62,9 +62,9 @@ public class NowPlayingView extends CrossSlidingView implements MediaChangeListe
             }
             mTitleBar.update(song, album);
 
-            List<String> songKeys = MediaCache.getSongKeys(mContext);
-            if (songKeys != null) {
-                List<Song> currentPlaylist = RepositoryUtil.getSongRepository(mContext).getSongsForKeys(songKeys);
+            List<Long> songIds = MediaCache.getQueue(mContext);
+            if (songIds != null) {
+                List<Song> currentPlaylist = RepositoryUtil.getSongRepository(mContext).getSongsForIds(songIds);
                 int currentIndex = MusicUtil.getSongIndexFromSongs(currentPlaylist, song);
                 if (currentIndex != -1)
                     mNowPlayingTitleBarSliderView.setItems(currentPlaylist, currentIndex);

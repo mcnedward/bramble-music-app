@@ -30,7 +30,7 @@ public class PlaylistContentProvider extends DataContentProvider {
     @Override
     protected void checkColumns(String[] projection) {
         String[] available = { DatabaseHelper.ID,
-                DatabaseHelper.P_SONG_KEYS };
+                DatabaseHelper.SONG_IDS};
         if (projection != null) {
             HashSet<String> requestedColumns = new HashSet<>(Arrays.asList(projection));
             HashSet<String> availableColumns = new HashSet<>(Arrays.asList(available));

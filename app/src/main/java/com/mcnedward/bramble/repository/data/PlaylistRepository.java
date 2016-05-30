@@ -7,7 +7,6 @@ import android.net.Uri;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.mcnedward.bramble.entity.data.Thumbnail;
 import com.mcnedward.bramble.exception.EntityAlreadyExistsException;
 import com.mcnedward.bramble.exception.EntityDoesNotExistException;
 import com.mcnedward.bramble.entity.data.Playlist;
@@ -28,11 +27,11 @@ public class PlaylistRepository extends DataRepository<Playlist> implements IPla
     public PlaylistRepository(Context context) {
         super(context);
         mGson = new Gson();
-        mTypeToken = new TypeToken<List<String>>() {}.getType();
+        mTypeToken = new TypeToken<List<Long>>() {}.getType();
     }
 
     @Override
-    public void saveCurrentPlaylist(List<String> songKeys) {
+    public void saveCurrentPlaylist(List<Long> songKeys) {
         // First remove the old playlist, if there is one
         try {
             delete(1);
@@ -48,7 +47,7 @@ public class PlaylistRepository extends DataRepository<Playlist> implements IPla
     }
 
     @Override
-    public List<String> getCurrentPlaylist() {
+    public List<Long> getCurrentPlaylist() {
         try {
             return get(1).getSongKeys();
         } catch (EntityDoesNotExistException e) {
@@ -61,8 +60,8 @@ public class PlaylistRepository extends DataRepository<Playlist> implements IPla
     protected Playlist generateEntityFromCursor(Cursor cursor) {
         Playlist playlist = new Playlist();
         playlist.setId(cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseHelper.ID)));
-        String songIdsAsJson = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.P_SONG_KEYS));
-        playlist.setSongIds(mGson.<List<String>>fromJson(songIdsAsJson, mTypeToken));
+        String songIdsAsJson = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.SONG_IDS));
+        playlist.setSongIds(mGson.<List<Long>>fromJson(songIdsAsJson, mTypeToken));
         return playlist;
     }
 
@@ -76,7 +75,7 @@ public class PlaylistRepository extends DataRepository<Playlist> implements IPla
     @Override
     protected ContentValues generateContentValuesFromEntityWithNoId(Playlist entity) {
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.P_SONG_KEYS, mGson.toJson(entity.getSongKeys()));
+        values.put(DatabaseHelper.SONG_IDS, mGson.toJson(entity.getSongKeys()));
         return values;
     }
 
@@ -87,14 +86,14 @@ public class PlaylistRepository extends DataRepository<Playlist> implements IPla
 
     @Override
     protected String getOrderBy() {
-        return DatabaseHelper.P_SONG_KEYS + " ASC";
+        return DatabaseHelper.SONG_IDS + " ASC";
     }
 
     @Override
     protected String[] getColumns() {
         return new String[]{
                 DatabaseHelper.ID,
-                DatabaseHelper.P_SONG_KEYS,
+                DatabaseHelper.SONG_IDS,
         };
     }
 }
