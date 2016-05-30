@@ -135,7 +135,7 @@ public class MusicUtil {
         return currentIndex;
     }
 
-    public static void doPlayButtonAction(Context context, ImageView playButton) {
+    public static void doPlayButtonAction(Context context) {
         MediaPlayer player = MediaService.getPlayer();
         if (player == null) {
             Song song = MediaCache.getSong(context);
@@ -145,15 +145,13 @@ public class MusicUtil {
         } else {
             if (player.isPlaying()) {
                 player.pause();
-                switchPlayButton(context, playButton, false);
             } else {
                 player.start();
-                switchPlayButton(context, playButton, true);
             }
             if (MediaService.isStopped()) {
                 MediaService.pauseNowPlayingThread(false);
             }
-            MediaService.notifyMediaChangeListeners();
+            MediaService.notifyMediaPlayStateChangeListeners();
         }
     }
 

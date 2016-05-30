@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -111,6 +113,7 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         if (mListAdapter == null)
             mListAdapter = createMediaListAdapter();
         mListView.setAdapter(mListAdapter);
+        mListView.setOnScrollChangeListener(getScrollChangeListener());
 
         if (mListAdapter.isEmpty()) {
             mProgressBar.setVisibility(View.VISIBLE);
@@ -123,11 +126,21 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         if (mGridAdapter == null)
             mGridAdapter = createMediaGridAdapter();
         mGridView.setAdapter(mGridAdapter);
+        mGridView.setOnScrollChangeListener(getScrollChangeListener());
 
         if (mGridAdapter.isEmpty()) {
             mProgressBar.setVisibility(View.VISIBLE);
             mTxtProgress.setVisibility(View.VISIBLE);
         }
+    }
+
+    private View.OnScrollChangeListener getScrollChangeListener() {
+        return new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                Log.d(TAG, "SCROLLING");
+            }
+        };
     }
 
     @Override

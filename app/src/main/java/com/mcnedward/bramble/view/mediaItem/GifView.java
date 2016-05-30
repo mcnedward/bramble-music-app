@@ -81,10 +81,22 @@ public class GifView extends ImageView implements MediaChangeListener {
     }
 
     @Override
-    public void notifyMediaChange(Song currentSong, boolean isPlaying) {
+    public void onMediaPlayStateChange(Song currentSong, boolean playing) {
         mCurrentSong = currentSong;
-        mIsPlaying = isPlaying;
+        mIsPlaying = playing;
         switchMediaIcon();
+    }
+
+    @Override
+    public void onMediaChange(Song currentSong, boolean playing) {
+        mCurrentSong = currentSong;
+        mIsPlaying = playing;
+        switchMediaIcon();
+    }
+
+    @Override
+    public void onMediaStop(Song song) {
+        stop();
     }
 
     /**

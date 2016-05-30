@@ -50,11 +50,21 @@ public class AlbumSongItem extends RelativeLayout implements MediaChangeListener
     }
 
     @Override
-    public void notifyMediaChange(Song currentSong, boolean isPlaying) {
-        mGifView.notifyMediaChange(currentSong, isPlaying);
+    public void onMediaPlayStateChange(Song currentSong, boolean playing) {
+        mGifView.onMediaPlayStateChange(currentSong, playing);
+    }
+
+    @Override
+    public void onMediaChange(Song currentSong, boolean playing) {
+        mGifView.onMediaChange(currentSong, playing);
         if (mSong.getId() == currentSong.getId())
             mTxtTrack.setVisibility(INVISIBLE);
         else
             mTxtTrack.setVisibility(VISIBLE);
+    }
+
+    @Override
+    public void onMediaStop(Song song) {
+
     }
 }

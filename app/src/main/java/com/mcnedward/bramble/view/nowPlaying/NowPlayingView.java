@@ -47,11 +47,6 @@ public class NowPlayingView extends CrossSlidingView implements MediaChangeListe
         mNowPlayingTitleBarSliderView.slideUp(top);
     }
 
-    @Override
-    public void notifyMediaChange(Song song, boolean playing) {
-        loadAlbum();
-    }
-
     private void loadAlbum() {
         // TODO I think this is being called twice? At least on next song start
         Song song = MediaCache.getSong(mContext);
@@ -118,4 +113,18 @@ public class NowPlayingView extends CrossSlidingView implements MediaChangeListe
         return mBottomControl;
     }
 
+    @Override
+    public void onMediaPlayStateChange(Song currentSong, boolean playing) {
+
+    }
+
+    @Override
+    public void onMediaChange(Song song, boolean playing) {
+        loadAlbum();
+    }
+
+    @Override
+    public void onMediaStop(Song song) {
+
+    }
 }

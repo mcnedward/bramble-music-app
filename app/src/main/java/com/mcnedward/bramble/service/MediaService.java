@@ -13,7 +13,6 @@ import com.mcnedward.bramble.enums.IntentKey;
 import com.mcnedward.bramble.exception.EntityDoesNotExistException;
 import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.listener.MediaPlayingListener;
-import com.mcnedward.bramble.listener.MediaStopListener;
 import com.mcnedward.bramble.entity.media.Album;
 import com.mcnedward.bramble.entity.media.Song;
 import com.mcnedward.bramble.utils.MediaCache;
@@ -39,7 +38,6 @@ public class MediaService extends Service {
     private static ArrayList<String> mSongKeys;
     private static Album mAlbum;
     private static Set<MediaChangeListener> mMediaChangeListeners;
-    private static Set<MediaStopListener> mMediaStopListeners;
     private static Set<MediaPlayingListener> mMediaPlayingListeners;
 
     private static MediaThread mMediaThread;
@@ -214,6 +212,7 @@ public class MediaService extends Service {
                 }
                 mPlayer.start();
                 notifyMediaChangeListeners();
+                notifyMediaPlayStateChangeListeners();
             }
         };
 
@@ -240,6 +239,7 @@ public class MediaService extends Service {
                     notifyMediaStopListeners();
                 }
                 notifyMediaChangeListeners();
+                notifyMediaPlayStateChangeListeners();
             }
         };
     }
@@ -289,7 +289,7 @@ public class MediaService extends Service {
             mMediaChangeListeners = new HashSet<>();
         mMediaChangeListeners.add(listener);
         if (mSong != null)
-            listener.notifyMediaChange(mSong, isPlaying());
+            listener.onMediaChange(mSong, isPlaying());
     }
 
     public static void removeMediaChangeListener(MediaChangeListener listener) {
@@ -302,26 +302,19 @@ public class MediaService extends Service {
     public static void notifyMediaChangeListeners() {
         if (mSong == null) return;
         for (MediaChangeListener listener : mMediaChangeListeners)
-            listener.notifyMediaChange(mSong, isPlaying());
+            listener.onMediaChange(mSong, isPlaying());
     }
 
-    public static void attachMediaStopListener(MediaStopListener listener) {
-        if (mMediaStopListeners == null)
-            mMediaStopListeners = new HashSet<>();
-        mMediaStopListeners.add(listener);
-    }
-
-    public static void removeMediaStopListener(MediaStopListener listener) {
-        if (mMediaStopListeners == null)
-            mMediaStopListeners = new HashSet<>();
-        if (mMediaStopListeners.contains(listener))
-            mMediaStopListeners.remove(listener);
+    public static void notifyMediaPlayStateChangeListeners() {
+        if (mSong == null) return;
+        for (MediaChangeListener listener : mMediaChangeListeners)
+            listener.onMediaPlayStateChange(mSong, isPlaying());
     }
 
     public static void notifyMediaStopListeners() {
         if (mSong == null) return;
-        for (MediaStopListener listener : mMediaStopListeners)
-            listener.notifyMediaStop(mSong);
+        for (MediaChangeListener listener : mMediaChangeListeners)
+            listener.onMediaStop(mSong);
     }
 
     public static void attachMediaPlayingListener(MediaPlayingListener listener) {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 
 import com.mcnedward.bramble.entity.media.Song;
+import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.utils.MusicUtil;
 import com.mcnedward.bramble.utils.RippleUtil;
 

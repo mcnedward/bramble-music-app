@@ -57,7 +57,7 @@ public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeL
         mBtnPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicUtil.doPlayButtonAction(mContext, mBtnPlay);
+                MusicUtil.doPlayButtonAction(mContext);
             }
         });
     }
@@ -106,7 +106,17 @@ public class NowPlayingTitleBarView extends LinearLayout implements MediaChangeL
     }
 
     @Override
-    public void notifyMediaChange(Song currentSong, boolean playing) {
+    public void onMediaPlayStateChange(Song currentSong, boolean playing) {
         MusicUtil.switchPlayButton(mContext, mBtnPlay, playing);
+    }
+
+    @Override
+    public void onMediaChange(Song currentSong, boolean playing) {
+        update(currentSong, null);
+    }
+
+    @Override
+    public void onMediaStop(Song song) {
+
     }
 }

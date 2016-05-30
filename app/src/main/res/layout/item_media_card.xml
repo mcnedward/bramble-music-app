@@ -4,14 +4,14 @@
               android:layout_height="wrap_content"
               android:layout_gravity="center"
               android:clipToPadding="false"
-              android:padding="5dp">
+              android:padding="3dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/White"
         android:orientation="vertical"
-        android:elevation="5dp">
+        android:elevation="3dp">
 
         <RelativeLayout
             android:id="@+id/container_media_image"

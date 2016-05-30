@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.listener.MediaChangeListener;
 import com.mcnedward.bramble.listener.MediaPlayingListener;
-import com.mcnedward.bramble.listener.MediaStopListener;
 import com.mcnedward.bramble.entity.media.Album;
 import com.mcnedward.bramble.entity.media.Song;
 import com.mcnedward.bramble.service.MediaService;
@@ -26,7 +25,7 @@ import com.mcnedward.bramble.utils.RippleUtil;
 /**
  * Created by Edward on 5/19/2016.
  */
-public class NowPlayingBottomControlView extends LinearLayout implements MediaPlayingListener, MediaChangeListener, MediaStopListener {
+public class NowPlayingBottomControlView extends LinearLayout implements MediaPlayingListener, MediaChangeListener {
 
     private Context mContext;
     private SeekBar mSeekBar;
@@ -129,7 +128,6 @@ public class NowPlayingBottomControlView extends LinearLayout implements MediaPl
 
         MediaService.attachMediaPlayingListener(this);
         MediaService.attachMediaChangeListener(this);
-        MediaService.attachMediaStopListener(this);
     }
 
     /**
@@ -155,7 +153,7 @@ public class NowPlayingBottomControlView extends LinearLayout implements MediaPl
         mBtnPlay.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                MusicUtil.doPlayButtonAction(mContext, mBtnPlay);
+                MusicUtil.doPlayButtonAction(mContext);
             }
         });
         mBtnForward.setOnClickListener(new OnClickListener() {
@@ -194,12 +192,17 @@ public class NowPlayingBottomControlView extends LinearLayout implements MediaPl
     }
 
     @Override
-    public void notifyMediaChange(Song currentSong, boolean playing) {
+    public void onMediaPlayStateChange(Song currentSong, boolean playing) {
         MusicUtil.switchPlayButton(mContext, mBtnPlay, playing);
     }
 
     @Override
-    public void notifyMediaStop(final Song song) {
+    public void onMediaChange(Song currentSong, boolean playing) {
+
+    }
+
+    @Override
+    public void onMediaStop(final Song song) {
         post(new Runnable() {
             @Override
             public void run() {
