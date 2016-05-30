@@ -30,20 +30,20 @@ import java.util.List;
 public abstract class MediaFragment<T extends Media> extends Fragment implements LoaderManager.LoaderCallbacks<List<T>> {
     private final static String TAG = "MediaFragment";
 
-    private MediaType mediaType;
+    private MediaType mMediaType;
 
-    protected ListView listView;
-    protected GridView gridView;
+    protected ListView mListView;
+    protected GridView mGridView;
 
     protected DataLoader<T> mDataLoader;
     protected BaseMediaAdapter<T> mListAdapter;
     protected MediaGridAdapter<T> mGridAdapter;
 
-    protected ProgressBar progressBar;
-    private TextView txtProgress;
+    protected ProgressBar mProgressBar;
+    private TextView mTxtProgress;
 
     public MediaFragment(MediaType mediaType) {
-        this.mediaType = mediaType;
+        this.mMediaType = mediaType;
     }
 
     public static MediaFragment newInstance(MediaType mediaType) {
@@ -68,11 +68,11 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
 
     public void toggleMediaView(boolean grid) {
         if (grid) {
-            listView.setVisibility(View.GONE);
-            gridView.setVisibility(View.VISIBLE);
+            mListView.setVisibility(View.GONE);
+            mGridView.setVisibility(View.VISIBLE);
         } else {
-            listView.setVisibility(View.VISIBLE);
-            gridView.setVisibility(View.GONE);
+            mListView.setVisibility(View.VISIBLE);
+            mGridView.setVisibility(View.GONE);
         }
     }
 
@@ -81,23 +81,23 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         super.onCreateView(inflater, container, savedInstanceState);
         View thisView = inflater.inflate(R.layout.fragment_media, container, false);
 
-        progressBar = (ProgressBar) thisView.findViewById(R.id.media_progress_bar);
-        txtProgress = (TextView) thisView.findViewById(R.id.media_progress_text);
+        mProgressBar = (ProgressBar) thisView.findViewById(R.id.media_progress_bar);
+        mTxtProgress = (TextView) thisView.findViewById(R.id.media_progress_text);
 
         setupList(thisView);
         setupGrid(thisView);
 
-        switch (mediaType) {
+        switch (mMediaType) {
             case ARTIST:
-                txtProgress.setText(getContext().getString(R.string.artist_loading_text));
+                mTxtProgress.setText(getContext().getString(R.string.artist_loading_text));
                 toggleMediaView(true);
                 break;
             case ALBUM:
-                txtProgress.setText(getContext().getString(R.string.album_loading_text));
+                mTxtProgress.setText(getContext().getString(R.string.album_loading_text));
                 toggleMediaView(true);
                 break;
             case SONG:
-                txtProgress.setText(getContext().getString(R.string.song_loading_text));
+                mTxtProgress.setText(getContext().getString(R.string.song_loading_text));
                 toggleMediaView(false);
                 break;
         }
@@ -106,34 +106,34 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
     }
 
     private void setupList(View view) {
-        listView = (ListView) view.findViewById(R.id.list_media);
-        listView.setItemsCanFocus(true);
+        mListView = (ListView) view.findViewById(R.id.list_media);
+        mListView.setItemsCanFocus(true);
         if (mListAdapter == null)
             mListAdapter = createMediaListAdapter();
-        listView.setAdapter(mListAdapter);
+        mListView.setAdapter(mListAdapter);
 
         if (mListAdapter.isEmpty()) {
-            progressBar.setVisibility(View.VISIBLE);
-            txtProgress.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.VISIBLE);
+            mTxtProgress.setVisibility(View.VISIBLE);
         }
     }
 
     private void setupGrid(View view) {
-        gridView = (GridView) view.findViewById(R.id.grid_media);
+        mGridView = (GridView) view.findViewById(R.id.grid_media);
         if (mGridAdapter == null)
             mGridAdapter = createMediaGridAdapter();
-        gridView.setAdapter(mGridAdapter);
+        mGridView.setAdapter(mGridAdapter);
 
         if (mGridAdapter.isEmpty()) {
-            progressBar.setVisibility(View.VISIBLE);
-            txtProgress.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.VISIBLE);
+            mTxtProgress.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, String.format("Calling %s Fragment initLoader with mId %s!", mediaType.type(), getLoaderId()));
+        Log.d(TAG, String.format("Calling %s Fragment initLoader with mId %s!", mMediaType.type(), getLoaderId()));
         getLoaderManager().initLoader(getLoaderId(), savedInstanceState, this);
     }
 
@@ -147,7 +147,7 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
 
     @Override
     public void onLoadFinished(Loader<List<T>> loader, List<T> data) {
-        Log.d(TAG, String.format("onLoadFinished() called! Loading %s data!", mediaType.type()));
+        Log.d(TAG, String.format("onLoadFinished() called! Loading %s data!", mMediaType.type()));
         mListAdapter.reset();
         mListAdapter.setGroups(data);
         mListAdapter.notifyDataSetChanged();
@@ -157,10 +157,10 @@ public abstract class MediaFragment<T extends Media> extends Fragment implements
         mGridAdapter.setGroups(data);
         mGridAdapter.notifyDataSetChanged();
 
-        if (progressBar != null)
-            progressBar.setVisibility(View.GONE);
-        if (txtProgress != null)
-            txtProgress.setVisibility(View.GONE);
+        if (mProgressBar != null)
+            mProgressBar.setVisibility(View.GONE);
+        if (mTxtProgress != null)
+            mTxtProgress.setVisibility(View.GONE);
     }
 
     @Override

@@ -15,6 +15,9 @@ import android.widget.Space;
 
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.activity.fragment.NowPlayingFragment;
+import com.mcnedward.bramble.adapter.grid.ArtistImageGridAdapter;
+import com.mcnedward.bramble.entity.data.ArtistImage;
+import com.mcnedward.bramble.listener.MediaGridChangeListener;
 import com.mcnedward.bramble.listener.ScrollViewListener;
 import com.mcnedward.bramble.view.ParallaxScrollView;
 import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
@@ -27,7 +30,7 @@ import com.mcnedward.bramble.view.nowPlaying.NowPlayingView;
  * The background image will be hidden when the foreground content is scrolled up, then shown again when the foreground content has moved back down
  * a certain amount.
  */
-public abstract class ParallaxView<T> extends LinearLayout {
+public abstract class ParallaxView<T> extends LinearLayout implements MediaGridChangeListener<ArtistImage> {
     private static final String TAG = "ParallaxView";
     private static final float FOREGROUND_SPACE_SCALE_HEIGHT = 2f;
     private static final float BACKGROUND_SPACE_SCALE_HEIGHT = 1.3f;
@@ -37,6 +40,7 @@ public abstract class ParallaxView<T> extends LinearLayout {
     protected ParallaxScrollView mBgScrollView;
     protected ParallaxScrollView mContentScrollView;
     protected NowPlayingView mNowPlayingView;
+    protected ImageView mImgBackground;
 
     private DisplayMetrics dm;
 
@@ -63,6 +67,8 @@ public abstract class ParallaxView<T> extends LinearLayout {
     protected void initialize() {
         initializeForegroundContent();
         initializeBackgroundContent();
+        // Register as a listener for ArtistImage choosing changes
+        ArtistImageGridAdapter.registerListener(this);
     }
 
     /**
@@ -124,7 +130,7 @@ public abstract class ParallaxView<T> extends LinearLayout {
 
     private void initializeBackgroundContent() {
         LinearLayout layout = (LinearLayout) findViewById(R.id.parallax_background_content);
-        ImageView imgBackground = (ImageView) findViewById(R.id.bg_album_art);
+        mImgBackground = (ImageView) findViewById(R.id.bg_album_art);
 
         int spaceHeight = (int) (dm.heightPixels / getBackgroundSpaceScaleHeight());
         int imageHeight = (int) (dm.heightPixels / getImageScaleHeight());
@@ -133,8 +139,8 @@ public abstract class ParallaxView<T> extends LinearLayout {
         space.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, spaceHeight));
         layout.addView(space);
 
-        imgBackground.setLayoutParams(new LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, imageHeight));
-        loadBackgroundImage(imgBackground);
+        mImgBackground.setLayoutParams(new LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, imageHeight));
+        loadBackgroundImage(mImgBackground);
 
         setupBackgroundContent(layout);
     }
@@ -206,4 +212,9 @@ public abstract class ParallaxView<T> extends LinearLayout {
         return mNowPlayingView;
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        ArtistImageGridAdapter.unregisterListener(this);
+    }
 }

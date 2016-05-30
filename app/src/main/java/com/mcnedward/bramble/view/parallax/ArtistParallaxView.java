@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.entity.data.ArtistImage;
 import com.mcnedward.bramble.entity.media.Artist;
+import com.mcnedward.bramble.listener.MediaGridChangeListener;
 import com.mcnedward.bramble.utils.PicassoUtil;
 
 /**
@@ -40,9 +41,14 @@ public class ArtistParallaxView extends ParallaxView<Artist> {
     protected void loadBackgroundImage(ImageView imageView) {
         // Get the higher resolution image if it exists
         ArtistImage artistImage = mArtist.getArtistImages().get(0);
+        loadImage(artistImage, imageView);
+    }
+
+    private void loadImage(ArtistImage artistImage, ImageView imageView) {
         String imageUrl = artistImage.getMediaUrl();
         if (imageUrl == null) return;
         PicassoUtil.getPicasso(mContext).with(mContext).load(imageUrl).centerInside().fit().into(imageView);
+
     }
 
     @Override
@@ -69,4 +75,8 @@ public class ArtistParallaxView extends ParallaxView<Artist> {
         return 3f;
     }
 
+    @Override
+    public void notifyMediaGridChange(ArtistImage item) {
+        loadImage(item, mImgBackground);
+    }
 }

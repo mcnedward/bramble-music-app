@@ -9,7 +9,7 @@ import com.mcnedward.bramble.utils.MusicUtil;
  */
 public class ArtistImage extends Data implements ITitleAndImage {
 
-    private int mArtistId;
+    private long mArtistId;
     private String mTitle;
     private String mMediaUrl;
     private String mSourceUrl;
@@ -18,8 +18,9 @@ public class ArtistImage extends Data implements ITitleAndImage {
     private int mHeight;
     private int mFileSize;
     private String mContentType;
-    private Thumbnail mThumbnail;
     private String mBitmapPath;
+    private boolean mSelectedImage;
+    private Thumbnail mThumbnail;
     private String mCacheKey;
 
     public ArtistImage() {
@@ -70,11 +71,11 @@ public class ArtistImage extends Data implements ITitleAndImage {
         return mMediaUrl;
     }
 
-    public int getArtistId() {
+    public long getArtistId() {
         return mArtistId;
     }
 
-    public void setArtistId(int artistId) {
+    public void setArtistId(long artistId) {
         mArtistId = artistId;
     }
 
@@ -136,20 +137,28 @@ public class ArtistImage extends Data implements ITitleAndImage {
         mContentType = contentType;
     }
 
-    public Thumbnail getThumbnail() {
-        return mThumbnail;
-    }
-
-    public void setThumbnail(Thumbnail thumbnail) {
-        mThumbnail = thumbnail;
-    }
-
     public String getBitmapPath() {
         return mBitmapPath;
     }
 
     public void setBitmapPath(String bitmapPath) {
         mBitmapPath = bitmapPath;
+    }
+
+    public boolean isSelectedImage() {
+        return mSelectedImage;
+    }
+
+    public void setSelectedImage(boolean selectedImage) {
+        mSelectedImage = selectedImage;
+    }
+
+    public Thumbnail getThumbnail() {
+        return mThumbnail;
+    }
+
+    public void setThumbnail(Thumbnail thumbnail) {
+        mThumbnail = thumbnail;
     }
 
     @Override

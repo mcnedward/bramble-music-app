@@ -13,6 +13,9 @@
     <string name="request">Request</string>
 
     <!-- ARTIST -->
-    <string name="choose_artist_background">Choose a new background for the artist </string>
-    <string name="choose_artist_thumbnail">Choose a new thumbnail for the artist </string>
+    <string name="choose_artist_title">Artist Image Chooser</string>
+    <string name="choose_artist_background">Choose a new background image for the artist </string>
+    <string name="choose_artist_refine">Refine artist image search</string>
+    <string name="choose_artist_search">Search</string>
+    <string name="choose_artist_search_empty">You need to enter a search query. This should be the artist\'s name, followed by something like: \"band\", \"artist\", \"music\"...</string>
 </resources>

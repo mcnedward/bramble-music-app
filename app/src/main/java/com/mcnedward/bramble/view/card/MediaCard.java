@@ -52,6 +52,9 @@ public class MediaCard<T extends ITitleAndImage> extends LinearLayout {
             case RECT:
                 mImgMediaImage = new RectImageCard(context);
                 break;
+            case BIG_RECT:
+                mImgMediaImage = new BigRectImageCard(context);
+                break;
             default:
                 mImgMediaImage = new RectImageCard(context);
                 break;

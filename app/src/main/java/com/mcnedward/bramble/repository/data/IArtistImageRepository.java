@@ -10,6 +10,9 @@ import java.util.List;
  */
 public interface IArtistImageRepository extends IDataRepository<ArtistImage> {
 
-    List<ArtistImage> getForArtistId(int artistId) throws EntityDoesNotExistException;
+    List<ArtistImage> getForArtistId(long artistId);
 
+    ArtistImage getSelectedImageForArtist(long artistId) throws  EntityDoesNotExistException;
+
+    boolean setSelectedImage(ArtistImage newSelectedArtistImage, long artistId);
 }

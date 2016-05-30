@@ -20,7 +20,7 @@ public class AlbumRepository extends MediaRepository<Album> {
         super(context, MediaType.ALBUM);
     }
 
-    public List<Album> getAlbumsForArtist(int artistId) {
+    public List<Album> getAlbumsForArtist(long artistId) {
         Uri mediaUri = MediaStore.Audio.Artists.Albums.getContentUri("external", artistId);
         return read(mediaUri, getColumns(), null, null, getOrderBy());
     }

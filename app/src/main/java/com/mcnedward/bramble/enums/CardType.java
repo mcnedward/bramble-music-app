@@ -6,6 +6,7 @@ package com.mcnedward.bramble.enums;
 public enum CardType {
 
     SQUARE,
-    RECT
+    RECT,
+    BIG_RECT
 
 }

@@ -28,8 +28,31 @@ public class ArtistImageRepository extends DataRepository<ArtistImage> implement
     }
 
     @Override
-    public List<ArtistImage> getForArtistId(int artistId) throws EntityDoesNotExistException {
+    public List<ArtistImage> getForArtistId(long artistId) {
         return read(String.format("%s=?", DatabaseHelper.A_ARTIST_ID), new String[]{String.valueOf(artistId)});
+    }
+
+    @Override
+    public ArtistImage getSelectedImageForArtist(long artistId) throws  EntityDoesNotExistException {
+        return readFirstOrDefault(String.format("%s = ? AND %s = 1", DatabaseHelper.A_ARTIST_ID, DatabaseHelper.A_SELECTED_IMAGE), new String[]{String.valueOf(artistId)});
+    }
+
+    @Override
+    public boolean setSelectedImage(ArtistImage newSelectedArtistImage, long artistId) {
+        boolean updated = false;
+        try {
+            ArtistImage oldSelectedArtistImage = getSelectedImageForArtist(artistId);
+            oldSelectedArtistImage.setSelectedImage(false);
+            updated = update(oldSelectedArtistImage);
+        } catch (EntityDoesNotExistException e) {
+            // No default ArtistImage found, so just continue
+        }
+        try {
+            updated = update(newSelectedArtistImage);
+        } catch (EntityDoesNotExistException e) {
+            Log.w(TAG, "Could not update the ArtistImage " + newSelectedArtistImage.getTitle() + " because it does not exist.");
+        }
+        return updated;
     }
 
     @Override
@@ -63,6 +86,7 @@ public class ArtistImageRepository extends DataRepository<ArtistImage> implement
         ai.setFileSize(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.A_FILE_SIZE)));
         ai.setContentType(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.A_CONTENT_TYPE)));
         ai.setBitmapPath(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.A_BITMAP_PATH)));
+        ai.setSelectedImage(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.A_SELECTED_IMAGE)) == 1);
 
         int thumbnailId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.A_THUMBNAIL_ID));
         try {
@@ -96,6 +120,7 @@ public class ArtistImageRepository extends DataRepository<ArtistImage> implement
         values.put(DatabaseHelper.A_FILE_SIZE, entity.getFileSize());
         values.put(DatabaseHelper.A_BITMAP_PATH, entity.getBitmapPath());
         values.put(DatabaseHelper.A_CONTENT_TYPE, entity.getContentType());
+        values.put(DatabaseHelper.A_SELECTED_IMAGE, entity.isSelectedImage() ? 1 : 0);
         values.put(DatabaseHelper.A_THUMBNAIL_ID, entity.getThumbnail() != null ? entity.getThumbnail().getId() : 0);
         return values;
     }
@@ -114,6 +139,7 @@ public class ArtistImageRepository extends DataRepository<ArtistImage> implement
                 DatabaseHelper.A_FILE_SIZE,
                 DatabaseHelper.A_CONTENT_TYPE,
                 DatabaseHelper.A_BITMAP_PATH,
+                DatabaseHelper.A_SELECTED_IMAGE,
                 DatabaseHelper.A_THUMBNAIL_ID
         };
     }

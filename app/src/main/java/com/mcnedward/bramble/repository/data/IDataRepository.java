@@ -29,6 +29,15 @@ public interface IDataRepository<T extends Data> extends IRepository<T> {
     boolean update(T entity) throws EntityDoesNotExistException;
 
     /**
+     * Update an existing entity.
+     *
+     * @param id The id entity to update.
+     * @return True if the entity was updated, false otherwise
+     * @throws EntityDoesNotExistException If the entity does not exist.
+     */
+    boolean update(long id) throws EntityDoesNotExistException;
+
+    /**
      * Delete an existing entity.
      *
      * @param entity The entity to delete.
@@ -40,7 +49,7 @@ public interface IDataRepository<T extends Data> extends IRepository<T> {
     /**
      * Delete an existing entity.
      *
-     * @param id The mId of the entity to delete.
+     * @param id The id of the entity to delete.
      * @return True if the entity was deleted, false otherwise.
      * @throws EntityDoesNotExistException If the entity does not exist.
      */

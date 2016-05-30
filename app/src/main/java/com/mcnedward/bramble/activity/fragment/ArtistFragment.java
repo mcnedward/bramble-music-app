@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.mcnedward.bramble.adapter.grid.ArtistGridAdapter;
+import com.mcnedward.bramble.adapter.grid.ArtistImageGridAdapter;
 import com.mcnedward.bramble.adapter.grid.MediaGridAdapter;
 import com.mcnedward.bramble.adapter.list.ArtistListAdapter;
 import com.mcnedward.bramble.adapter.list.MediaListAdapter;
@@ -16,6 +17,7 @@ import com.mcnedward.bramble.entity.media.Artist;
 import com.mcnedward.bramble.entity.media.MediaType;
 import com.mcnedward.bramble.exception.EntityAlreadyExistsException;
 import com.mcnedward.bramble.exception.EntityDoesNotExistException;
+import com.mcnedward.bramble.listener.MediaGridChangeListener;
 import com.mcnedward.bramble.repository.data.ArtistImageRepository;
 import com.mcnedward.bramble.repository.data.IArtistImageRepository;
 import com.mcnedward.bramble.repository.media.ArtistRepository;
@@ -27,7 +29,7 @@ import java.util.Random;
 /**
  * Created by edward on 24/12/15.
  */
-public class ArtistFragment extends MediaFragment<Artist> {
+public class ArtistFragment extends MediaFragment<Artist> implements MediaGridChangeListener<ArtistImage> {
     private final static String TAG = "ArtistFragment";
     private final static int LOADER_ID = new Random().nextInt();
 
@@ -43,6 +45,9 @@ public class ArtistFragment extends MediaFragment<Artist> {
         super.onActivityCreated(savedInstanceState);
         mController = new WebController(getActivity());
         mRepository = new ArtistImageRepository(getActivity());
+
+        // Register this as a listener for ArtistImage choosing changes
+        ArtistImageGridAdapter.registerListener(this);
     }
 
     @Override
@@ -51,14 +56,14 @@ public class ArtistFragment extends MediaFragment<Artist> {
 
         for (Artist artist : data) {
             List<ArtistImage> artistImages;
-            try {
-                artistImages = mRepository.getForArtistId(artist.getId());
+            artistImages = mRepository.getForArtistId(artist.getId());
+            if (!artistImages.isEmpty()) {
                 artist.setArtistImages(artistImages);
                 mGridAdapter.updateItem(artist);
                 mGridAdapter.notifyDataSetChanged();
-            } catch (EntityDoesNotExistException e) {
+            } else {
                 // If no image, then make a request for one
-                mController.requestArtistImage(artist,
+                mController.requestArtistImages(artist,
                         new Response.Listener<ArtistImageResponse>() {
                             @Override
                             public void onResponse(ArtistImageResponse response) {
@@ -68,7 +73,9 @@ public class ArtistFragment extends MediaFragment<Artist> {
                                     Log.d(TAG, "No images found for artist: " + requestArtist.getArtistName());
                                 } else {
                                     // Get the artist images from the response, save them in the database, and handle the bitmap for the first one
-                                    for (ArtistImage ai : artistImages) {
+                                    for (int i = 0; i < artistImages.size(); i++) {
+                                        ArtistImage ai = artistImages.get(i);
+                                        if (i == 0) ai.setSelectedImage(true);  // Set the first as the default selected image
                                         ai.setArtistId(requestArtist.getId());
                                         try {
                                             mRepository.save(ai);
@@ -78,14 +85,13 @@ public class ArtistFragment extends MediaFragment<Artist> {
                                     }
                                     requestArtist.setArtistImages(artistImages);
                                     mGridAdapter.updateItem(requestArtist);
-                                    mGridAdapter.notifyDataSetChanged();
                                 }
                             }
                         });
             }
         }
-
     }
+
 
     @Override
     public IMediaRepository<Artist> createRepository() {
@@ -107,4 +113,17 @@ public class ArtistFragment extends MediaFragment<Artist> {
         return LOADER_ID;
     }
 
+    @Override
+    public void notifyMediaGridChange(ArtistImage item) {
+        Artist artist = mGridAdapter.getItemWithId(item.getArtistId());
+        if (artist == null) return;
+        artist.setSelectedImage(item);
+        mGridAdapter.updateItem(artist);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ArtistImageGridAdapter.unregisterListener(this);
+    }
 }

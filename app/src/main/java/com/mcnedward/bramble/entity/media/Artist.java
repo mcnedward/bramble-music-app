@@ -17,6 +17,7 @@ public class Artist extends Media implements Serializable {
     private String artistName;
     private int numberOfAlbums;
     private List<ArtistImage> mArtistImages;
+    private ArtistImage mSelectedImage;
 
     public Artist(int artistId, String artistName, String artistKey, int numberOfAlbums) {
         super(artistId, "", artistName, artistKey, MediaType.ARTIST);
@@ -73,12 +74,47 @@ public class Artist extends Media implements Serializable {
         return mArtistImages;
     }
 
+    /**
+     * Sets the ArtistImages for this Artist. This will also set the image url to use for this Artist.
+     *
+     * @param artistImages The ArtistImages.
+     */
     public void setArtistImages(List<ArtistImage> artistImages) {
         this.mArtistImages = artistImages;
-        // TODO This will be changed based on user preferences
+        for (ArtistImage artistImage : artistImages) {
+            if (artistImage.isSelectedImage()) {
+                setImageUrl(artistImage.getMediaUrl());
+                return;
+            }
+        }
+        // If default was not found, use the first
         ArtistImage artistImage = artistImages.get(0);
-        if (artistImage == null) return;
         setImageUrl(artistImage.getMediaUrl());
+    }
+
+    public ArtistImage getSelectedImage() {
+        return mSelectedImage;
+    }
+
+    /**
+     * Sets the currently selected ArtistImage. This will also set the image url to use the newly selected ArtistImage.
+     *
+     * @param artistImage The newly selected ArtistImage.
+     */
+    public void setSelectedImage(ArtistImage artistImage) {
+        for (ArtistImage ai : mArtistImages) {
+            if (ai.isSelectedImage()) {
+                // Reset the currently selected image
+                ai.setSelectedImage(false);
+            }
+            if (ai.getId() == artistImage.getId()) {
+                // Set the new selected image
+                ai.setSelectedImage(true);
+                mSelectedImage = ai;
+            }
+        }
+        // Reset the image url
+        setArtistImages(mArtistImages);
     }
 
     @Override

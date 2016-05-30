@@ -5,6 +5,7 @@ package com.mcnedward.bramble.entity;
  */
 public interface ITitleAndImage {
 
+    long getId();
     String getTitle();
     String getImagePath();
     String getImageUrl();

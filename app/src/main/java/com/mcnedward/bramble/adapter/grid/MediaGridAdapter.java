@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.mcnedward.bramble.R;
 import com.mcnedward.bramble.entity.ITitleAndImage;
 import com.mcnedward.bramble.enums.CardType;
 import com.mcnedward.bramble.utils.PicassoUtil;
@@ -100,23 +101,10 @@ public abstract class MediaGridAdapter<T extends ITitleAndImage> extends BaseAda
         if ((imagePath == null || imagePath.equals("")) && (imageUrl != null && !imageUrl.equals(""))) {
             // No path, so try for a url instead
             mediaCard.update(item, false);
-            PicassoUtil.getPicasso(mContext).with(mContext).load(imageUrl).fit().centerInside().into(mediaCard.getImageView(), getPicassoCallback(item, mediaCard));
+            PicassoUtil.getPicasso(mContext).with(mContext).load(imageUrl).placeholder(R.drawable.no_album_art).fit().centerInside().into(mediaCard.getImageView());
         } else {
             mediaCard.update(item);
         }
-    }
-
-    private Callback getPicassoCallback(final T item, final MediaCard mediaCard) {
-        return new Callback() {
-            @Override
-            public void onSuccess() {
-                mediaCard.update(item, false);
-            }
-            @Override
-            public void onError() {
-                mediaCard.update(item);
-            }
-        };
     }
 
     public void updateItem(T item) {
@@ -125,6 +113,7 @@ public abstract class MediaGridAdapter<T extends ITitleAndImage> extends BaseAda
             T groupItem = mGroups.get(i);
             if (groupItem.getCacheKey().equals(item.getCacheKey())) {
                 mGroups.set(i, item);
+                notifyDataSetChanged();
                 return;
             }
         }
@@ -132,6 +121,7 @@ public abstract class MediaGridAdapter<T extends ITitleAndImage> extends BaseAda
 
     public void setGroups(List<T> groups) {
         mGroups = groups;
+        notifyDataSetChanged();
     }
 
     public void reset() {
@@ -148,6 +138,15 @@ public abstract class MediaGridAdapter<T extends ITitleAndImage> extends BaseAda
     @Override
     public T getItem(int position) {
         return mGroups.get(position);
+    }
+
+    public T getItemWithId(long id) {
+        for (T item : mGroups) {
+            if (item.getId() == id) {
+                return item;
+            }
+        }
+        return null;
     }
 
     @Override

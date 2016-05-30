@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mcnedward.bramble.R;
+import com.mcnedward.bramble.entity.data.ArtistImage;
 import com.mcnedward.bramble.entity.media.Album;
 import com.mcnedward.bramble.entity.media.Song;
 import com.mcnedward.bramble.repository.media.SongRepository;
@@ -74,4 +75,8 @@ public class AlbumParallaxView extends ParallaxView<Album> {
 
     }
 
+    @Override
+    public void notifyMediaGridChange(ArtistImage item) {
+
+    }
 }

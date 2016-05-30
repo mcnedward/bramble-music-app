@@ -13,7 +13,7 @@ import java.util.Random;
  */
 public abstract class Media implements Serializable, ITitleAndImage {
 
-    protected int mId;
+    protected long mId;
     protected String mImagePath;
     protected String mImageUrl;
     protected String mTitle;
@@ -32,7 +32,7 @@ public abstract class Media implements Serializable, ITitleAndImage {
 
     public boolean save(SharedPreferences.Editor editor) {
         String theMediaType = mMediaType.type();
-        editor.putInt(theMediaType + "_id", mId);
+        editor.putInt(theMediaType + "_id", (int) mId);
         editor.putString(theMediaType + "_imagePath", mImagePath);
         editor.putString(theMediaType + "_title", mTitle);
         editor.putString(theMediaType + "_key", mKey);
@@ -43,7 +43,7 @@ public abstract class Media implements Serializable, ITitleAndImage {
 
     protected abstract void saveMedia(SharedPreferences.Editor editor);
 
-    public int getId() {
+    public long getId() {
         return mId;
     }
 

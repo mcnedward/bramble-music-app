@@ -17,7 +17,7 @@ public class Album extends Media implements Serializable {
     private int firstYear;
     private int lastYear;
     private String albumArt;
-    private List<Integer> songIds;
+    private List<Long> songIds;
     private List<Song> songs;
 
     public Album(int albumId, String albumName, String albumKey, String artist, int numberOfSongs, int firstYear, int lastYear, String albumArt) {
@@ -125,11 +125,11 @@ public class Album extends Media implements Serializable {
         this.albumArt = albumArt;
     }
 
-    public List<Integer> getSongIds() {
+    public List<Long> getSongIds() {
         return songIds;
     }
 
-    public void setSongIds(List<Integer> songIds) {
+    public void setSongIds(List<Long> songIds) {
         this.songIds = songIds;
     }
 

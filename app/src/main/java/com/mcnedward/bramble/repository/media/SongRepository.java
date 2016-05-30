@@ -27,7 +27,7 @@ public class SongRepository extends MediaRepository<Song> {
         mSongComparator = new SongComparator();
     }
 
-    public List<Song> getSongsForAlbum(int albumId) {
+    public List<Song> getSongsForAlbum(long albumId) {
         List<Song> songs = read(String.format("%s = ?", MediaStore.Audio.Media.ALBUM_ID), String.valueOf(albumId));
         Collections.sort(songs, mSongComparator);
         return songs;
